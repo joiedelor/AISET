@@ -1,5 +1,108 @@
 # AISET - AI Systems Engineering Tool
 
+---
+
+## 🚨 PROJECT STATUS (Last Updated: 2025-11-13)
+
+### ✅ CURRENT STATE: MVP COMPLETE - CODE ON GITHUB
+
+**Repository:** https://github.com/joiedelor/AISET
+**Status:** All 68 files created and pushed to GitHub
+**Version:** 0.1.0
+
+### 📋 CRITICAL INFORMATION FOR RESUMING
+
+#### Location
+- **Local Path:** `/home/joiedelor/aiset/`
+- **Platform:** WSL2 Ubuntu on Windows
+- **Access from Windows:** `\\wsl$\Ubuntu\home\joiedelor\aiset`
+
+#### Essential Files Created (68 total)
+- **Backend:** 31 files (config, 11 models, 4 services, 10 routers, tests)
+- **Frontend:** 18 files (React pages, components, types, config)
+- **Docs:** 5 files (README, DO-178C compliance, traceability)
+- **Infrastructure:** 14 files (Docker, CI/CD, scripts)
+
+#### Required Configuration (BEFORE FIRST RUN)
+
+1. **GitHub Token** (REVOKE COMPROMISED TOKEN FIRST!)
+   - Go to: https://github.com/settings/tokens
+   - Delete old token (was shared in conversation)
+   - Create new with scopes: `repo` + `workflow`
+   - Store in password manager (NOT in code)
+
+2. **Backend Environment** (`backend/.env`)
+   ```bash
+   # Copy template
+   cp backend/.env.example backend/.env
+
+   # Edit and add:
+   DATABASE_URL=postgresql://aiset_user:PASSWORD@localhost:5432/aiset_db
+   ANTHROPIC_API_KEY=sk-ant-YOUR_KEY_HERE
+   SECRET_KEY=$(openssl rand -hex 32)
+   ```
+
+3. **Database Setup**
+   ```bash
+   # Install PostgreSQL if needed
+   sudo apt install postgresql postgresql-contrib
+
+   # Create database
+   sudo -u postgres psql
+   CREATE DATABASE aiset_db;
+   CREATE USER aiset_user WITH PASSWORD 'your_password';
+   GRANT ALL PRIVILEGES ON DATABASE aiset_db TO aiset_user;
+   \q
+
+   # Initialize schema
+   python scripts/init_db.py
+   ```
+
+#### Quick Start Commands
+
+```bash
+# Navigate to project
+cd /home/joiedelor/aiset
+
+# Option 1: Docker (Recommended)
+docker-compose up
+
+# Option 2: Manual
+# Terminal 1 - Backend
+cd backend && source venv/bin/activate && uvicorn main:app --reload
+
+# Terminal 2 - Frontend
+cd frontend && npm run dev
+
+# Access:
+# Frontend: http://localhost:5173
+# Backend: http://localhost:8000
+# API Docs: http://localhost:8000/docs
+```
+
+#### What's NOT in Git (Configure Locally)
+- ❌ `backend/.env` (has secrets)
+- ❌ `backend/venv/` (virtual environment)
+- ❌ `frontend/node_modules/` (npm packages)
+- ❌ Database data
+- ❌ API tokens
+
+#### Next Immediate Tasks
+1. Revoke compromised GitHub token
+2. Create new token with `workflow` permission
+3. Add CI/CD file: `git add .github/workflows/ci.yml && git push`
+4. Configure `backend/.env`
+5. Run `python scripts/init_db.py`
+6. Start development with `docker-compose up`
+
+#### Important Files for Context
+- **PROJECT_STATUS.md** - Complete project status and resume guide
+- **README.md** - User documentation
+- **docs/DO178C_COMPLIANCE.md** - Certification compliance details
+- **docs/TRACEABILITY_MATRIX.md** - All 55+ requirements traced
+
+---
+
 ## 🎯 Project Overview
 
 AISET is an **AI-powered systems engineering tool** designed to automate requirements elicitation, design documentation, and traceability management for critical systems development.
