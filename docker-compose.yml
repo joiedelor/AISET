@@ -1,0 +1,64 @@
+# AISET Docker Compose Configuration
+# DO-178C Traceability: REQ-DEPLOY-001
+# Purpose: Container orchestration for development and production
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: aiset-postgres
+    environment:
+      POSTGRES_DB: aiset_db
+      POSTGRES_USER: aiset_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aiset_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: aiset-backend
+    environment:
+      DATABASE_URL: postgresql://aiset_user:${DB_PASSWORD:-changeme}@postgres:5432/aiset_db
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      SECRET_KEY: ${SECRET_KEY:-your-secret-key-here}
+      AI_SERVICE: ${AI_SERVICE:-claude}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - ./exports:/app/exports
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: aiset-frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev
+
+volumes:
+  postgres_data:
+    driver: local
