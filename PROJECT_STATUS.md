@@ -1,6 +1,6 @@
 # AISET - Project Status & Resume Guide
 
-**Last Updated:** 2025-11-14 23:00 UTC
+**Last Updated:** 2025-11-14 23:30 UTC
 **Version:** 0.2.0
 **Status:** ⚠️ MVP Complete + Database Complete BUT DO-178C Remediation In Progress
 
@@ -270,13 +270,14 @@ cd frontend && npm run dev
 ## 🔑 Important File Locations
 
 ### Documentation (Read First)
-- **Project Index:** `00_DO178C_INDEX.md` ⭐
-- **This File:** `PROJECT_STATUS.md`
-- **Resume Guide:** `SESSION_RESUME.md`
-- **Daily Workflow:** `docs/DO178C_Daily_Workflow_Guide.md` ⭐ CRITICAL
-- **Project Structure:** `docs/DO178C_Project_Structure.md`
-- **Software Development Plan:** `docs/SDP_Software_Development_Plan.md`
-- **Tool Qualification Plan:** `docs/Tool_Qualification_Plan_DO330.md`
+- **Documentation Structure:** `DOCUMENTATION_STRUCTURE.md` ⭐ **START HERE**
+- **Project Index:** `00_DO178C_INDEX.md`
+- **This File:** `PROJECT_STATUS.md` (Human-readable status)
+- **Claude Resume:** `Claude.md` (AI quick reference)
+- **Daily Workflow:** `01_PLANNING/Standards/DO178C_Daily_Workflow_Guide.md` ⭐ CRITICAL
+- **Software Development Plan:** `01_PLANNING/SDP_Software_Development_Plan.md`
+- **Tool Qualification Plan:** `01_PLANNING/Tool_Qualification/Tool_Qualification_Plan_DO330.md`
+- **Gap Analysis:** `docs/GAP_ANALYSIS.md` ⭐ Read for compliance gaps
 
 ### Source Code
 - **Backend:** `backend/` (Python FastAPI)
@@ -452,7 +453,20 @@ cd frontend && npm run dev
 
 ## 📚 Documentation Created (2025-11-14)
 
-### DO-178C Guide Documents (docs/)
+### Master Documentation Structure
+1. **DOCUMENTATION_STRUCTURE.md** (NEW - 650 lines)
+   - Single source of truth for all documentation
+   - File ownership and responsibilities
+   - Update procedures and anti-patterns
+   - Session end checklist
+
+2. **.claude/session_end.md** (NEW - 450 lines)
+   - Mandatory session end procedure for Claude Code
+   - Automated checks and templates
+   - Commit message guidelines
+   - Quick verification script
+
+### DO-178C Guide Documents (01_PLANNING/)
 1. **DO178C_Daily_Workflow_Guide.md** (637 lines)
    - Complete daily workflow for DO-178C compliance
    - Step-by-step process with examples
