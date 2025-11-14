@@ -78,6 +78,9 @@ def init_db() -> None:
         In production, use Alembic migrations instead of this function.
         This is primarily for development and testing.
     """
+    # Import all models to register them with Base
+    import models  # noqa: F401
+
     logger.info("Initializing database tables...")
     Base.metadata.create_all(bind=engine)
     logger.info("Database tables created successfully")

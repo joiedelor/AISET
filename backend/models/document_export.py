@@ -7,7 +7,7 @@ Document exports are tracked for audit purposes and to maintain
 a complete record of all generated certification artifacts.
 """
 
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Enum as SQLEnum, Boolean
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Enum as SQLEnum, Boolean, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 import enum

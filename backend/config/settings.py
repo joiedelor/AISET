@@ -8,8 +8,8 @@ All settings are validated at startup to ensure system integrity.
 """
 
 from typing import List
-from pydantic_settings import BaseSettings
-from pydantic import Field, validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field, field_validator
 
 
 class Settings(BaseSettings):
@@ -45,8 +45,8 @@ class Settings(BaseSettings):
     log_level: str = Field("INFO", env="LOG_LEVEL")
 
     # CORS Settings
-    allowed_origins: List[str] = Field(
-        ["http://localhost:5173", "http://localhost:3000"],
+    allowed_origins: str = Field(
+        "http://localhost:5173,http://localhost:3000",
         env="ALLOWED_ORIGINS"
     )
 
@@ -59,23 +59,23 @@ class Settings(BaseSettings):
     require_approval_workflow: bool = Field(True, env="REQUIRE_APPROVAL_WORKFLOW")
     traceability_strict_mode: bool = Field(True, env="TRACEABILITY_STRICT_MODE")
 
-    @validator("allowed_origins", pre=True)
-    def parse_cors_origins(cls, v):
-        """Parse comma-separated CORS origins."""
-        if isinstance(v, str):
-            return [origin.strip() for origin in v.split(",")]
-        return v
+    @property
+    def cors_origins(self) -> List[str]:
+        """Get parsed CORS origins as a list."""
+        return [origin.strip() for origin in self.allowed_origins.split(",")]
 
-    @validator("ai_service")
+    @field_validator("ai_service")
+    @classmethod
     def validate_ai_service(cls, v):
         """Ensure AI service is valid."""
         if v not in ["claude", "lmstudio"]:
             raise ValueError("ai_service must be 'claude' or 'lmstudio'")
         return v
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=False
+    )
 
 
 # Global settings instance
