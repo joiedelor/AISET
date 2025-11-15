@@ -1,6 +1,19 @@
 # AISET Project Structure
 
-Complete file structure of the AISET project with DO-178C compliance.
+Complete file structure of the AISET project with **4 DOCUMENTATION LEVELS** clearly separated.
+
+**⚠️ CRITICAL:** See `DOCUMENTATION_LEVELS.md` for complete level separation guide.
+
+---
+
+## 🎯 Four Documentation Levels
+
+### **Level 1:** AISET Tool Development (DO-178C DAL D)
+### **Level 2:** AISET Usage Framework (ARP4754A - what AISET helps users create)
+### **Level 3:** Claude Session Documentation (internal development)
+### **Level 4:** Specification Roleplay (requirements capture)
+
+---
 
 ## 📁 Project Root
 
@@ -9,12 +22,30 @@ aiset/
 ├── README.md                          # Main project documentation
 ├── LICENSE                            # MIT License
 ├── CONTRIBUTING.md                    # Contribution guidelines
-├── Claude.md                          # Original project specifications
-├── PROJECT_STRUCTURE.md              # This file
-├── .gitignore                        # Git ignore rules
-├── docker-compose.yml                # Docker orchestration
 │
-├── 📂 backend/                       # Python FastAPI Backend
+├── 📄 **[Meta]** Documentation Organization
+├── DOCUMENTATION_LEVELS.md           # ⭐ MASTER: 4-level separation guide
+├── DOCUMENTATION_STRUCTURE.md        # ⭐ Documentation organization (v2.0)
+├── PROJECT_STRUCTURE.md              # This file - codebase structure
+│
+├── 📄 **[Level 3]** Claude Session Documentation (Internal Development)
+├── Claude.md                          # ⭐ Claude Code resume file
+├── PROJECT_STATUS.md                  # ⭐ Human-readable project status
+│
+├── 📄 **[Level 4]** Specification Roleplay (Requirements Capture)
+├── REQUIREMENTS.md                    # ⭐ Tool requirements (v0.5.0, 85 requirements)
+│                                      # → Will become Level 1 SRS source
+├── ROLEPLAY_RULES.md                 # ⭐ Specification roleplay methodology
+├── ROLEPLAY_SESSION.md               # Roleplay session status (COMPLETED)
+│
+├── 📄 **[Level 1]** DO-178C Index
+├── 00_DO178C_INDEX.md                # Master index for AISET DO-178C compliance
+│
+├── 📄 **[Level 1]** AISET Development Infrastructure
+├── .gitignore                        # Git ignore rules
+├── docker-compose.yml                # Docker orchestration (AISET deployment)
+│
+├── 📂 **[Level 1]** backend/         # AISET Tool Source Code (Python FastAPI)
 │   ├── main.py                       # FastAPI application entry point
 │   ├── requirements.txt              # Python dependencies
 │   ├── Dockerfile                    # Backend container image
@@ -63,7 +94,7 @@ aiset/
 │       ├── test_requirements_service.py  # Requirements tests (REQ-TEST-001)
 │       └── test_traceability_service.py  # Traceability tests (REQ-TEST-002)
 │
-├── 📂 frontend/                      # React TypeScript Frontend
+├── 📂 **[Level 1]** frontend/        # AISET Tool Source Code (React TypeScript)
 │   ├── package.json                  # NPM dependencies
 │   ├── tsconfig.json                 # TypeScript configuration
 │   ├── tsconfig.node.json            # TypeScript node config
@@ -96,20 +127,31 @@ aiset/
 │           ├── Traceability.tsx      # Traceability matrix (REQ-FRONTEND-013)
 │           └── Documents.tsx         # Document generation (REQ-FRONTEND-014)
 │
-├── 📂 docs/                          # Documentation
-│   ├── DO178C_COMPLIANCE.md          # DO-178C compliance documentation
-│   └── TRACEABILITY_MATRIX.md        # Complete requirements traceability
+├── 📂 docs/                          # Reference Documentation (PHYSICALLY SEPARATED BY LEVEL)
+│   ├── README.md                     # ⭐ Explains level separation
+│   │
+│   ├── 📂 Level_1_AISET_Development/ # **[Level 1]** AISET Tool Development (DO-178C DAL D)
+│   │   ├── DATABASE_SCHEMA.md        # ⭐ AISET database schema (42 tables)
+│   │   ├── SQL_requirement.md        # AISET database requirements spec
+│   │   ├── GAP_ANALYSIS.md           # AISET DO-178C compliance gaps
+│   │   └── DO178C_COMPLIANCE.md      # AISET DO-178C compliance status
+│   │
+│   └── 📂 Level_2_User_Framework/    # **[Level 2]** AISET Usage Framework (ARP4754A)
+│       ├── Project_Plan.md           # ⭐ 10-phase ARP4754A process (475 lines)
+│       │                             # ⚠️ This is for USERS, NOT AISET development
+│       └── TRACEABILITY_MATRIX.md    # Template of what AISET generates
 │
-├── 📂 scripts/                       # Utility scripts
+├── 📂 **[Level 1]** scripts/         # AISET Development Utility Scripts
 │   ├── setup.sh                      # Initial setup script (REQ-SETUP-001)
 │   └── init_db.py                    # Database initialization (REQ-SETUP-002)
 │
-└── 📂 .github/                       # GitHub configuration
+└── 📂 **[Level 1]** .github/         # AISET Development CI/CD
     └── workflows/
         └── ci.yml                    # CI/CD pipeline (REQ-CI-001)
 ```
 
-## 📊 File Count Summary
+## 📊 File Count Summary **[Level 1]**
+*AISET Tool Development Components*
 
 ### Backend (Python)
 - **Configuration:** 3 files (settings, database, main)
@@ -145,7 +187,8 @@ aiset/
 - ✅ Test suites
 - ✅ Setup scripts
 
-## 🎯 DO-178C Traceability Coverage
+## 🎯 DO-178C Traceability Coverage **[Level 1]**
+*AISET Tool Development Requirements Coverage*
 
 ### Requirements Implemented
 
@@ -168,7 +211,8 @@ aiset/
 
 **Implementation Coverage:** 100%
 
-## 🚀 Key Features Implemented
+## 🚀 Key Features Implemented **[Level 1]**
+*AISET Tool Capabilities*
 
 ### 1. Database (16 Tables)
 ✅ Projects, Requirements, Design, Tests
@@ -215,7 +259,8 @@ aiset/
 ✅ Code quality checks
 ✅ Setup scripts
 
-## 📝 Next Steps
+## 📝 Next Steps **[Level 1]**
+*AISET Tool Setup & Deployment*
 
 1. **Run Setup:**
    ```bash
@@ -244,5 +289,8 @@ aiset/
 ---
 
 **Status:** ✅ MVP Complete - Ready for Development
-**Version:** 0.1.0
-**Last Updated:** 2025-11-13
+**Version:** 0.2.0
+**Last Updated:** 2025-11-15 (Level separation added)
+
+**⚠️ IMPORTANT:** All folders and sections now tagged with documentation levels.
+**See:** `DOCUMENTATION_LEVELS.md` for level definitions and anti-mixing guidelines.

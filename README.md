@@ -5,6 +5,28 @@
 **License:** MIT
 **DO-178C Compliance:** Level C (configurable A-E)
 
+---
+
+## ⚠️ Documentation Structure - READ FIRST
+
+**This project has 4 DISTINCT documentation levels - DO NOT MIX THEM!**
+
+| Level | Purpose | Location | Audience |
+|-------|---------|----------|----------|
+| **Level 1** | AISET Tool Development (DO-178C DAL D) | `01_PLANNING/` - `09_CERTIFICATION/` | AISET developers |
+| **Level 2** | AISET Usage Framework (ARP4754A) | `docs/Project_Plan.md` | AISET users |
+| **Level 3** | Claude Session Documentation | `Claude.md`, `PROJECT_STATUS.md` | Claude Code AI |
+| **Level 4** | Specification Roleplay | `REQUIREMENTS.md`, `ROLEPLAY_*.md` | Requirements engineers |
+
+**📖 Read:** `DOCUMENTATION_LEVELS.md` for complete level separation guide
+
+**⚠️ CRITICAL DISTINCTION:**
+- **Level 1:** We develop AISET tool per DO-178C
+- **Level 2:** AISET helps users develop their systems per ARP4754A
+- **These are DIFFERENT processes - NEVER confuse them!**
+
+---
+
 ## 📖 Overview
 
 AISET is an AI-powered systems engineering tool designed to **automate requirements elicitation, design documentation, and traceability management** for safety-critical systems development, with full **DO-178C certification compliance**.

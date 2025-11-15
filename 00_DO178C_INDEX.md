@@ -1,8 +1,22 @@
 # DO-178C Project Index - AISET
 ## AI Systems Engineering Tool
-**Version:** 1.0
-**Date:** 2025-11-14
+
+**Version:** 1.1
+**Date:** 2025-11-15
 **DAL Level:** D (To be confirmed)
+
+**⚠️ DOCUMENTATION LEVEL:** [Level 1] AISET Tool Development
+
+---
+
+## ⚠️ CRITICAL: Level 1 Only
+
+**ALL folders 01-09 contain ONLY Level 1 documentation:**
+- These folders document **AISET tool development** per DO-178C DAL D
+- **NOT for user system development** (that's Level 2 - see `docs/Project_Plan.md`)
+- **NEVER mix AISET development with user system documentation**
+
+**See:** `/DOCUMENTATION_LEVELS.md` for complete level separation guide
 
 ---
 

@@ -3,62 +3,65 @@
 
 **⭐ This file is Claude Code's resume reference**
 **📖 For detailed human-readable status, see PROJECT_STATUS.md**
-**📚 For documentation structure, see DOCUMENTATION_STRUCTURE.md**
+**📚 For documentation structure, see DOCUMENTATION_LEVELS.md (NEW)**
 
 ---
 
-## 🚨 PROJECT STATUS (Last Updated: 2025-11-14 23:30 UTC)
+## 🚨 PROJECT STATUS (Last Updated: 2025-11-15 19:30 UTC)
 
-### ⚠️ CURRENT STATE: FUNCTIONAL BUT NOT DO-178C COMPLIANT
+### ✅ CURRENT STATE: SPECIFICATION COMPLETE | LEVEL SEPARATION APPLIED
 
 **Repository:** https://github.com/joiedelor/AISET
-**Status:** MVP Complete ✅ | DO-178C Compliance: 25% ⚠️
+**Status:** Specification Complete ✅ | Documentation Organized ✅ | DO-178C Compliance: 25% ⚠️
 **Version:** 0.1.0
 
-**⚠️ CRITICAL:** System is FUNCTIONAL but NOT production-ready. DO-178C remediation in progress.
+**✅ MAJOR MILESTONE:** Requirements specification complete (v0.5.0, 85 requirements)
+**✅ MAJOR MILESTONE:** 4-level documentation separation implemented
 
-### 🎯 SESSION SUMMARY (2025-11-14 19:00-23:30 UTC)
+### 🎯 SESSION SUMMARY (2025-11-15 09:00-19:30 UTC)
 
 **COMPLETED ✅**
-1. ✅ PostgreSQL 15 installed (manual, no Docker)
-2. ✅ Python 3.12.3 virtual environment created
-3. ✅ Backend dependencies installed (385 packages)
-4. ✅ Frontend dependencies installed (Node.js 18)
-5. ✅ Database configured and connected
-6. ✅ Backend API running on port 8000
-7. ✅ Frontend dev server running on port 5173
-8. ✅ Fixed Pydantic v2 compatibility issues
-9. ✅ Fixed SQLAlchemy model loading
-10. ✅ LM Studio configured (Windows host)
-11. ✅ DO-178C compliance review performed
-12. ✅ DO-178C directory structure created
-13. ✅ Retroactive documentation started
-14. ✅ DO-178C guide documents created
-15. ✅ Software Development Plan (SDP) completed
-16. ✅ Tool Qualification Plan (DO-330) completed
-17. ✅ Daily Workflow Guide completed
-18. ✅ Database schema expanded: 16 → 42 tables
-19. ✅ Full ARP4754/DO-178C/DO-254 compliance schema
-20. ✅ Database schema documentation created
-21. ✅ Gap analysis performed (14 gaps identified)
-22. ✅ Documentation structure cleaned (removed 5 duplicates)
-23. ✅ Session end procedure created
+
+**Specification & Requirements:**
+1. ✅ Specification roleplay completed (FURN-001 furniture project)
+2. ✅ Database tested with real data (Project ID: 3, Conversation ID: 1)
+3. ✅ REQUIREMENTS.md updated to v0.5.0 (85 requirements: 31 AI, 8 FE, 11 BE, 34 DB, 1 DOC)
+4. ✅ Added REQ-AI-031: Product Development Context Awareness (AI consults PROJECT_PLAN.md)
+5. ✅ Added REQ-AI-028-030: Session management requirements
+6. ✅ Added REQ-FE-008: Dual Interface Layout (proposal + dialogue fields)
+7. ✅ Roleplay session documented in ROLEPLAY_SESSION.md (COMPLETED status)
+
+**Documentation Level Separation (CRITICAL):**
+8. ✅ Created DOCUMENTATION_LEVELS.md - Master guide for 4-level separation
+9. ✅ Updated DOCUMENTATION_STRUCTURE.md to v2.0 with level tags
+10. ✅ Updated PROJECT_STRUCTURE.md to v0.2.0 with complete level tags
+11. ✅ Updated root README.md with 4-level structure table
+12. ✅ Updated 00_DO178C_INDEX.md to v1.1 with Level 1 warning
+
+**Physical Project Organization:**
+13. ✅ Created README.md in all 9 DO-178C folders (01-09) - all marked [Level 1]
+14. ✅ Physically separated docs/ folder:
+    - Created Level_1_AISET_Development/ folder
+    - Created Level_2_User_Framework/ folder
+    - Moved files to appropriate level folders
+15. ✅ Created docs/README.md explaining physical separation
+16. ✅ Removed Zone.Identifier Windows artifacts
+17. ✅ Removed empty subdirectories (api/, guides/, images/)
+
+**Key Insights & Clarifications:**
+- ⭐ PROJECT_PLAN.md is Level 2 (what AISET USERS follow - ARP4754A)
+- ⭐ AISET development follows DO-178C DAL D (Level 1), NOT ARP4754A
+- ⭐ Critical separation: AISET tool development ≠ User system development
+- ⭐ One-question-at-a-time is CRITICAL constraint for AISET-AI (REQ-AI-001)
 
 **DO-178C COMPLIANCE STATUS ⚠️**
-- **Overall Compliance:** 25%
-- **Planning:** 40% (SDP ✅, Tool Qualification Plan ✅, Daily Workflow Guide ✅, PSAC/SVP/SCMP/SQAP pending)
-- **Requirements:** 0% (no SRS yet)
-- **Design:** 0% (no HLD/LLD yet)
-- **Code Quality:** 40% (exists but not reviewed/tested)
-- **Verification:** 0% (no tests yet)
-- **Traceability:** 0% (not established yet)
-
-**ACTIVE NON-CONFORMANCE REPORTS (NCRs)**
-1. NCR-2025-11-14-001: No Requirements (CRITICAL)
-2. NCR-2025-11-14-002: No Design Documentation (CRITICAL)
-3. NCR-2025-11-14-003: No Code Reviews (HIGH)
-4. NCR-2025-11-14-004: No Unit Tests (HIGH)
-5. NCR-2025-11-14-005: Tool Not Qualified (MEDIUM)
+- **Overall Compliance:** 25% (unchanged - remediation pending)
+- **Planning:** 40%
+- **Requirements:** Source ready (REQUIREMENTS.md v0.5.0) → needs SRS formatting
+- **Design:** 0%
+- **Code Quality:** 40%
+- **Verification:** 0%
+- **Traceability:** 0%
 
 ### 📋 CRITICAL INFORMATION FOR RESUMING
 
@@ -67,47 +70,75 @@
 - **Platform:** WSL2 Ubuntu on Windows
 - **Access from Windows:** `\\wsl$\Ubuntu\home\joiedelor\aiset`
 
-#### System Status (2025-11-14 23:30)
-- ✅ **Backend API:** Running on http://localhost:8000
-- ✅ **Frontend Dev:** Running on http://localhost:5173
-- ✅ **PostgreSQL:** localhost:5432 (database: aiset_db, 42 tables)
-- ✅ **LM Studio:** Configured (Windows host: 172.27.80.1:1234)
+#### System Status (2025-11-15 19:30)
+- ✅ **Backend API:** Can start with `cd backend && source venv/bin/activate && python -m uvicorn main:app --reload`
+- ✅ **Frontend Dev:** Can start with `cd frontend && npm run dev`
+- ✅ **PostgreSQL:** localhost:5432 (database: aiset_db, 42 tables + test data)
+- ✅ **Test Data:** Project FURN-001 (ID: 3), Conversation ID: 1
 - ⚠️ **DO-178C Compliance:** 25% - NOT production-ready
 
-#### Essential Files (68 source + DO-178C docs)
-- **Backend:** 31 files (Python/FastAPI)
-- **Frontend:** 18 files (React/TypeScript)
-- **Database:** 42 tables (16 → 42, full compliance schema)
-- **Migrations:** 002_add_compliance_schema_v2.sql
-- **DO-178C Folders:** 9 folders (01_PLANNING through 09_CERTIFICATION)
-- **DO-178C Guides (docs/):**
-  - `DO178C_Daily_Workflow_Guide.md` - Guide pratique quotidien DO-178C
-  - `DO178C_Project_Structure.md` - Structure de projet DO-178C
-  - `SDP_Software_Development_Plan.md` - Plan de développement logiciel
-  - `Tool_Qualification_Plan_DO330.md` - Plan de qualification des outils
-  - `SQL_requirement.md` - Database requirements specification
-  - `DATABASE_SCHEMA.md` - Complete database schema documentation
-- **Project Docs:** PROJECT_STATUS.md, 00_DO178C_INDEX.md, SESSION_RESUME.md
-- **AI Tool Usage:** TU-2025-11-14-001
+#### Documentation Structure (⭐ MAJOR UPDATE)
 
-#### Configuration Files (COMPLETED ✅)
+**4 DOCUMENTATION LEVELS - CRITICAL TO UNDERSTAND:**
 
-1. **Backend Environment** (`backend/.env`)
-   ```bash
-   DATABASE_URL=postgresql://aiset_user:***@localhost:5432/aiset_db
-   SECRET_KEY=*** (64-char hex)
-   AI_SERVICE=lmstudio
-   LM_STUDIO_URL=http://172.27.80.1:1234/v1
-   ```
+1. **[Level 1] AISET Tool Development (DO-178C DAL D)**
+   - Location: `01_PLANNING/` through `09_CERTIFICATION/`, `docs/Level_1_AISET_Development/`
+   - Purpose: Develop AISET software tool itself
+   - Standard: DO-178C DAL D
 
-2. **Database** (PostgreSQL 15)
-   ```bash
-   # Already configured:
-   - Database: aiset_db
-   - User: aiset_user
-   - Owner: aiset_user (full permissions)
-   - Tables: 16 created successfully
-   ```
+2. **[Level 2] AISET Usage Framework (ARP4754A)**
+   - Location: `docs/Level_2_User_Framework/`
+   - Purpose: What AISET helps USERS create (reference framework)
+   - Standard: ARP4754A system development process
+   - Files: PROJECT_PLAN.md (10-phase process), TRACEABILITY_MATRIX.md
+
+3. **[Level 3] Claude Session Documentation**
+   - Location: Root level
+   - Purpose: Development continuity for Claude Code
+   - Files: Claude.md (this file), PROJECT_STATUS.md, DOCUMENTATION_STRUCTURE.md
+
+4. **[Level 4] Specification Roleplay**
+   - Location: Root level
+   - Purpose: Requirements capture via roleplay
+   - Files: REQUIREMENTS.md (v0.5.0, 85 requirements), ROLEPLAY_RULES.md, ROLEPLAY_SESSION.md
+   - Status: COMPLETED 2025-11-15
+
+**⚠️ CRITICAL:** See `DOCUMENTATION_LEVELS.md` for complete separation guide
+
+#### Essential Files
+
+**Meta Documentation:**
+- `DOCUMENTATION_LEVELS.md` - ⭐ MASTER: 4-level separation guide (NEW)
+- `DOCUMENTATION_STRUCTURE.md` - Documentation organization (v2.0)
+- `PROJECT_STRUCTURE.md` - Codebase structure (v0.2.0)
+
+**[Level 3] Claude Session Documentation:**
+- `Claude.md` - This file (Claude's quick reference)
+- `PROJECT_STATUS.md` - Human-readable detailed status
+
+**[Level 4] Specification Documents:**
+- `REQUIREMENTS.md` - ⭐ Tool requirements (v0.5.0, 85 requirements)
+- `ROLEPLAY_RULES.md` - Specification roleplay methodology
+- `ROLEPLAY_SESSION.md` - Session status (COMPLETED)
+
+**[Level 1] DO-178C Documentation:**
+- `00_DO178C_INDEX.md` - Master DO-178C index (v1.1)
+- `01_PLANNING/` - SDP, Tool Qualification, Standards (all have README.md)
+- `02_REQUIREMENTS/` through `09_CERTIFICATION/` (all have README.md marking Level 1)
+
+**[Level 2] User Framework (docs/Level_2_User_Framework/):**
+- `Project_Plan.md` - 10-phase ARP4754A process (475 lines) - for AISET-AI context
+- `TRACEABILITY_MATRIX.md` - Template of what AISET generates
+
+**[Level 1] AISET Development Reference (docs/Level_1_AISET_Development/):**
+- `DATABASE_SCHEMA.md` - Complete AISET database schema (42 tables)
+- `SQL_requirement.md` - AISET database requirements
+- `GAP_ANALYSIS.md` - DO-178C compliance gaps
+- `DO178C_COMPLIANCE.md` - Compliance status
+
+**Source Code:**
+- `backend/` - 31 files (Python/FastAPI) - [Level 1]
+- `frontend/` - 18 files (React/TypeScript) - [Level 1]
 
 #### Quick Start Commands (For Next Session)
 
@@ -128,40 +159,46 @@ cd frontend && npm run dev
 # Frontend: http://localhost:5173
 # Backend: http://localhost:8000
 # API Docs: http://localhost:8000/docs
+
+# Database access (test data exists):
+PGPASSWORD="3/P5JDV/KWR6nwCfwtKOpvbarwCDn88R" psql -h localhost -U aiset_user -d aiset_db
 ```
 
-**Note:** Docker was NOT used (too complex for initial setup).
+#### Next Immediate Tasks
 
-#### What's NOT in Git (Configure Locally)
-- ❌ `backend/.env` (has secrets - CONFIGURED ✅)
-- ❌ `backend/venv/` (virtual environment - CREATED ✅)
-- ❌ `frontend/node_modules/` (npm packages - INSTALLED ✅)
-- ❌ Database data (PostgreSQL local)
-- ❌ API tokens
+**SPECIFICATION → LEVEL 1 TRANSITION:**
+1. **NEXT:** Transform REQUIREMENTS.md (Level 4) into formal SRS (Level 1)
+   - Create `02_REQUIREMENTS/SRS_Software_Requirements_Specification.md`
+   - Format per DO-178C requirements
+   - Trace back to REQUIREMENTS.md source
 
-#### Next Immediate Tasks (DO-178C Remediation)
-1. ✅ ~~Complete environment setup~~ (DONE 2025-11-14)
-2. ✅ ~~DO-178C compliance review~~ (DONE 2025-11-14)
-3. ✅ ~~Create DO-178C structure~~ (DONE 2025-11-14)
-4. ✅ ~~Document today's session~~ (DONE 2025-11-14)
-5. **URGENT:** Perform code reviews on all modified files
-6. **URGENT:** Create retroactive requirements (REQ-SETUP-001 to 004)
-7. **URGENT:** Write unit tests for configuration/database code
-8. **SHORT-TERM:** Complete 4 missing plans (PSAC, SVP, SCMP, SQAP)
-9. **SHORT-TERM:** Create SRS, HLD, LLD
-10. **MEDIUM-TERM:** Achieve 90% test coverage
+**DO-178C REMEDIATION (Level 1):**
+2. Create missing planning documents (PSAC, SVP, SCMP, SQAP)
+3. Create design documentation (HLD, LLD)
+4. Perform code reviews on all source code
+5. Write unit tests for existing code
+6. Establish traceability (Requirements → Design → Code → Tests)
 
-#### Critical DO-178C Documentation (⭐ READ FIRST)
-- **DOCUMENTATION_STRUCTURE.md** - ⭐ MASTER GUIDE - Read this to understand all docs
-- **00_DO178C_INDEX.md** - Master project index
-- **PROJECT_STATUS.md** - Complete human-readable status and resume guide
-- **Claude.md** - This file (Claude's quick reference)
-- **01_PLANNING/Standards/DO178C_Daily_Workflow_Guide.md** - MANDATORY daily workflow (CRITICAL)
-- **01_PLANNING/SDP_Software_Development_Plan.md** - Software Development Plan
-- **01_PLANNING/Tool_Qualification/Tool_Qualification_Plan_DO330.md** - Tool qualification
-- **docs/DATABASE_SCHEMA.md** - Complete database schema (42 tables)
-- **docs/GAP_ANALYSIS.md** - Compliance gaps and remediation roadmap
-- **.claude/session_end.md** - Session end procedure (MANDATORY)
+**DEVELOPMENT:**
+7. Begin frontend implementation
+8. Begin backend API implementation
+9. Test AISET-AI behavior against specification
+
+#### Critical Documentation (⭐ READ FIRST)
+
+**Level Separation (MUST READ):**
+- **DOCUMENTATION_LEVELS.md** - ⭐ MASTER: Understand 4 levels (NEW 2025-11-15)
+- **DOCUMENTATION_STRUCTURE.md** - Documentation organization (v2.0)
+- **PROJECT_STRUCTURE.md** - Codebase structure (v0.2.0)
+
+**Requirements Specification:**
+- **REQUIREMENTS.md** - ⭐ Complete tool requirements (v0.5.0, 85 requirements)
+- **ROLEPLAY_RULES.md** - Specification methodology
+- **ROLEPLAY_SESSION.md** - Session history (COMPLETED)
+
+**DO-178C Workflow:**
+- **01_PLANNING/Standards/DO178C_Daily_Workflow_Guide.md** - MANDATORY workflow
+- **.claude/session_end.md** - Session end procedure
 
 ---
 
@@ -172,310 +209,47 @@ AISET is an **AI-powered systems engineering tool** designed to automate require
 ### Primary Goal
 Reduce engineering overhead by 50-70% while maintaining full compliance with aerospace and safety-critical standards, particularly **DO-178C** (Software Considerations in Airborne Systems and Equipment Certification).
 
----
-
-## 🛡️ Certification Requirements
-
-### DO-178C Compliance
-This tool is being developed to support **DO-178C certification processes**:
-
-- **Traceability**: Complete bidirectional traceability from requirements → design → tests
-- **Documentation**: Automated generation of certification artifacts (SRS, SDD, Test Plans)
-- **Quality Assurance**: Validation workflows with human-in-the-loop approval
-- **Version Control**: Full audit trail of all changes and decisions
-- **Standards Compliance**: Structured data conforming to ISO/IEEE standards
-
-### Certification Artifacts Generated
-- Software Requirements Specification (SRS)
-- Software Design Description (SDD)
-- Requirements Traceability Matrix (RTM)
-- Test Coverage Reports
-- Verification & Validation Documentation
-
----
-
-## 💡 Core Problem Solved
-
-**Current Challenge**: Engineers spend 40-60% of their time on:
-- Manual requirements documentation
-- Maintaining traceability matrices
-- Generating certification documents
-- Managing change impact analysis
-
-**AISET Solution**: AI handles administrative tasks while engineers focus on design.
+### Key Requirements (v0.5.0 - 85 total)
+- **AI Requirements (31):** One-question-at-a-time, task assignment, automatic updates, session management
+- **Frontend Requirements (8):** Dual interface (proposal + dialogue), project dashboard, document list
+- **Backend Requirements (11):** API endpoints, session state management
+- **Database Requirements (34):** 42 tables, document associations, traceability
+- **Documentation Requirements (1):** REQ-AI-031 - AI consults PROJECT_PLAN.md for context
 
 ---
 
 ## 🏗️ Architecture
 
 ### Technology Stack
-- **Backend**: Python FastAPI + PostgreSQL + SQLAlchemy
-- **Frontend**: React + TypeScript + Vite
-- **AI Engine**: Dual support
-  - Claude API (Anthropic) - Primary for production
-  - LM Studio + Mistral - Local fallback for offline/dev work
-- **Database**: PostgreSQL 14+ with 15+ tables for complete data model
+- **Backend**: Python 3.12+ with FastAPI
+- **Frontend**: React 18 + TypeScript 5
+- **Database**: PostgreSQL 15+ (42 tables)
+- **AI Engine**: Claude API (primary) + LM Studio/Mistral (local fallback)
 
-### Key Components
-
-#### 1. AI Conversational Interface
-- Natural language requirements elicitation
-- Intelligent follow-up questions
-- Context-aware parsing and extraction
-
-#### 2. Requirements Management
-- Structured requirement storage (ID, type, priority, status)
-- Hierarchical decomposition
-- Automatic numbering and versioning
-
-#### 3. Validation Workflow
-- AI extracts requirements with confidence scores
-- Human validation before database insertion
-- Approval/rejection with rationale tracking
-
-#### 4. Traceability Engine
-- Automatic requirement → design → test linking
-- Gap detection and conflict resolution
-- Real-time traceability matrix generation
-
-#### 5. Document Generation
-- Template-based export (Markdown, PDF)
-- Customizable certification artifacts
-- Version-controlled documentation
+### Database Status
+- **Tables:** 42 (full ARP4754/DO-178C/DO-254 compliance schema)
+- **Test Data:** Project FURN-001 (Furniture Building Project)
+  - Project ID: 3
+  - Conversation ID: 1
+  - Messages in ai_messages table
 
 ---
 
-## 📊 Database Schema
+## 📊 Current Status
 
-### Core Tables
-- `projects`: Project metadata and configuration
-- `requirements`: All system requirements with full attributes
-- `design_components`: System architecture and design elements
-- `test_cases`: Verification test cases
-- `ai_conversations`: Chat history and context
-- `ai_extracted_entities`: Pending AI extractions awaiting validation
+**Version**: 0.1.0 (Specification Complete)
 
-### Traceability Tables
-- `requirements_design_trace`: Requirements ↔ Design mapping
-- `requirements_test_trace`: Requirements ↔ Tests mapping
-- `design_test_trace`: Design ↔ Tests mapping
+**Recent Milestones (2025-11-15)**:
+- ✅ Requirements specification complete (85 requirements)
+- ✅ 4-level documentation separation implemented
+- ✅ Physical folder organization by level
+- ✅ Specification roleplay methodology documented
+- ✅ Database tested with real project data
 
-### Audit Tables
-- `version_history`: Complete change tracking
-- `change_requests`: Impact analysis and approval workflow
+**Next Phase**: Transform specification into DO-178C deliverables
 
 ---
 
-## 🚀 Development Phases
-
-### MVP (Phase 1) - Current Focus ✅
-- [x] AI conversational requirements elicitation
-- [x] Structured requirement extraction and validation
-- [x] Basic traceability (requirements → design)
-- [x] PostgreSQL database with complete schema
-- [x] React frontend with chat interface
-- [x] Export to Markdown/PDF
-
-### Phase 2 - Enhanced Compliance
-- [ ] Full DO-178C artifact generation
-- [ ] Gap and inconsistency detection
-- [ ] Advanced traceability matrix with filtering
-- [ ] Test case generation from requirements
-- [ ] Impact analysis for change requests
-- [ ] Multi-user collaboration
-
-### Phase 3 - Enterprise Features
-- [ ] Integration with Jira, GitHub, Confluence
-- [ ] Role-based access control (Engineer, Reviewer, Auditor)
-- [ ] Advanced analytics and dashboards
-- [ ] CI/CD pipeline integration
-- [ ] Docker deployment
-- [ ] API for external tool integration
-
----
-
-## 🔄 Typical Workflow
-
-```
-1. Engineer starts conversation with AI
-   ↓
-2. AI asks structured questions
-   ↓
-3. AI extracts requirements from responses
-   ↓
-4. Engineer validates extracted requirements
-   ↓
-5. Approved requirements stored in database
-   ↓
-6. Engineer describes design approach
-   ↓
-7. AI creates design components with automatic requirement linking
-   ↓
-8. System generates traceability matrix
-   ↓
-9. Export certification documentation
-```
-
----
-
-## 🎨 Design Principles
-
-### 1. Human-in-the-Loop
-AI assists but humans approve. All critical decisions require human validation.
-
-### 2. Audit Trail
-Every action is logged with timestamp, user, and rationale for certification compliance.
-
-### 3. Flexibility
-Support both cloud AI (Claude) and local AI (Mistral) for different environments.
-
-### 4. Standards-Based
-Follow ISO/IEEE standards for requirements engineering and DO-178C for aerospace.
-
-### 5. Open Source
-MIT License - Community-driven development with transparency.
-
----
-
-## 🌐 GitHub Repository
-
-### Repository Structure
-```
-aiset/
-├── backend/          # FastAPI application
-├── frontend/         # React application
-├── docs/             # Documentation and guides
-├── scripts/          # Utility scripts
-├── tests/            # Test suites
-├── .github/          # CI/CD workflows
-└── README.md         # Main documentation
-```
-
-### Contribution Guidelines
-- Feature branches with descriptive names
-- Pull requests with detailed descriptions
-- Code review required before merge
-- Automated tests must pass
-- Follow Python PEP 8 and TypeScript ESLint standards
-
-### GitHub Actions
-- Automated testing on push
-- Code quality checks (linting, type checking)
-- Documentation generation
-- Docker image building
-
----
-
-## 📈 Success Metrics
-
-### Development Goals
-- ✅ Complete MVP in 4 weeks
-- ✅ 100% test coverage for critical paths
-- ✅ Documentation coverage for all APIs
-- ✅ Zero critical security vulnerabilities
-
-### User Impact Goals
-- 50%+ reduction in documentation time
-- 100% traceability coverage
-- 90%+ user satisfaction
-- Successful DO-178C audit support
-
----
-
-## 🔒 Security & Privacy
-
-- No sensitive data in version control
-- Environment variables for all credentials
-- PostgreSQL with encrypted connections
-- API authentication via JWT tokens
-- Role-based access control
-
----
-
-## 📚 Documentation
-
-### User Guides
-- Getting Started Guide
-- Requirements Elicitation Tutorial
-- Traceability Matrix Guide
-- Export and Reporting Guide
-
-### Developer Guides
-- API Documentation (OpenAPI/Swagger)
-- Database Schema Reference
-- AI Service Integration Guide
-- Frontend Component Library
-
-### Certification Guides
-- DO-178C Compliance Checklist
-- Artifact Generation Guide
-- Audit Preparation Guide
-
----
-
-## 🤝 Target Users
-
-1. **Systems Engineers**: Primary users for requirements and design
-2. **Certification Authorities**: Reviewers and auditors
-3. **Project Managers**: Progress tracking and reporting
-4. **QA Engineers**: Test case management and verification
-
----
-
-## 🛠️ Development Standards
-
-### Code Quality
-- Type hints in Python (mypy)
-- TypeScript strict mode
-- Comprehensive unit tests (pytest, vitest)
-- Integration tests for critical workflows
-- Code review for all changes
-
-### Documentation
-- Docstrings for all functions
-- README for each module
-- API documentation auto-generated
-- User guides with examples
-
-### Version Control
-- Conventional Commits format
-- Semantic versioning (SemVer)
-- Changelog maintained
-- Release notes for each version
-
----
-
-## 🎯 Current Status
-
-**Version**: 0.1.0 (MVP in development)
-
-**Latest Updates**:
-- ✅ Complete database schema implemented
-- ✅ AI service with Claude/Mistral switch
-- ✅ Basic frontend with chat interface
-- ✅ Requirements validation workflow
-- 🔄 Documentation generation in progress
-- 🔄 Enhanced traceability features in progress
-
----
-
-## 📞 Project Information
-
-- **License**: MIT
-- **Language**: Python 3.12+, TypeScript 5+
-- **Platform**: Linux (Ubuntu/WSL), macOS, Windows (via WSL)
-- **Repository**: https://github.com/[username]/aiset (to be published)
-
----
-
-## 🔮 Future Vision
-
-AISET aims to become the **de facto open-source tool** for AI-assisted systems engineering in safety-critical industries (aerospace, automotive, medical devices, nuclear).
-
-By combining AI automation with rigorous certification requirements, AISET will enable faster development cycles while maintaining the highest safety and quality standards.
-
----
-
-**Last Updated**: November 2025  
-**Status**: Active Development  
-**Maintainers**: Open to contributors
+**Last Updated**: 2025-11-15 19:30 UTC
+**Status**: Specification Complete | Documentation Organized | Ready for DO-178C SRS creation
+**Session**: Specification roleplay and documentation organization
