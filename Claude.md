@@ -7,57 +7,64 @@
 
 ---
 
-## 🚨 PROJECT STATUS (Last Updated: 2025-11-15 19:30 UTC)
+## 🚨 PROJECT STATUS (Last Updated: 2025-11-16 18:00 UTC)
 
-### ✅ CURRENT STATE: SPECIFICATION COMPLETE | LEVEL SEPARATION APPLIED
+### ✅ CURRENT STATE: ENTERPRISE ARCHITECTURE COMPLETE | COLLABORATIVE REQUIREMENTS DEFINED
 
 **Repository:** https://github.com/joiedelor/AISET
-**Status:** Specification Complete ✅ | Documentation Organized ✅ | DO-178C Compliance: 25% ⚠️
+**Status:** Requirements v0.8.0 Complete ✅ | Collaborative Architecture Defined ✅ | DO-178C Compliance: 25% ⚠️
 **Version:** 0.1.0
 
-**✅ MAJOR MILESTONE:** Requirements specification complete (v0.5.0, 85 requirements)
-**✅ MAJOR MILESTONE:** 4-level documentation separation implemented
+**✅ CRITICAL MILESTONE:** Requirements specification complete (v0.8.0, 167 requirements)
+**✅ CRITICAL MILESTONE:** Enterprise collaborative/distributed architecture defined
+**✅ MAJOR MILESTONE:** Product structure & CI management (34+ fields) specified
 
-### 🎯 SESSION SUMMARY (2025-11-15 09:00-19:30 UTC)
+### 🎯 SESSION SUMMARY (2025-11-16 10:00-18:00 UTC)
 
 **COMPLETED ✅**
 
-**Specification & Requirements:**
-1. ✅ Specification roleplay completed (FURN-001 furniture project)
-2. ✅ Database tested with real data (Project ID: 3, Conversation ID: 1)
-3. ✅ REQUIREMENTS.md updated to v0.5.0 (85 requirements: 31 AI, 8 FE, 11 BE, 34 DB, 1 DOC)
-4. ✅ Added REQ-AI-031: Product Development Context Awareness (AI consults PROJECT_PLAN.md)
-5. ✅ Added REQ-AI-028-030: Session management requirements
-6. ✅ Added REQ-FE-008: Dual Interface Layout (proposal + dialogue fields)
-7. ✅ Roleplay session documented in ROLEPLAY_SESSION.md (COMPLETED status)
+**Requirements Specification - Massive Expansion (v0.5.0 → v0.8.0):**
+1. ✅ **v0.6.0:** Added 10 Project Initialization requirements (85 → 95 total)
+   - REQ-AI-032 to REQ-AI-037: Structured project initialization interview
+   - AI shall determine safety criticality, DAL/SIL, regulatory requirements
+   - Foundation questions → Planning questions → Execution questions
+   - REQ-FE-009: Project context display on dashboard
+   - REQ-BE-012: Project initialization workflow
+   - REQ-DB-035, REQ-DB-036: Project context and standards mapping storage
 
-**Documentation Level Separation (CRITICAL):**
-8. ✅ Created DOCUMENTATION_LEVELS.md - Master guide for 4-level separation
-9. ✅ Updated DOCUMENTATION_STRUCTURE.md to v2.0 with level tags
-10. ✅ Updated PROJECT_STRUCTURE.md to v0.2.0 with complete level tags
-11. ✅ Updated root README.md with 4-level structure table
-12. ✅ Updated 00_DO178C_INDEX.md to v1.1 with Level 1 warning
+2. ✅ **v0.7.0:** Added 25 Product Structure & CI Management requirements (95 → 120 total)
+   - REQ-AI-038 to REQ-AI-040: Product structure extraction, item data extraction, CI classification
+   - REQ-FE-010 to REQ-FE-013: Product structure tree, BOM editor, item management, CI table view
+   - REQ-BE-013 to REQ-BE-015: BOM management, item lifecycle, change impact analysis
+   - REQ-DB-037 to REQ-DB-051: 15 database requirements for comprehensive CI management
+   - **Created:** docs/Level_2_User_Framework/CONFIGURATION_ITEM_MANAGEMENT.md (34+ CI fields documented)
 
-**Physical Project Organization:**
-13. ✅ Created README.md in all 9 DO-178C folders (01-09) - all marked [Level 1]
-14. ✅ Physically separated docs/ folder:
-    - Created Level_1_AISET_Development/ folder
-    - Created Level_2_User_Framework/ folder
-    - Moved files to appropriate level folders
-15. ✅ Created docs/README.md explaining physical separation
-16. ✅ Removed Zone.Identifier Windows artifacts
-17. ✅ Removed empty subdirectories (api/, guides/, images/)
+3. ✅ **v0.8.0:** Added 47 Collaborative & Distributed Work requirements (120 → 167 total)
+   - **User answered 6 critical architecture questions:**
+     - Q1: Both concurrent AND distributed (equal priority)
+     - Q2: All scenarios (single company, prime+suppliers, multi-site)
+     - Q3: Milestone-based merges
+     - Q4: Semi-automatic merge (AI suggests, human approves)
+     - Q5: Hybrid identifiers (GUID + human-readable)
+     - Q6: Complex access control
+   - REQ-AI-041 to REQ-AI-044: AI-assisted merge conflict resolution, duplicate detection, notifications, access control
+   - REQ-FE-014 to REQ-FE-023: Check-out/check-in UI, merge review, conflict resolution, work assignment, notifications, comments, RBAC UI, merge preview, activity feed, lock indicators
+   - REQ-BE-016 to REQ-BE-029: Pessimistic locking, optimistic conflict detection, work assignment, export/import, intelligent merge engine, merge preview/rollback, notifications, RBAC enforcement, session management, ID mapping, duplicate detection, instance tracking
+   - REQ-DB-052 to REQ-DB-070: Hybrid ID system, session management, lock management, work assignment, RBAC, team permissions, CI-level ACL, comments, notifications, merge metadata, source instance tracking, ID mapping, conflicts, rollback, audit trail, external references, data sharing, activity log, duplicate detection
 
-**Key Insights & Clarifications:**
-- ⭐ PROJECT_PLAN.md is Level 2 (what AISET USERS follow - ARP4754A)
-- ⭐ AISET development follows DO-178C DAL D (Level 1), NOT ARP4754A
-- ⭐ Critical separation: AISET tool development ≠ User system development
-- ⭐ One-question-at-a-time is CRITICAL constraint for AISET-AI (REQ-AI-001)
+**Key Architecture Decisions:**
+- ✅ Enterprise-grade collaborative platform (not single-user tool)
+- ✅ Support BOTH concurrent access (same DB) AND distributed development (different DBs)
+- ✅ Hybrid identifier strategy: GUID (internal, collision-free) + Display ID (human-readable)
+- ✅ PLM-style check-out/check-in with pessimistic locking
+- ✅ Intelligent merge engine with 5 conflict types + AI-assisted resolution
+- ✅ Complex RBAC: 7 role types, team-based + CI-level permissions
+- ✅ Milestone-based data exchange between AISET instances
 
 **DO-178C COMPLIANCE STATUS ⚠️**
 - **Overall Compliance:** 25% (unchanged - remediation pending)
 - **Planning:** 40%
-- **Requirements:** Source ready (REQUIREMENTS.md v0.5.0) → needs SRS formatting
+- **Requirements:** Comprehensive (REQUIREMENTS.md v0.8.0, 167 requirements) → needs SRS formatting
 - **Design:** 0%
 - **Code Quality:** 40%
 - **Verification:** 0%
@@ -100,8 +107,8 @@
 4. **[Level 4] Specification Roleplay**
    - Location: Root level
    - Purpose: Requirements capture via roleplay
-   - Files: REQUIREMENTS.md (v0.5.0, 85 requirements), ROLEPLAY_RULES.md, ROLEPLAY_SESSION.md
-   - Status: COMPLETED 2025-11-15
+   - Files: REQUIREMENTS.md (v0.8.0, 167 requirements), ROLEPLAY_RULES.md, ROLEPLAY_SESSION.md
+   - Status: COMPLETED 2025-11-16
 
 **⚠️ CRITICAL:** See `DOCUMENTATION_LEVELS.md` for complete separation guide
 
@@ -117,7 +124,7 @@
 - `PROJECT_STATUS.md` - Human-readable detailed status
 
 **[Level 4] Specification Documents:**
-- `REQUIREMENTS.md` - ⭐ Tool requirements (v0.5.0, 85 requirements)
+- `REQUIREMENTS.md` - ⭐ Tool requirements (v0.8.0, 167 requirements)
 - `ROLEPLAY_RULES.md` - Specification roleplay methodology
 - `ROLEPLAY_SESSION.md` - Session status (COMPLETED)
 
@@ -209,7 +216,7 @@ PGPASSWORD="3/P5JDV/KWR6nwCfwtKOpvbarwCDn88R" psql -h localhost -U aiset_user -d
 - **PROJECT_STRUCTURE.md** - Codebase structure (v0.2.0)
 
 **Requirements Specification:**
-- **REQUIREMENTS.md** - ⭐ Complete tool requirements (v0.5.0, 85 requirements)
+- **REQUIREMENTS.md** - ⭐ Complete tool requirements (v0.8.0, 167 requirements)
 - **ROLEPLAY_RULES.md** - Specification methodology
 - **ROLEPLAY_SESSION.md** - Session history (COMPLETED)
 
@@ -226,12 +233,12 @@ AISET is an **AI-powered systems engineering tool** designed to automate require
 ### Primary Goal
 Reduce engineering overhead by 50-70% while maintaining full compliance with aerospace and safety-critical standards, particularly **DO-178C** (Software Considerations in Airborne Systems and Equipment Certification).
 
-### Key Requirements (v0.5.0 - 85 total)
-- **AI Requirements (31):** One-question-at-a-time, task assignment, automatic updates, session management
-- **Frontend Requirements (8):** Dual interface (proposal + dialogue), project dashboard, document list
-- **Backend Requirements (11):** API endpoints, session state management
-- **Database Requirements (34):** 42 tables, document associations, traceability
-- **Documentation Requirements (1):** REQ-AI-031 - AI consults PROJECT_PLAN.md for context
+### Key Requirements (v0.8.0 - 167 total)
+- **AI Requirements (44):** One-question-at-a-time, task assignment, automatic updates, session management, project initialization interview, product structure extraction, AI-assisted merge, collaboration support
+- **Frontend Requirements (23):** Dual interface (proposal + dialogue), project dashboard, document list, product structure tree, BOM editor, check-out/check-in UI, merge review, RBAC UI
+- **Backend Requirements (29):** API endpoints, session state management, BOM management, pessimistic locking, optimistic conflict detection, intelligent merge engine, RBAC enforcement
+- **Database Requirements (70):** 42 tables, document associations, traceability, hybrid ID system, lock management, work assignment, merge metadata, source instance tracking
+- **Documentation Requirements (1):** REQ-DOC-001 - AI_INSTRUCTION.md creation
 
 ---
 
@@ -256,17 +263,18 @@ Reduce engineering overhead by 50-70% while maintaining full compliance with aer
 
 **Version**: 0.1.0 (Specification Complete)
 
-**Recent Milestones (2025-11-15)**:
-- ✅ Requirements specification complete (85 requirements)
+**Recent Milestones (2025-11-16)**:
+- ✅ Requirements specification complete (167 requirements)
+- ✅ Enterprise collaborative/distributed architecture defined
+- ✅ Product structure & CI management (34+ fields) specified
+- ✅ Project initialization interview structured
 - ✅ 4-level documentation separation implemented
-- ✅ Physical folder organization by level
-- ✅ Specification roleplay methodology documented
 - ✅ Database tested with real project data
 
 **Next Phase**: Transform specification into DO-178C deliverables
 
 ---
 
-**Last Updated**: 2025-11-15 19:30 UTC
-**Status**: Specification Complete | Documentation Organized | Ready for DO-178C SRS creation
-**Session**: Specification roleplay and documentation organization
+**Last Updated**: 2025-11-16 18:00 UTC
+**Status**: Enterprise Architecture Complete | Requirements v0.8.0 | Ready for DO-178C SRS creation
+**Session**: Requirements expansion - Project initialization, CI management, collaborative/distributed architecture
