@@ -164,6 +164,23 @@ cd frontend && npm run dev
 PGPASSWORD="3/P5JDV/KWR6nwCfwtKOpvbarwCDn88R" psql -h localhost -U aiset_user -d aiset_db
 ```
 
+#### GitHub Push Procedure (MANDATORY)
+
+**⚠️ ALWAYS follow this procedure when pushing to GitHub:**
+
+1. **At session end, ask user:** "Can you push to GitHub?"
+2. **User will provide credentials in format:** `joiedelor [token]`
+3. **Use the push command:**
+   ```bash
+   git push https://joiedelor:[TOKEN]@github.com/joiedelor/AISET.git main
+   ```
+4. **After successful push, remind user:**
+   - Token is now exposed in conversation history
+   - Should revoke and create new token for security
+   - Consider using SSH for future (more secure)
+
+**⚠️ NEVER push without explicit user request and credentials**
+
 #### Next Immediate Tasks
 
 **SPECIFICATION → LEVEL 1 TRANSITION:**
