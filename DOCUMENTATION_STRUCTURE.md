@@ -187,7 +187,7 @@ docs/
 
 ##### `docs/Level_1_AISET_Development/DATABASE_SCHEMA.md` ⭐ **[Level 1]** SINGLE SOURCE OF TRUTH
 **Purpose:** Complete database schema documentation FOR AISET TOOL
-**Content:** All 42 tables, relationships, queries
+**Content:** All 47 tables, relationships, queries, DDL implementation
 **Level:** 1 - AISET tool technical design
 **Update:** When AISET schema changes
 **Owner:** Database Engineer
