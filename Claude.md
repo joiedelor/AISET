@@ -15,7 +15,7 @@
 **Status:** Design v1.0.0 Complete ✅ | Database Ready to Deploy ✅ | DO-178C Compliance: 40% ⚠️
 **Version:** 0.1.0
 
-**✅ CRITICAL MILESTONE:** Requirements specification complete (v0.8.0, 167 requirements)
+**✅ CRITICAL MILESTONE:** Formal SRS created (AISET-SRS-001 v1.0.0, 167 requirements, DO-178C Section 5.1 compliant)
 **✅ CRITICAL MILESTONE:** Complete design documentation (HLD + LLD + Traceability)
 **✅ CRITICAL MILESTONE:** Database implementation package ready (schema + migrations + setup guide)
 **✅ MAJOR MILESTONE:** DO-178C review framework established (file-based, no dev database needed)
@@ -158,8 +158,11 @@
 - `Claude.md` - This file (Claude's quick reference)
 - `PROJECT_STATUS.md` - Human-readable detailed status
 
-**[Level 4] Specification Documents:**
-- `REQUIREMENTS.md` - ⭐ Tool requirements (v0.8.0, 167 requirements)
+**[Level 1] Requirements Documents:**
+- `02_REQUIREMENTS/SRS_Software_Requirements_Specification.md` - ⭐ OFFICIAL SRS (AISET-SRS-001 v1.0.0, 167 requirements, DO-178C Section 5.1 compliant)
+
+**[Level 4] Specification Roleplay (Source Material):**
+- `ROLEPLAY_REQUIREMENTS.md` - Roleplay working file (v0.8.0, source for SRS) - For future roleplay sessions
 - `ROLEPLAY_RULES.md` - Specification roleplay methodology
 - `ROLEPLAY_SESSION.md` - Session status (COMPLETED)
 
@@ -273,7 +276,8 @@ PGPASSWORD="3/P5JDV/KWR6nwCfwtKOpvbarwCDn88R" psql -h localhost -U aiset_user -d
 - **PROJECT_STRUCTURE.md** - Codebase structure (v0.2.0)
 
 **Requirements Specification:**
-- **REQUIREMENTS.md** - ⭐ Complete tool requirements (v0.8.0, 167 requirements)
+- **02_REQUIREMENTS/SRS_Software_Requirements_Specification.md** - ⭐ OFFICIAL SRS (v1.0.0, 167 requirements, DO-178C compliant)
+- **ROLEPLAY_REQUIREMENTS.md** - Roleplay working file (source for SRS, for future roleplay sessions)
 - **ROLEPLAY_RULES.md** - Specification methodology
 - **ROLEPLAY_SESSION.md** - Session history (COMPLETED)
 
@@ -290,7 +294,7 @@ AISET is an **AI-powered systems engineering tool** designed to automate require
 ### Primary Goal
 Reduce engineering overhead by 50-70% while maintaining full compliance with aerospace and safety-critical standards, particularly **DO-178C** (Software Considerations in Airborne Systems and Equipment Certification).
 
-### Key Requirements (v0.8.0 - 167 total)
+### Key Requirements (SRS v1.0.0 - 167 total)
 - **AI Requirements (44):** One-question-at-a-time, task assignment, automatic updates, session management, project initialization interview, product structure extraction, AI-assisted merge, collaboration support
 - **Frontend Requirements (23):** Dual interface (proposal + dialogue), project dashboard, document list, product structure tree, BOM editor, check-out/check-in UI, merge review, RBAC UI
 - **Backend Requirements (29):** API endpoints, session state management, BOM management, pessimistic locking, optimistic conflict detection, intelligent merge engine, RBAC enforcement
@@ -321,7 +325,9 @@ Reduce engineering overhead by 50-70% while maintaining full compliance with aer
 **Version**: 0.1.0 (Specification Complete)
 
 **Recent Milestones (2025-11-16)**:
+- ✅ **Formal SRS created** (AISET-SRS-001 v1.0.0, DO-178C Section 5.1 compliant)
 - ✅ Requirements specification complete (167 requirements)
+- ✅ Proper separation: SRS (official) vs ROLEPLAY_REQUIREMENTS.md (working file)
 - ✅ Enterprise collaborative/distributed architecture defined
 - ✅ Product structure & CI management (34+ fields) specified
 - ✅ Project initialization interview structured
