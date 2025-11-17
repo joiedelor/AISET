@@ -1,9 +1,10 @@
 # AISET - AI Systems Engineering Tool
 
-**Version:** 0.1.0
-**Status:** MVP Development
+**Version:** 0.6.0
+**Status:** Prototype Development (43% Complete)
 **License:** MIT
 **DO-178C Compliance:** Level C (configurable A-E)
+**Requirements:** 176 (167 primary + 8 derived) - 100% specified, 43% implemented
 
 ---
 
@@ -29,18 +30,42 @@
 
 ## 📖 Overview
 
-AISET is an AI-powered systems engineering tool designed to **automate requirements elicitation, design documentation, and traceability management** for safety-critical systems development, with full **DO-178C certification compliance**.
+AISET is an **enterprise-grade, AI-powered collaborative systems engineering platform** designed to **automate requirements elicitation, product structure management, design documentation, and traceability management** for safety-critical systems development, with full **DO-178C certification compliance**.
 
 ### Key Features
 
-- 🤖 **AI-Powered Requirements Elicitation** - Natural language conversation with Claude/Mistral
-- 📊 **Automated Traceability Matrix** - Bidirectional links: Requirements ↔ Design ↔ Tests
-- ✅ **Human-in-the-Loop Validation** - AI extracts, humans approve
-- 📄 **Certification Document Generation** - Auto-generate SRS, SDD, RTM, Test Reports
+**AI-Powered Engineering:**
+- 🤖 **Intelligent Requirements Elicitation** - Natural language conversation with Claude/LM Studio
+- 🎯 **Single Question Interaction** - Focused, non-overwhelming user experience
+- 💬 **Adaptive Communication** - Simple language by default, technical when needed
+- 🚫 **AI Guardrails** - AI facilitates, doesn't make design decisions
+- ✅ **Approval Workflow** - AI proposes, humans validate and approve
+
+**Product & Configuration Management:**
+- 📦 **Product Structure Management** - Hierarchical Bill of Materials (BOM)
+- ⚙️ **Configuration Item Tracking** - 34+ metadata fields per CI
+- 🔄 **Lifecycle Management** - Track CIs through development phases
+- 🏷️ **Hybrid Identifiers** - GUID (system) + Display ID (human-readable)
+
+**Collaborative Development:**
+- 👥 **Multi-User Concurrent Access** - Real-time collaboration
+- 🔒 **Check-Out/Check-In** - Pessimistic locking for conflict prevention
+- 🔀 **Intelligent Merge Engine** - 5 conflict types with AI-assisted resolution
+- 🌐 **Distributed Development** - Multi-instance support with data exchange
+- 💬 **Comments & Notifications** - Team communication and awareness
+
+**Traceability & Compliance:**
+- 📊 **Automated Traceability Matrix** - Bidirectional links: Requirements ↔ Design ↔ Tests ↔ CIs
 - 🔍 **Gap Detection** - Automatically find missing traceability links
 - 📈 **Coverage Analysis** - Real-time requirements verification status
-- 🛡️ **Complete Audit Trail** - Every change logged for certification
+- 🛡️ **Complete Audit Trail** - Before/after snapshots for every change
+- 📄 **Certification Document Generation** - Auto-generate SRS, SDD, RTM, Test Reports
 - 🎯 **DO-178C Compliant** - Supports certification levels A through E
+
+**Access Control & Security:**
+- 🔐 **Role-Based Access Control** - 7 role types (Admin, Manager, Engineer, Reviewer, Viewer, External)
+- 👥 **Team-Based Permissions** - Project and team-level access
+- 🛡️ **CI-Level ACL** - Fine-grained access control per configuration item
 
 ## 🏗️ Architecture
 
@@ -48,10 +73,11 @@ AISET is an AI-powered systems engineering tool designed to **automate requireme
 
 **Backend:**
 - Python 3.12+ with FastAPI
-- PostgreSQL 15+ (16 tables for complete data model)
+- PostgreSQL 15+ (47 tables for enterprise data model)
 - SQLAlchemy ORM
+- Alembic migrations
 - Anthropic Claude API (primary)
-- LM Studio + Mistral (local fallback)
+- LM Studio (local fallback)
 
 **Frontend:**
 - React 18 + TypeScript 5
@@ -132,31 +158,61 @@ npm run dev
 
 ## 📊 Database Schema
 
-AISET uses a comprehensive 16-table PostgreSQL schema:
+AISET uses a comprehensive **47-table enterprise PostgreSQL schema** organized in 15 sections:
 
-**Core Entities:**
-- `projects` - Project metadata
-- `requirements` - System requirements
-- `design_components` - Architecture and design
-- `test_cases` - Verification tests
-- `users` - User accounts
+**Section 1: Users and Authentication (6 tables)**
+- `users`, `roles`, `user_roles`, `teams`, `team_members`, `sessions`
 
-**AI & Elicitation:**
-- `ai_conversations` - Chat sessions
-- `ai_messages` - Individual messages
-- `ai_extracted_entities` - Pending validations
-- `validation_decisions` - Approval records
+**Section 2: Projects (4 tables)**
+- `projects`, `project_context`, `project_standards`, `project_standards_mapping`
 
-**Traceability:**
-- `requirements_design_trace` - Req → Design links
-- `requirements_test_trace` - Req → Test links
-- `design_test_trace` - Design → Test links
-- `traceability_gaps` - Detected gaps
+**Section 3: Requirements (2 tables)**
+- `requirements`, `requirement_relationships`
 
-**Audit & Compliance:**
-- `version_history` - Complete change log
-- `change_requests` - Change management
-- `document_exports` - Generated artifacts
+**Section 4: Design (3 tables)**
+- `design_components`, `component_relationships`, `interfaces`
+
+**Section 5: Configuration Management (5 tables)**
+- `configuration_items` (34+ fields), `ci_relationships`, `ci_documents`, `baselines`, `baseline_items`
+
+**Section 6: Verification (3 tables)**
+- `test_cases`, `test_results`, `verification_procedures`
+
+**Section 7: Traceability (1 table)**
+- `traceability_links` - Unified bidirectional traceability
+
+**Section 8: Documents (3 tables)**
+- `documents`, `document_versions`, `document_relationships`
+
+**Section 9: AI Conversations (2 tables)**
+- `ai_conversations`, `ai_messages`
+
+**Section 10: Change Management (3 tables)**
+- `change_requests`, `change_approvals`, `problem_reports`
+
+**Section 11: Audit and History (2 tables)**
+- `audit_trail` (before/after snapshots), `activity_log`
+
+**Section 12: Collaborative Work (4 tables)**
+- `locks`, `notifications`, `comments`, `work_assignments`
+
+**Section 13: Distributed Development (6 tables)**
+- `instances`, `id_mappings`, `merge_sessions`, `merge_conflicts`, `external_references`, `data_sharing_policies`
+
+**Section 14: Access Control (2 tables)**
+- `ci_acl`, `team_permissions`
+
+**Section 15: Quality (1 table)**
+- `duplicate_candidates`
+
+**Key Schema Features:**
+- ✅ **Hybrid Identifiers:** guid (UUID) + display_id (human-readable) on all tables
+- ✅ **Complete Audit Trail:** created_at, updated_at, created_by, updated_by on all tables
+- ✅ **Soft Deletes:** deleted_at field (NULL = active)
+- ✅ **Optimistic Locking:** version field for concurrency control
+- ✅ **Referential Integrity:** All foreign keys enforced
+
+See `backend/database/schema_v1.sql` (1600+ lines) and `AI_INSTRUCTION.md` for complete documentation.
 
 ## 🎯 Typical Workflow
 
@@ -278,33 +334,81 @@ docker-compose up
 docker-compose -f docker-compose.prod.yml up -d
 ```
 
-## 🛣️ Roadmap
+## 🛣️ Roadmap & Current Status
 
-### MVP (Phase 1) - ✅ Current Focus
+### Current Status: Prototype 43% Complete
 
-- [x] AI conversational requirements elicitation
-- [x] Structured requirement extraction and validation
-- [x] Basic traceability (requirements → design)
-- [x] PostgreSQL database with complete schema
-- [x] React frontend with chat interface
-- [x] Export to Markdown/PDF
+**✅ Completed (76 requirements - 43%):**
+- [x] PostgreSQL enterprise database schema (47 tables) - 84% mature
+- [x] AI service infrastructure (Claude + LM Studio)
+- [x] RESTful API framework (FastAPI)
+- [x] Basic frontend UI (React + TypeScript)
+- [x] Project and requirements CRUD
+- [x] AI conversation storage
+- [x] Traceability links infrastructure
+- [x] Hybrid identifier system (GUID + display_id)
+- [x] Complete audit trail architecture
+- [x] Soft delete implementation
 
-### Phase 2 - Enhanced Compliance
+**⚠️ Partially Implemented (23 requirements - 13%):**
+- [ ] AI context recall (messages retrieved, not yet used)
+- [ ] JWT authentication (user router exists, not enforced)
+- [ ] Database connection pooling (setup exists, needs verification)
+- [ ] RBAC enforcement (roles defined, middleware missing)
 
-- [ ] Full DO-178C artifact generation
-- [ ] Gap and inconsistency detection
-- [ ] Advanced traceability matrix with filtering
+**❌ Critical Gaps (77 requirements - 44%):**
+- [ ] AI behavior logic (single question, approval workflow, guardrails)
+- [ ] Project initialization interview
+- [ ] Product structure/BOM management UI and APIs
+- [ ] Collaborative features (check-out/check-in, merging, conflict resolution)
+- [ ] Notification system
+- [ ] Document editor
+- [ ] Role-based UI
+- [ ] Full-text search
+
+### Implementation Plan (from Design Validation Report)
+
+**Phase 1: Core AI Functionality (Weeks 1-2) - Priority 1**
+- [ ] Implement AI behavior logic (REQ-AI-001, REQ-AI-002, REQ-AI-010)
+  - Single question at a time enforcement
+  - Simple language system prompt
+  - Guardrails preventing design decisions
+- [ ] AI_INSTRUCTION.md ✅ **DONE**
+- [ ] Project initialization interview (REQ-AI-032 to REQ-AI-037)
+- [ ] AI approval workflow (REQ-AI-017, REQ-AI-018, REQ-AI-019)
+
+**Phase 2: Security & Workflows (Weeks 3-4) - Priority 2**
+- [ ] JWT authentication (REQ-BE-004)
+- [ ] Approval workflow
+- [ ] BOM management APIs and UI
+- [ ] Notification system backend
+
+**Phase 3: Collaborative Features (Weeks 5-6)**
+- [ ] Locking mechanism (check-out/check-in)
+- [ ] Merge engine (5 conflict types)
+- [ ] Conflict resolution UI
+- [ ] Distributed development support
+
+**Phase 4: Enterprise Polish (Weeks 7-8)**
+- [ ] Notification center UI
+- [ ] Comment threads
+- [ ] Activity feed
+- [ ] Role-based UI
+- [ ] Advanced analytics
+
+### Long-Term Vision
+
+**Phase 5: External Integration**
+- [ ] Integration with Jira, GitHub, Confluence
+- [ ] CI/CD pipeline integration
+- [ ] External tool API
+- [ ] Webhooks for automation
+
+**Phase 6: Advanced AI Features**
 - [ ] Test case generation from requirements
 - [ ] Impact analysis for change requests
-- [ ] Multi-user collaboration
-
-### Phase 3 - Enterprise Features
-
-- [ ] Integration with Jira, GitHub, Confluence
-- [ ] Role-based access control (Engineer, Reviewer, Auditor)
-- [ ] Advanced analytics and dashboards
-- [ ] CI/CD pipeline integration
-- [ ] API for external tool integration
+- [ ] Duplicate detection (semantic similarity)
+- [ ] AI-assisted traceability suggestions
 
 ## 🤝 Contributing
 
@@ -352,6 +456,8 @@ Traditional systems engineering is **time-consuming and error-prone**:
 - Requirements quality varies widely
 - Change impact analysis is difficult
 - Certification preparation is expensive
+- Product structure management is complex
+- Multi-team collaboration is challenging
 
 **AISET changes this:**
 - AI handles documentation, engineers focus on design
@@ -359,11 +465,35 @@ Traditional systems engineering is **time-consuming and error-prone**:
 - Consistent requirements quality validation
 - Real-time impact analysis
 - Ready-to-submit certification artifacts
+- Enterprise product structure management (BOM, CIs, baselines)
+- Seamless multi-user collaboration with intelligent merge
 
 **Result:** 50-70% reduction in engineering overhead while maintaining full DO-178C compliance.
+
+## 📈 Project Maturity
+
+**Current Status (v0.6.0):**
+- **Overall:** 43% implemented (56% including partial)
+- **Database:** 84% complete (excellent foundation)
+- **Backend:** 21% complete (RESTful framework established)
+- **Frontend:** 22% complete (basic UI exists)
+- **AI:** 5% complete (infrastructure ready, behavior logic needed)
+
+**Documentation:**
+- ✅ Software Requirements Specification (SRS v1.0.0) - 167 requirements
+- ✅ High-Level Design (HLD v1.0.0)
+- ✅ Low-Level Design (LLD v1.0.0) - Database schema
+- ✅ Design Validation Report - All 176 requirements validated
+- ✅ AI_INSTRUCTION.md - Complete database documentation for AI
+- ✅ Traceability Matrix
+- ⚠️ Implementation - In progress
+
+See `05_VERIFICATION/Design_Validation_Report.md` for complete requirement-by-requirement assessment.
 
 ---
 
 **Built with ❤️ for the aerospace and safety-critical systems community**
 
 *AISET - Accelerating safe software development through AI*
+
+**⚠️ Development Status:** This is a prototype under active development. Not production-ready. DO NOT use for actual certification projects until 100% requirements implementation and full DO-178C compliance verification complete.
