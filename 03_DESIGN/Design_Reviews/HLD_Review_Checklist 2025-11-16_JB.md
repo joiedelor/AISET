@@ -1,7 +1,7 @@
 # High-Level Design (HLD) Review Checklist
 
 **Document Under Review:** HLD_High_Level_Design.md v1.0.0
-**Reviewer:** [Your Name]
+**Reviewer:** [JB]
 **Review Date:** [YYYY-MM-DD]
 **Review Type:** Solo Design Review (DO-178C Section 5.3)
 
