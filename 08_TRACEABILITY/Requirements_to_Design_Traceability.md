@@ -56,12 +56,12 @@ This document provides bidirectional traceability between AISET requirements (RE
 
 ## 3. AI Requirements Traceability (REQ-AI-001 through REQ-AI-044)
 
-| Requirement ID | Requirement Summary | HLD Section | LLD Tables | Verification |
-|----------------|---------------------|-------------|------------|--------------|
-| **REQ-AI-001** | One question at a time | 4.4.1 | ai_conversations, ai_messages | Implemented in AI Engine design |
-| **REQ-AI-002** | Role: Assistant (not designer) | 4.4 | - | Core AI principle documented |
+| Requirement ID | Requirement Summary | HLD Section | LLD Tables | Implementation Status | Verification |
+|----------------|---------------------|-------------|------------|----------------------|--------------|
+| **REQ-AI-001** | Single question interaction | 4.4.1 | ai_conversations, ai_messages | ✅ IMPLEMENTED (backend/services/ai_service.py:212-256, validate_single_question:270-314, backend/routers/ai_conversation.py:114-124) | Unit tests: test_ai_service.py |
+| **REQ-AI-002** | Simple language by default | 4.4 | - | ✅ IMPLEMENTED (backend/services/ai_service.py:222-226 system prompt) | Unit tests: test_ai_service.py |
 | **REQ-AI-003** | Clarifying questions | 4.4.1 | - | Requirements elicitation workflow |
-| **REQ-AI-010** | No design decisions | 4.4 | - | AI role constraints |
+| **REQ-AI-010** | No design decisions | 4.4 | - | ✅ IMPLEMENTED (backend/services/ai_service.py:228-233 system prompt) | Unit tests: test_ai_service.py |
 | **REQ-AI-011** | Task assignment pattern | 4.4.1 | - | AI behavior specification |
 | **REQ-AI-025** | Automatic updates without permission | 4.2, 4.4 | audit_trail | Update + review marking |
 | **REQ-AI-026** | Mark documents for review | 4.2 | documents.review_status | Backend handles marking |

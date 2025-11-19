@@ -111,18 +111,35 @@ async def send_message(
         # Get AI response
         response = await ai_service.requirements_elicitation(message)
 
+        # Validate single question (REQ-AI-001)
+        validation = await ai_service.validate_single_question(response)
+
+        # Log validation warnings (for DO-178C compliance monitoring)
+        import logging
+        logger = logging.getLogger(__name__)
+        if not validation["valid"]:
+            logger.warning(
+                f"REQ-AI-001 violation detected in conversation {conversation_id}: "
+                f"{', '.join(validation['issues'])}"
+            )
+
         # Save AI response
         ai_message = AIMessage(
             conversation_id=conversation_id,
             role=MessageRole.ASSISTANT,
-            content=response
+            content=response,
+            metadata={
+                "validation": validation,
+                "model": ai_service.get_current_model()
+            }
         )
         db.add(ai_message)
         db.commit()
 
         return {
             "message": response,
-            "conversation_id": conversation_id
+            "conversation_id": conversation_id,
+            "validation": validation
         }
 
     except Exception as e:
