@@ -4,7 +4,6 @@
  * Purpose: Projects listing and management
  */
 
-import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { projectsApi } from '../services/api'
@@ -36,10 +35,10 @@ export default function Projects() {
             Manage your systems engineering projects
           </p>
         </div>
-        <button className="btn-primary flex items-center gap-2">
+        <Link to="/projects/new" className="btn-primary flex items-center gap-2">
           <Plus className="w-5 h-5" />
           New Project
-        </button>
+        </Link>
       </div>
 
       {projects && projects.length > 0 ? (
@@ -82,9 +81,9 @@ export default function Projects() {
           <p className="text-gray-600 dark:text-gray-400 mb-6">
             Get started by creating your first project
           </p>
-          <button className="btn-primary">
+          <Link to="/projects/new" className="btn-primary inline-block">
             Create Project
-          </button>
+          </Link>
         </div>
       )}
     </div>

@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './components/Layout'
 import Dashboard from './pages/Dashboard'
 import Projects from './pages/Projects'
+import ProjectInitializationWizard from './pages/ProjectInitializationWizard'
 import ProjectDetails from './pages/ProjectDetails'
 import Requirements from './pages/Requirements'
 import Chat from './pages/Chat'
@@ -22,6 +23,7 @@ function App() {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="projects" element={<Projects />} />
+          <Route path="projects/new" element={<ProjectInitializationWizard />} />
           <Route path="projects/:projectId" element={<ProjectDetails />} />
           <Route path="projects/:projectId/requirements" element={<Requirements />} />
           <Route path="projects/:projectId/chat" element={<Chat />} />

@@ -8,7 +8,7 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { documentsApi } from '../services/api'
-import { FileText, Download, CheckCircle } from 'lucide-react'
+import { FileText, Download } from 'lucide-react'
 
 export default function Documents() {
   const { projectId } = useParams<{ projectId: string }>()

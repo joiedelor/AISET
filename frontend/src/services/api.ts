@@ -47,7 +47,15 @@ export const aiApi = {
   createConversation: (data: { project_id: number; title?: string }) =>
     api.post<{ conversation_id: number }>('/conversations', data),
   sendMessage: (conversationId: number, message: string) =>
-    api.post<{ message: string }>(`/conversations/${conversationId}/messages`, { message }),
+    api.post<{
+      message: string
+      conversation_id: number
+      validation: {
+        valid: boolean
+        question_count: number
+        issues: string[]
+      }
+    }>(`/conversations/${conversationId}/messages`, { message }),
   getMessages: (conversationId: number) =>
     api.get<AIMessage[]>(`/conversations/${conversationId}/messages`),
   extractRequirements: (conversationId: number) =>

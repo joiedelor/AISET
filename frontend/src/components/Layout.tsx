@@ -5,7 +5,7 @@
  */
 
 import { Outlet, Link, useLocation } from 'react-router-dom'
-import { FileText, GitBranch, MessageSquare, FolderOpen, LayoutDashboard, FileCheck } from 'lucide-react'
+import { FolderOpen, LayoutDashboard } from 'lucide-react'
 
 export default function Layout() {
   const location = useLocation()
