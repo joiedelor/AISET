@@ -13,6 +13,7 @@ __all__ = [
     "design_components",
     "test_cases",
     "ai_conversation",
+    "approval",
     "traceability",
     "documents",
     "users"

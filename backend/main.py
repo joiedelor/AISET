@@ -25,7 +25,8 @@ from routers import (
     traceability,
     documents,
     users,
-    health
+    health,
+    approval
 )
 
 # Configure logging
@@ -80,6 +81,7 @@ app.include_router(requirements.router, prefix="/api/v1", tags=["Requirements"])
 app.include_router(design_components.router, prefix="/api/v1", tags=["Design"])
 app.include_router(test_cases.router, prefix="/api/v1", tags=["Tests"])
 app.include_router(ai_conversation.router, prefix="/api/v1", tags=["AI"])
+app.include_router(approval.router, prefix="/api/v1/approval", tags=["Approval Workflow"])
 app.include_router(traceability.router, prefix="/api/v1", tags=["Traceability"])
 app.include_router(documents.router, prefix="/api/v1", tags=["Documents"])
 

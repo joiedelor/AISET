@@ -90,6 +90,87 @@ export const documentsApi = {
     api.post<DocumentExport>(`/projects/${projectId}/generate-rtm`, { generated_by }),
 }
 
+// Approval Workflow API (REQ-AI-017, REQ-AI-018, REQ-AI-019)
+export interface Proposal {
+  id: string
+  change_type: 'addition' | 'modification' | 'deletion'
+  entity_type: 'requirement' | 'design_component' | 'test_case'
+  section: string
+  original_content?: string
+  proposed_content: string
+  confidence_score: number
+  rationale: string
+  status: 'pending' | 'approved' | 'rejected' | 'modified'
+  created_at: string
+}
+
+export interface ApprovalRequest {
+  decision: 'approved' | 'rejected' | 'modified'
+  modified_content?: string
+  rationale: string
+  reviewed_by: string
+}
+
+export interface ApprovalResponse {
+  proposal_id: string
+  decision: string
+  reviewed_by: string
+  reviewed_at: string
+  created_entity_id?: number
+  modified_content?: string
+}
+
+export const approvalApi = {
+  // Get all pending proposals (REQ-AI-017)
+  getPendingProposals: (conversationId?: number) =>
+    api.get<Proposal[]>('/approval/proposals', {
+      params: conversationId ? { conversation_id: conversationId } : undefined
+    }),
+
+  // Get proposal by ID
+  getProposal: (proposalId: string) =>
+    api.get<Proposal>(`/approval/proposals/${proposalId}`),
+
+  // Get proposal diff for highlighting (REQ-AI-019)
+  getProposalDiff: (proposalId: string) =>
+    api.get<{
+      id: string
+      change_type: string
+      entity_type: string
+      section: string
+      original?: string
+      proposed: string
+      rationale: string
+      confidence: number
+      highlight_class: string
+    }>(`/approval/proposals/${proposalId}/diff`),
+
+  // Approve or reject a proposal (REQ-AI-017, REQ-AI-018)
+  approveProposal: (proposalId: string, request: ApprovalRequest) =>
+    api.post<ApprovalResponse>(`/approval/proposals/${proposalId}/approve`, request),
+
+  // Bulk approve/reject proposals
+  bulkApprove: (proposalIds: string[], decision: string, rationale: string, reviewedBy: string) =>
+    api.post<ApprovalResponse[]>('/approval/proposals/bulk-approve', {
+      proposal_ids: proposalIds,
+      decision,
+      rationale,
+      reviewed_by: reviewedBy
+    }),
+
+  // Get proposals for a conversation
+  getConversationProposals: (conversationId: number, includeProcessed: boolean = false) =>
+    api.get<Proposal[]>(`/approval/conversations/${conversationId}/proposals`, {
+      params: { include_processed: includeProcessed }
+    }),
+
+  // Extract proposals from conversation
+  extractProposals: (conversationId: number) =>
+    api.post<{ extracted_count: number; proposals: Array<{ id: string; type: string; section: string; content: string }> }>(
+      `/approval/conversations/${conversationId}/extract-proposals`
+    ),
+}
+
 // Health API
 export const healthApi = {
   check: () => api.get('/health'),
