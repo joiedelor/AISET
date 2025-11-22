@@ -2,11 +2,17 @@
  * Chat Page - Dual Interface
  * DO-178C Traceability: REQ-FE-008, REQ-FE-007, REQ-AI-017, REQ-AI-018, REQ-AI-019
  * Purpose: AI-powered requirements elicitation with dual-pane interface
+ *
+ * REQ-FE-008: Dual Interface Design
+ * - Left pane: Dialogue field for conversational interaction with AI
+ * - Right pane: Document field showing AI-generated content with change highlighting
+ * - Resizable split-pane layout for user preference
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams } from 'react-router-dom'
-import { Send, FileText, Check, X, AlertTriangle, Loader2, Edit3, RefreshCw } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
+import { Send, FileText, Check, X, AlertTriangle, Loader2, Edit3, RefreshCw, GripVertical, Download, Eye, Code } from 'lucide-react'
 import { aiApi, approvalApi, Proposal, ApprovalRequest } from '../services/api'
 
 interface Message {
@@ -102,6 +108,102 @@ export default function Chat() {
   const [editingProposal, setEditingProposal] = useState<Proposal | null>(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const currentUser = 'user' // TODO: Get from auth context
+
+  // REQ-FE-008: Resizable dual-pane interface state
+  const [leftPaneWidth, setLeftPaneWidth] = useState(50) // Percentage
+  const [isResizing, setIsResizing] = useState(false)
+  const [documentContent, setDocumentContent] = useState('')
+  const [viewMode, setViewMode] = useState<'preview' | 'edit'>('preview')
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // Handle resize drag (REQ-FE-008: Resizable split-pane)
+  const handleMouseDown = useCallback(() => {
+    setIsResizing(true)
+  }, [])
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isResizing || !containerRef.current) return
+      const containerRect = containerRef.current.getBoundingClientRect()
+      const newWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100
+      // Constrain between 25% and 75%
+      setLeftPaneWidth(Math.min(75, Math.max(25, newWidth)))
+    }
+
+    const handleMouseUp = () => {
+      setIsResizing(false)
+    }
+
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove)
+      document.addEventListener('mouseup', handleMouseUp)
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [isResizing])
+
+  // Generate markdown document from approved content
+  useEffect(() => {
+    if (approvedContent.length > 0) {
+      const doc = generateDocument(approvedContent)
+      setDocumentContent(doc)
+    }
+  }, [approvedContent])
+
+  // Generate structured document from requirements
+  const generateDocument = (requirements: string[]): string => {
+    const sections: { [key: string]: string[] } = {
+      'Functional Requirements': [],
+      'Non-Functional Requirements': [],
+      'Interface Requirements': [],
+      'Other Requirements': []
+    }
+
+    requirements.forEach((req) => {
+      // Simple classification based on content
+      if (req.toLowerCase().includes('performance') || req.toLowerCase().includes('security') || req.toLowerCase().includes('availability')) {
+        sections['Non-Functional Requirements'].push(req)
+      } else if (req.toLowerCase().includes('interface') || req.toLowerCase().includes('api')) {
+        sections['Interface Requirements'].push(req)
+      } else if (req.toLowerCase().includes('shall') || req.toLowerCase().includes('must')) {
+        sections['Functional Requirements'].push(req)
+      } else {
+        sections['Other Requirements'].push(req)
+      }
+    })
+
+    let markdown = `# Software Requirements Specification\n\n`
+    markdown += `**Generated:** ${new Date().toISOString()}\n\n`
+    markdown += `---\n\n`
+
+    Object.entries(sections).forEach(([section, reqs]) => {
+      if (reqs.length > 0) {
+        markdown += `## ${section}\n\n`
+        reqs.forEach((req, idx) => {
+          markdown += `### REQ-${section.split(' ')[0].toUpperCase().slice(0, 3)}-${String(idx + 1).padStart(3, '0')}\n\n`
+          markdown += `${req}\n\n`
+        })
+      }
+    })
+
+    return markdown
+  }
+
+  // Export document as markdown file
+  const handleExportDocument = () => {
+    const blob = new Blob([documentContent], { type: 'text/markdown' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `requirements-${new Date().toISOString().split('T')[0]}.md`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
 
   // Initialize conversation on component mount (REQ-FE-007)
   useEffect(() => {
@@ -209,7 +311,7 @@ export default function Chat() {
         reviewed_by: currentUser
       }
 
-      const response = await approvalApi.approveProposal(proposalId, request)
+      await approvalApi.approveProposal(proposalId, request)
 
       // Add to approved content
       setApprovedContent(prev => [...prev, proposal.proposed_content])
@@ -281,9 +383,15 @@ export default function Chat() {
   }
 
   return (
-    <div className="h-[calc(100vh-2rem)] flex gap-4 p-8">
+    <div
+      ref={containerRef}
+      className={`h-[calc(100vh-2rem)] flex p-4 ${isResizing ? 'select-none cursor-col-resize' : ''}`}
+    >
       {/* LEFT PANE: Chat Dialogue (REQ-FE-008) */}
-      <div className="w-1/2 flex flex-col">
+      <div
+        className="flex flex-col pr-2"
+        style={{ width: `${leftPaneWidth}%` }}
+      >
         <div className="mb-4">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <Send className="w-6 h-6" />
@@ -376,34 +484,88 @@ export default function Chat() {
         </div>
       </div>
 
+      {/* RESIZE HANDLE (REQ-FE-008: Resizable Split-Pane) */}
+      <div
+        className="w-2 flex-shrink-0 cursor-col-resize group relative"
+        onMouseDown={handleMouseDown}
+      >
+        <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-1 bg-gray-300 dark:bg-gray-600 rounded-full group-hover:bg-blue-500 transition-colors" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1 bg-gray-200 dark:bg-gray-700 rounded group-hover:bg-blue-100 dark:group-hover:bg-blue-900 transition-colors">
+          <GripVertical className="w-4 h-4 text-gray-500 group-hover:text-blue-600" />
+        </div>
+      </div>
+
       {/* RIGHT PANE: Document Proposal (REQ-FE-008) */}
-      <div className="w-1/2 flex flex-col">
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-              <FileText className="w-6 h-6" />
-              Document Proposal
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
-              AI-generated requirements with change highlighting
-            </p>
-          </div>
-          {/* Extract proposals button */}
-          {conversationId && messages.length > 0 && (
-            <button
-              onClick={handleExtractProposals}
-              disabled={isExtracting}
-              className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm disabled:opacity-50"
-              title="Extract proposals from conversation"
-            >
-              {isExtracting ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <RefreshCw className="w-4 h-4" />
+      <div
+        className="flex flex-col pl-2"
+        style={{ width: `${100 - leftPaneWidth}%` }}
+      >
+        <div className="mb-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <FileText className="w-6 h-6" />
+                Document Proposal
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                AI-generated requirements with change highlighting
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              {/* View mode toggle */}
+              <div className="flex rounded-lg bg-gray-100 dark:bg-gray-700 p-1">
+                <button
+                  onClick={() => setViewMode('preview')}
+                  className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-sm transition-colors ${
+                    viewMode === 'preview'
+                      ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                  }`}
+                  title="Preview mode"
+                >
+                  <Eye className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode('edit')}
+                  className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-sm transition-colors ${
+                    viewMode === 'edit'
+                      ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                  }`}
+                  title="Edit mode"
+                >
+                  <Code className="w-4 h-4" />
+                </button>
+              </div>
+              {/* Export button */}
+              {documentContent && (
+                <button
+                  onClick={handleExportDocument}
+                  className="flex items-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm"
+                  title="Export document as markdown"
+                >
+                  <Download className="w-4 h-4" />
+                  Export
+                </button>
               )}
-              Extract
-            </button>
-          )}
+              {/* Extract proposals button */}
+              {conversationId && messages.length > 0 && (
+                <button
+                  onClick={handleExtractProposals}
+                  disabled={isExtracting}
+                  className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm disabled:opacity-50"
+                  title="Extract proposals from conversation"
+                >
+                  {isExtracting ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="w-4 h-4" />
+                  )}
+                  Extract
+                </button>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Proposed Changes Section (REQ-AI-019: Highlighted Changes) */}
@@ -492,10 +654,25 @@ export default function Chat() {
           </div>
         )}
 
-        {/* Approved Document Content */}
+        {/* Document Content with Preview/Edit modes (REQ-FE-008) */}
         <div className="flex-1 card overflow-y-auto">
-          {approvedContent.length > 0 ? (
-            <div className="prose dark:prose-invert max-w-none">
+          {documentContent ? (
+            viewMode === 'preview' ? (
+              /* Preview Mode - Rendered Markdown */
+              <div className="prose dark:prose-invert max-w-none p-4">
+                <ReactMarkdown>{documentContent}</ReactMarkdown>
+              </div>
+            ) : (
+              /* Edit Mode - Raw Markdown Editor */
+              <textarea
+                value={documentContent}
+                onChange={(e) => setDocumentContent(e.target.value)}
+                className="w-full h-full p-4 font-mono text-sm bg-transparent border-0 resize-none focus:outline-none focus:ring-0 text-gray-900 dark:text-white"
+                placeholder="Document content will appear here..."
+              />
+            )
+          ) : approvedContent.length > 0 ? (
+            <div className="prose dark:prose-invert max-w-none p-4">
               <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Approved Requirements ({approvedContent.length})
               </h4>
@@ -513,11 +690,20 @@ export default function Chat() {
             <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400">
               <div className="text-center">
                 <FileText className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                <p>No approved requirements yet</p>
-                <p className="text-xs mt-1">Chat with AI, then click "Extract" to generate proposals</p>
-                <p className="text-xs mt-1 text-yellow-600 dark:text-yellow-400">
+                <p className="font-medium">No approved requirements yet</p>
+                <p className="text-xs mt-2">Start by chatting with AI to elicit requirements</p>
+                <p className="text-xs mt-1">Click "Extract" to generate proposals from conversation</p>
+                <p className="text-xs mt-3 text-yellow-600 dark:text-yellow-400 font-medium">
                   REQ-AI-018: All changes require explicit user approval
                 </p>
+                <div className="mt-4 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg text-left text-xs">
+                  <p className="font-medium mb-1">Dual Interface (REQ-FE-008):</p>
+                  <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+                    <li>Left pane: Dialogue with AI</li>
+                    <li>Right pane: Document proposals</li>
+                    <li>Drag the handle to resize panes</li>
+                  </ul>
+                </div>
               </div>
             </div>
           )}
