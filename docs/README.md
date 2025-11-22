@@ -11,7 +11,7 @@ See `/DOCUMENTATION_LEVELS.md` for complete level definitions.
 ```
 docs/
 ├── Level_1_AISET_Development/     [Level 1] AISET Tool Development (DO-178C DAL D)
-│   ├── DATABASE_SCHEMA.md         Complete AISET database schema (42 tables)
+│   ├── DATABASE_SCHEMA.md         Complete AISET database schema (47 tables)
 │   ├── SQL_requirement.md         AISET database requirements specification
 │   ├── GAP_ANALYSIS.md            AISET DO-178C compliance gap analysis
 │   └── DO178C_COMPLIANCE.md       AISET DO-178C compliance status

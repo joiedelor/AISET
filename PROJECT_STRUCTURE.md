@@ -33,8 +33,8 @@ aiset/
 ├── PROJECT_STATUS.md                  # ⭐ Human-readable project status
 │
 ├── 📄 **[Level 4]** Specification Roleplay (Requirements Capture)
-├── REQUIREMENTS.md                    # ⭐ Tool requirements (v0.5.0, 85 requirements)
-│                                      # → Will become Level 1 SRS source
+├── ROLEPLAY_REQUIREMENTS.md           # ⭐ Working requirements file (v0.8.0, 167 requirements)
+│                                      # → Source for Level 1 SRS (02_REQUIREMENTS/SRS)
 ├── ROLEPLAY_RULES.md                 # ⭐ Specification roleplay methodology
 ├── ROLEPLAY_SESSION.md               # Roleplay session status (COMPLETED)
 │
@@ -288,9 +288,9 @@ aiset/
 
 ---
 
-**Status:** ✅ MVP Complete - Ready for Development
+**Status:** ✅ Prototype 58% Complete
 **Version:** 0.2.0
-**Last Updated:** 2025-11-15 (Level separation added)
+**Last Updated:** 2025-11-22 (Requirements 182, DO-178C 52%)
 
 **⚠️ IMPORTANT:** All folders and sections now tagged with documentation levels.
 **See:** `DOCUMENTATION_LEVELS.md` for level definitions and anti-mixing guidelines.

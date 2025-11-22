@@ -1,5 +1,9 @@
 # Contributing to AISET
 
+**Document Type:** [Level 1] AISET Tool Development
+**Version:** 1.0.0
+**Last Updated:** 2025-11-22
+
 Thank you for your interest in contributing to AISET! This document provides guidelines and information for contributors.
 
 ## 🎯 Code of Conduct

@@ -1,8 +1,8 @@
 # AISET - High-Level Design (HLD)
 
 **Document Type:** [Level 1] AISET Tool Development - DO-178C DAL D
-**Document Version:** 1.0.0
-**Last Updated:** 2025-11-16
+**Document Version:** 1.2.0
+**Last Updated:** 2025-11-22
 **Status:** Draft - In Review
 **Applicable Standards:** DO-178C (Software), ARP4754A (System), DO-254 (Hardware reference)
 
@@ -15,6 +15,8 @@
 | Version | Date | Author | Description |
 |---------|------|--------|-------------|
 | 1.0.0 | 2025-11-16 | Claude + User | Initial HLD creation - Architecture definition |
+| 1.1.0 | 2025-11-22 | Claude + User | Added Project Initialization Interview Flow (Section 5.1), conversation persistence architecture |
+| 1.2.0 | 2025-11-22 | Claude + User | Added AI Controller Architecture (4.5), Guardrails Middleware (4.6), AI Roles (4.7), Micro-Interaction Pattern (4.8) |
 
 ### Approval
 
@@ -489,7 +491,10 @@ AISET follows a **4-tier enterprise architecture**:
 - Determine safety criticality, DAL/SIL
 - Identify applicable standards
 - Recommend development process
-- **Traces to:** REQ-AI-032 through REQ-AI-037
+- **Draft project creation:** Creates project record with status "initializing" on first message
+- **Conversation persistence:** All messages saved to ai_conversations/ai_messages tables
+- **Context memory:** Full conversation history passed to AI for continuity
+- **Traces to:** REQ-AI-032 through REQ-AI-037, REQ-AI-028 through REQ-AI-030, REQ-BE-030
 
 #### 4.4.3 Product Structure Extraction
 - Parse user-provided documents (BOM, product spec)
@@ -518,9 +523,356 @@ AISET follows a **4-tier enterprise architecture**:
 
 ---
 
+### 4.5 AI Controller Architecture
+
+The AI Controller is the critical component that enables stateless AI operation with full context awareness.
+
+#### 4.5.1 Core Principle: Stateless AI with External Memory
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    AI ARCHITECTURE                          │
+│                                                             │
+│  ┌─────────────┐    ┌──────────────────┐    ┌───────────┐ │
+│  │  Frontend   │───▶│   AI Controller  │───▶│    LLM    │ │
+│  │  (React)    │    │  (Context Build) │    │ (Stateless)│ │
+│  └─────────────┘    └──────────────────┘    └───────────┘ │
+│         ▲                    │                     │       │
+│         │                    ▼                     │       │
+│         │           ┌──────────────────┐          │       │
+│         │           │    PostgreSQL    │          │       │
+│         │           │  (State Storage) │◀─────────┘       │
+│         │           └──────────────────┘                  │
+│         │                    │                            │
+│         └────────────────────┘                            │
+│              (Response via API)                           │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Key Insight:** The LLM is stateless - it has no memory between calls. All project context is stored in PostgreSQL and rebuilt for every AI interaction.
+
+**Traces to:** REQ-AI-045 (Stateless AI with External Context)
+
+#### 4.5.2 Context Snapshot Builder
+
+The `get_ai_context()` function constructs the complete context for each AI call:
+
+```python
+def get_ai_context(project_id: int, work_item_id: int = None) -> AIContext:
+    """
+    Build complete context snapshot for AI call.
+
+    Returns:
+        AIContext containing:
+        - project_metadata: Project name, DAL/SIL, standards, domain
+        - relevant_requirements: Requirements related to current work item
+        - current_work_item: Active requirement/CI/document being edited
+        - conversation_history: Last N messages (configurable)
+        - system_instructions: AI guardrails and behavior rules
+    """
+```
+
+**Context Elements:**
+
+| Element | Source | Max Tokens |
+|---------|--------|------------|
+| System Instructions | Static prompts | ~500 |
+| Project Metadata | projects table | ~200 |
+| Current Work Item | requirements/CIs | ~500 |
+| Relevant History | ai_messages | ~2000 |
+| Related Requirements | requirements | ~1000 |
+| **Total Budget** | | ~4200 |
+
+**Token Management:**
+- Context truncated to fit model's max window
+- Most recent history prioritized
+- Summarization for older context if needed
+
+**Traces to:** REQ-AI-046 (Context Snapshot Builder)
+
+#### 4.5.3 Dynamic System Prompt Construction
+
+Every AI call receives a dynamically constructed system prompt:
+
+```
+SYSTEM PROMPT STRUCTURE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[ROLE DEFINITION]
+You are the AISET {role_name} assistant.
+
+[BEHAVIOR RULES]
+- Ask only ONE question at a time
+- PROPOSE options, never DECIDE
+- Use simple, clear language
+- Follow DO-178C compliance guidelines
+
+[PROJECT CONTEXT]
+Project: {project_name}
+Standards: {applicable_standards}
+DAL/SIL: {assurance_level}
+Domain: {industry_domain}
+
+[CURRENT WORK ITEM]
+{work_item_details}
+
+[CONVERSATION HISTORY]
+{last_n_messages}
+
+[SPECIFIC INSTRUCTIONS FOR THIS CALL]
+{task_specific_instructions}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+**Traces to:** REQ-AI-047 (Dynamic System Prompt Construction)
+
+---
+
+### 4.6 AI Guardrails Middleware
+
+The Guardrails Middleware validates all AI responses before returning to users.
+
+#### 4.6.1 Guardrails Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                 GUARDRAILS MIDDLEWARE                       │
+│                                                             │
+│  AI Response ──▶ ┌─────────────────────────────────────┐   │
+│                  │  1. Decision Detection Guard        │   │
+│                  │     - Block "You must...", "Best is"│   │
+│                  ├─────────────────────────────────────┤   │
+│                  │  2. Single Question Guard           │   │
+│                  │     - Count "?" ≤ 1                 │   │
+│                  ├─────────────────────────────────────┤   │
+│                  │  3. Complexity Guard                │   │
+│                  │     - Check sentence length         │   │
+│                  │     - Flag jargon                   │   │
+│                  └─────────────────────────────────────┘   │
+│                              │                             │
+│                    ┌─────────┴─────────┐                   │
+│                    ▼                   ▼                   │
+│               [PASS]              [BLOCK]                  │
+│            Return to user      Request AI retry            │
+│                                or return safe message      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### 4.6.2 Guard Implementations
+
+**1. Decision Detection Guard (REQ-AI-049)**
+
+```python
+BLOCKED_PATTERNS = [
+    r"you must choose",
+    r"you should use",
+    r"the best .* is",
+    r"the correct .* is",
+    r"i recommend you",
+    r"you need to"
+]
+
+def check_decision_guard(response: str) -> GuardResult:
+    for pattern in BLOCKED_PATTERNS:
+        if re.search(pattern, response.lower()):
+            return GuardResult(
+                passed=False,
+                reason=f"Decision detected: {pattern}",
+                action="retry_with_softer_prompt"
+            )
+    return GuardResult(passed=True)
+```
+
+**2. Single Question Guard (REQ-AI-050)**
+
+```python
+def check_question_guard(response: str) -> GuardResult:
+    question_count = response.count("?")
+    if question_count > 1:
+        return GuardResult(
+            passed=False,
+            reason=f"Multiple questions: {question_count}",
+            action="truncate_to_first_question"
+        )
+    return GuardResult(passed=True)
+```
+
+**3. Complexity Guard (REQ-AI-051)**
+
+```python
+def check_complexity_guard(response: str) -> GuardResult:
+    sentences = response.split(".")
+    avg_length = sum(len(s.split()) for s in sentences) / len(sentences)
+
+    if avg_length > 25:  # More than 25 words per sentence
+        return GuardResult(
+            passed=False,
+            reason=f"High complexity: {avg_length:.1f} words/sentence",
+            action="flag_for_simplification"
+        )
+    return GuardResult(passed=True)
+```
+
+**Traces to:** REQ-AI-048 through REQ-AI-051
+
+---
+
+### 4.7 AI Role Architecture
+
+Three distinct AI roles with separate static system prompts.
+
+#### 4.7.1 Role Overview
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    AI ROLES                                 │
+│                                                             │
+│  ┌─────────────────────┐  ┌─────────────────────┐         │
+│  │  SYSTEM ENGINEER AI │  │  DOCUMENT WRITER AI │         │
+│  │                     │  │                     │         │
+│  │  Input: User answers│  │  Input: Structured  │         │
+│  │  Output: Questions, │  │         entities    │         │
+│  │          Requirements│  │  Output: Markdown   │         │
+│  │                     │  │          documents  │         │
+│  └─────────────────────┘  └─────────────────────┘         │
+│                                                             │
+│  ┌─────────────────────┐                                   │
+│  │  CODE ASSISTANT AI  │                                   │
+│  │                     │                                   │
+│  │  Input: File/func   │                                   │
+│  │         specification│                                   │
+│  │  Output: Code edits │                                   │
+│  │          (single file)│                                  │
+│  └─────────────────────┘                                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### 4.7.2 Role Prompts (Static)
+
+**System Engineer AI Prompt:**
+```
+You are the AISET System Engineer assistant.
+
+CAPABILITIES:
+- Ask clarifying questions about requirements
+- Identify gaps in requirements
+- Classify requirements (functional, performance, safety)
+- Suggest requirement decomposition
+
+CONSTRAINTS:
+- Ask ONE question at a time
+- NEVER generate code
+- NEVER generate documents
+- ONLY propose, never decide
+- Use simple language
+```
+
+**Document Writer AI Prompt:**
+```
+You are the AISET Document Writer assistant.
+
+CAPABILITIES:
+- Generate SRS sections from requirements
+- Generate SDD sections from design elements
+- Generate RTM (Requirements Traceability Matrix)
+- Format output in Markdown
+
+CONSTRAINTS:
+- NEVER ask questions
+- NEVER make design decisions
+- ONLY generate documents from provided data
+- Follow DO-178C document templates
+```
+
+**Code Assistant AI Prompt:**
+```
+You are the AISET Code Assistant.
+
+CAPABILITIES:
+- Generate Python/TypeScript code
+- Edit existing files
+- Add new functions/classes
+- Write unit tests
+
+CONSTRAINTS:
+- Work on ONE file at a time
+- Use ONLY existing models and architecture
+- NEVER modify database schema
+- NEVER modify API contracts without approval
+- Follow project coding standards
+```
+
+**Traces to:** REQ-AI-052 through REQ-AI-055
+
+---
+
+### 4.8 Micro-Interaction Pattern
+
+#### 4.8.1 Interaction Flow
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│              MICRO-INTERACTION LOOP                         │
+│                                                             │
+│     ┌──────────┐        ┌──────────┐        ┌──────────┐  │
+│     │   AI     │        │  Human   │        │   AI     │  │
+│     │ Question │───────▶│  Answer  │───────▶│ Question │  │
+│     └──────────┘        └──────────┘        └──────────┘  │
+│          │                   │                   │         │
+│          ▼                   ▼                   ▼         │
+│     ┌─────────────────────────────────────────────────┐   │
+│     │              DATABASE (ai_messages)             │   │
+│     │   - Store every message                         │   │
+│     │   - Store every decision                        │   │
+│     │   - Rebuild context for next call               │   │
+│     └─────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Benefits:**
+1. AI never needs long-term memory
+2. Every interaction is auditable
+3. Matches DO-178C "single change - human approval" pattern
+4. Context can be rebuilt at any time
+
+**Traces to:** REQ-AI-056 through REQ-AI-058
+
+---
+
 ## 5. Data Flow
 
-### 5.1 Requirements Elicitation Flow
+### 5.1 Project Initialization Interview Flow
+
+```
+User starts wizard → Frontend → POST /api/v1/projects/initialize
+                                      ↓
+                         Backend: Create draft project (status="initializing")
+                                      ↓
+                         Backend: Create ai_conversation record
+                                      ↓
+                         Backend: Save user message to ai_messages
+                                      ↓
+                         Backend: Load full conversation history
+                                      ↓
+                         Backend → AI Engine (with conversation history)
+                                      ↓
+                         AI generates contextual response
+                                      ↓
+                         Backend: Save AI response to ai_messages
+                                      ↓
+                         Backend: Update conversation context
+                                      ↓
+                         Return: project_id, conversation_id, next_question
+                                      ↓
+                         Frontend: Display response, track IDs for next call
+```
+
+**Key Design Points:**
+- Project and conversation created on FIRST message (not after completion)
+- Full conversation history passed to AI enables memory/context
+- Frontend tracks project_id and conversation_id for subsequent calls
+- **Traces to:** REQ-AI-028, REQ-AI-029, REQ-AI-030, REQ-BE-030, REQ-DB-018, REQ-DB-034
+
+### 5.2 Requirements Elicitation Flow
 
 ```
 User Input → Frontend → Backend → AI Engine
@@ -536,7 +888,7 @@ User Input → Frontend → Backend → AI Engine
                     Frontend displays response + updated document list
 ```
 
-### 5.2 Check-out/Check-in Flow (Pessimistic Locking)
+### 5.3 Check-out/Check-in Flow (Pessimistic Locking)
 
 **Check-out:**
 ```

@@ -8,9 +8,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel
+from datetime import datetime
+import uuid
 
 from database.connection import get_db
 from models.project import Project, ProjectInitializationContext
+from models.ai_conversation import AIConversation, AIMessage, ConversationStatus, MessageRole
 from services.ai_service import ai_service
 
 router = APIRouter()
@@ -97,6 +100,7 @@ async def get_project(project_id: int, db: Session = Depends(get_db)):
 class InitializationRequest(BaseModel):
     """Schema for project initialization interview request."""
     project_id: Optional[int] = None
+    conversation_id: Optional[int] = None
     user_input: str
     context: Optional[Dict[str, Any]] = None
 
@@ -107,6 +111,7 @@ class InitializationResponse(BaseModel):
     stage: str
     complete: bool
     project_id: Optional[int] = None
+    conversation_id: Optional[int] = None
     context: Dict[str, Any]
 
 
@@ -134,25 +139,121 @@ async def initialize_project(
     5. Complete: Summary and confirmation
     """
     try:
-        # Get or create project
         project = None
+        conversation = None
+
+        # STEP 1: Get or create project (draft at start)
         if request.project_id:
             project = db.query(Project).filter(Project.id == request.project_id).first()
             if not project:
                 raise HTTPException(status_code=404, detail="Project not found")
+        else:
+            # Create a new draft project at the start of interview
+            project_code = f"PROJ-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+            project = Project(
+                name=f"Draft Project {project_code}",
+                project_code=project_code,
+                status="initializing",
+                created_by="initialization_wizard"
+            )
+            db.add(project)
+            db.commit()
+            db.refresh(project)
 
-        # Conduct interview
+        # STEP 2: Get or create conversation
+        if request.conversation_id:
+            conversation = db.query(AIConversation).filter(
+                AIConversation.id == request.conversation_id
+            ).first()
+            if not conversation:
+                raise HTTPException(status_code=404, detail="Conversation not found")
+        else:
+            # Create new conversation for this initialization
+            conversation = AIConversation(
+                project_id=project.id,
+                title="Project Initialization Interview",
+                purpose="project_initialization",
+                status=ConversationStatus.ACTIVE,
+                ai_service=ai_service.provider.get_model_name(),
+                model_name=ai_service.provider.get_model_name(),
+                created_by="initialization_wizard",
+                context={"stage": "initial", "data": {}}
+            )
+            db.add(conversation)
+            db.commit()
+            db.refresh(conversation)
+
+            # Add initial AI greeting as first message
+            initial_greeting = (
+                "Welcome to the AISET Project Initialization Wizard! "
+                "I'll guide you through setting up your project with the right DO-178C/DO-254 configuration. "
+                "Let's start: Can you describe the project as precisely as you can?"
+            )
+            initial_msg = AIMessage(
+                conversation_id=conversation.id,
+                role=MessageRole.ASSISTANT,
+                content=initial_greeting,
+                model_version=ai_service.provider.get_model_name()
+            )
+            db.add(initial_msg)
+            db.commit()
+
+        # STEP 3: Save user message to database
+        user_msg = AIMessage(
+            conversation_id=conversation.id,
+            role=MessageRole.USER,
+            content=request.user_input
+        )
+        db.add(user_msg)
+        db.commit()
+
+        # STEP 4: Build conversation history for AI context
+        messages_history = db.query(AIMessage).filter(
+            AIMessage.conversation_id == conversation.id
+        ).order_by(AIMessage.created_at).all()
+
+        # Format conversation history for AI
+        conversation_text = "\n".join([
+            f"{'User' if msg.role == MessageRole.USER else 'Assistant'}: {msg.content}"
+            for msg in messages_history
+        ])
+
+        # Get current stage from conversation context
+        current_context = conversation.context or {"stage": "initial", "data": {}}
+        if request.context:
+            current_context.update(request.context)
+
+        # STEP 5: Call AI with full conversation history
         interview_result = await ai_service.project_initialization_interview(
             user_input=request.user_input,
-            context=request.context
+            context=current_context,
+            conversation_history=conversation_text
         )
 
-        # If interview is complete and we have a project, update it
-        if interview_result["complete"] and project:
-            # Extract collected data from context
-            collected_data = request.context.get("data", {}) if request.context else {}
+        # STEP 6: Save AI response to database
+        ai_msg = AIMessage(
+            conversation_id=conversation.id,
+            role=MessageRole.ASSISTANT,
+            content=interview_result["next_question"],
+            tokens_used=interview_result.get("tokens_used", 0),
+            model_version=interview_result.get("model", "unknown")
+        )
+        db.add(ai_msg)
 
-            # Update project fields
+        # STEP 7: Update conversation context with stage and answered questions
+        current_context["stage"] = interview_result["stage"]
+        if "answered" in interview_result:
+            current_context["answered"] = interview_result["answered"]
+        conversation.context = current_context
+
+        # STEP 8: If interview is complete, update project
+        if interview_result["complete"]:
+            conversation.status = ConversationStatus.COMPLETED
+            conversation.completed_at = datetime.now()
+
+            collected_data = current_context.get("data", {})
+
+            # Update project from collected data
             if "safety_critical" in collected_data:
                 project.safety_critical = collected_data["safety_critical"]
             if "dal_level" in collected_data:
@@ -161,36 +262,37 @@ async def initialize_project(
                 project.sil_level = collected_data["sil_level"]
             if "domain" in collected_data:
                 project.domain = collected_data["domain"]
-                project.industry = collected_data["domain"]  # Update legacy field
+                project.industry = collected_data["domain"]
             if "product_type" in collected_data:
                 project.product_type = collected_data["product_type"]
-            if "architecture_type" in collected_data:
-                project.architecture_type = collected_data["architecture_type"]
-            if "requirements_source" in collected_data:
-                project.requirements_source = collected_data["requirements_source"]
+            if "project_name" in collected_data:
+                project.name = collected_data["project_name"]
 
-            # Store complete context in JSON field (REQ-AI-037)
+            project.status = "active"
             project.initialization_context = {
                 "interview_complete": True,
                 "stage": interview_result["stage"],
                 "collected_data": collected_data,
-                "model_used": interview_result["model"]
+                "model_used": interview_result["model"],
+                "conversation_id": conversation.id
             }
 
-            db.commit()
-            db.refresh(project)
-
-        # Build response context
-        response_context = request.context or {"stage": "initial", "data": {}}
-        response_context["stage"] = interview_result["stage"]
+        db.commit()
+        db.refresh(project)
+        db.refresh(conversation)
 
         return InitializationResponse(
             next_question=interview_result["next_question"],
             stage=interview_result["stage"],
             complete=interview_result["complete"],
-            project_id=project.id if project else None,
-            context=response_context
+            project_id=project.id,
+            conversation_id=conversation.id,
+            context=current_context
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Initialization error: {str(e)}")
+        import traceback
+        error_msg = str(e) if str(e) else f"{type(e).__name__}: {repr(e)}"
+        print(f"Initialization error: {error_msg}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Initialization error: {error_msg}")

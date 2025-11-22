@@ -9,8 +9,8 @@
 |------|-------|
 | **Document ID** | AISET-SRS-001 |
 | **Document Title** | Software Requirements Specification |
-| **Version** | 1.0.0 |
-| **Date** | 2025-11-16 |
+| **Version** | 1.2.0 |
+| **Date** | 2025-11-22 |
 | **Status** | Released for Review |
 | **Approval Status** | Pending Review |
 | **DO-178C Compliance** | Section 5.1 - Software High-Level Requirements |
@@ -24,6 +24,8 @@
 | Version | Date | Author | Description |
 |---------|------|--------|-------------|
 | 1.0.0 | 2025-11-16 | Development Team | Initial release - Transformed from specification roleplay artifacts (ROLEPLAY_REQUIREMENTS.md v0.8.0) |
+| 1.1.0 | 2025-11-22 | Development Team | Added REQ-BE-030 (Draft Project Creation), clarified REQ-AI-030 implementation details |
+| 1.2.0 | 2025-11-22 | Development Team | Added AI Controller (REQ-AI-045-047), Guardrails (REQ-AI-048-051), AI Roles (REQ-AI-052-055), Micro-Interaction (REQ-AI-056-058) requirements. Total: 182 requirements |
 
 ---
 
@@ -126,12 +128,12 @@ Requirements in this SRS were derived from:
 
 | Category | Total Requirements | Range |
 |----------|-------------------|-------|
-| AI Subsystem | 44 | REQ-AI-001 to REQ-AI-044 |
+| AI Subsystem | 58 | REQ-AI-001 to REQ-AI-058 |
 | Frontend Subsystem | 23 | REQ-FE-001 to REQ-FE-023 |
-| Backend Subsystem | 29 | REQ-BE-001 to REQ-BE-029 |
+| Backend Subsystem | 30 | REQ-BE-001 to REQ-BE-030 |
 | Database Subsystem | 70 | REQ-DB-001 to REQ-DB-070 |
 | Documentation | 1 | REQ-DOC-001 |
-| **TOTAL** | **167** | |
+| **TOTAL** | **182** | |
 
 ### 3.3 Requirements Format
 
@@ -869,6 +871,254 @@ Within each subsystem, requirements are further categorized:
 **Verification Method:** Test (RBAC enforcement in AI behavior)
 
 **Source:** Security requirement
+
+---
+
+### 6.1.11 AI Controller and Context Management Requirements
+
+**REQ-AI-045: Stateless AI with External Context**
+
+**Statement:** The AI engine shall operate as a stateless component, receiving all necessary context on every call from an AI Controller. The AI shall NOT rely on internal long-term memory.
+
+**Priority:** CRITICAL
+
+**Rationale:** LLMs have limited context windows and no persistent memory. Building a stateful project memory layer outside the AI ensures reliability, reproducibility, and context persistence across thousands of interactions.
+
+**Verification Method:** Test (verify AI receives complete context on each call)
+
+**Source:** AI Architecture Best Practice (2025-11-22)
+
+---
+
+**REQ-AI-046: Context Snapshot Builder**
+
+**Statement:** The system shall implement a Context Snapshot Builder function (`get_ai_context`) that constructs the AI prompt by:
+1. Loading active project metadata
+2. Loading relevant requirements for current work item
+3. Loading current document/work item being edited
+4. Loading relevant conversation history (last N messages)
+5. Injecting system instructions (AI guardrails)
+6. Truncating to model's maximum token window
+
+**Priority:** CRITICAL
+
+**Rationale:** Ensures AI always receives exactly what it needs without manual context management. This replaces the need for AI memory.
+
+**Verification Method:** Test (verify context contains all required elements)
+
+**Source:** AI Architecture Best Practice (2025-11-22)
+
+---
+
+**REQ-AI-047: Dynamic System Prompt Construction**
+
+**Statement:** The AI Controller shall build a dynamic system prompt for every AI call containing:
+1. AI role and behavior rules (single question, propose not decide, simple language)
+2. DO-178C guardrail instructions
+3. Current project context (standards, DAL/SIL, domain)
+4. Current work item context
+5. Relevant conversation history
+
+**Priority:** HIGH
+
+**Rationale:** Dynamic prompts allow context-aware AI behavior while maintaining consistent guardrails.
+
+**Verification Method:** Review (verify prompt structure) + Test (verify behavior)
+
+**Source:** AI Architecture Best Practice (2025-11-22)
+
+---
+
+### 6.1.12 AI Guardrails Requirements
+
+**REQ-AI-048: Guardrails Middleware**
+
+**Statement:** The backend shall implement a Guardrails Middleware that validates all AI responses before returning them to users. The middleware shall reject responses that violate safety rules.
+
+**Priority:** CRITICAL
+
+**Rationale:** DO-178C compliance requires that AI never makes unauthorized decisions. Middleware enforcement ensures consistent safety.
+
+**Verification Method:** Test (verify rejection of non-compliant responses)
+
+**Source:** DO-178C Compliance Requirement
+
+---
+
+**REQ-AI-049: Decision Detection Guardrail**
+
+**Statement:** The Guardrails Middleware shall detect and block AI responses that make decisions instead of proposals. Blocked patterns include:
+- "You must choose..."
+- "The best architecture is..."
+- "The correct design is..."
+- "You should use..." (imperative without options)
+
+**Priority:** CRITICAL
+
+**Rationale:** AI must propose options, never decide. This enforces REQ-AI-010 at the system level.
+
+**Verification Method:** Test (verify blocking of decision patterns)
+
+**Source:** REQ-AI-010 enforcement
+
+---
+
+**REQ-AI-050: Single Question Guardrail**
+
+**Statement:** The Guardrails Middleware shall detect and block AI responses containing more than one question. The middleware shall count question marks ("?") and reject responses with count > 1.
+
+**Priority:** CRITICAL
+
+**Rationale:** Enforces REQ-AI-001 (single question at a time) at the system level, regardless of AI model behavior.
+
+**Verification Method:** Test (verify blocking of multi-question responses)
+
+**Source:** REQ-AI-001 enforcement
+
+---
+
+**REQ-AI-051: Language Complexity Guardrail**
+
+**Statement:** The Guardrails Middleware shall assess language complexity using heuristics (sentence length, jargon score) and flag overly complex responses for potential simplification.
+
+**Priority:** MEDIUM
+
+**Rationale:** Supports REQ-AI-002 (simple language by default) at the system level.
+
+**Verification Method:** Test (verify complexity detection)
+
+**Source:** REQ-AI-002 enforcement
+
+---
+
+### 6.1.13 AI Role Separation Requirements
+
+**REQ-AI-052: Separated AI Roles**
+
+**Statement:** The system shall implement three distinct AI roles, each with a dedicated static system prompt:
+1. **System Engineer AI** - Requirements clarification and elicitation
+2. **Document Writer AI** - Generate SRS, SDD, RTM documents
+3. **Code Assistant AI** - Generate isolated backend/frontend modules
+
+**Priority:** HIGH
+
+**Rationale:** Role separation ensures predictable AI behavior. Each role has focused capabilities and constraints.
+
+**Verification Method:** Review (verify role prompts) + Test (verify role behavior)
+
+**Source:** AI Architecture Best Practice (2025-11-22)
+
+---
+
+**REQ-AI-053: System Engineer AI Role**
+
+**Statement:** The System Engineer AI role shall:
+- Accept user answers as input
+- Output validated requirements, identified gaps, and single follow-up questions
+- Never generate code or documents directly
+- Focus on requirements elicitation and clarification
+
+**Priority:** HIGH
+
+**Rationale:** Focused role for requirements phase of development.
+
+**Verification Method:** Test (verify role constraints)
+
+**Source:** AI Role Architecture
+
+---
+
+**REQ-AI-054: Document Writer AI Role**
+
+**Statement:** The Document Writer AI role shall:
+- Accept structured entities (requirements, design components) as input
+- Output formatted Markdown documents or database entries
+- Generate SRS, SDD, RTM, and other DO-178C documents
+- Never ask questions or make design decisions
+
+**Priority:** HIGH
+
+**Rationale:** Focused role for documentation generation.
+
+**Verification Method:** Test (verify document generation)
+
+**Source:** AI Role Architecture
+
+---
+
+**REQ-AI-055: Code Assistant AI Role**
+
+**Statement:** The Code Assistant AI role shall:
+- Accept specific file or function specifications as input
+- Output incremental code edits for single files
+- Work only with existing models and architecture
+- Never modify multiple files in one interaction
+
+**Priority:** HIGH
+
+**Rationale:** Focused role for controlled code generation that matches project architecture.
+
+**Verification Method:** Test (verify code generation constraints)
+
+**Source:** AI Role Architecture
+
+---
+
+### 6.1.14 AI Micro-Interaction Requirements
+
+**REQ-AI-056: Micro-Interaction Pattern**
+
+**Statement:** All AI interactions shall follow the micro-interaction pattern:
+1. AI asks ONE question or proposes ONE change
+2. User answers or approves/rejects
+3. AI continues with next single question/change
+This pattern shall be enforced by the AI Controller.
+
+**Priority:** CRITICAL
+
+**Rationale:** Micro-interactions ensure AI never needs memory, enforce DO-178C "single change - human approval - audit trace", and match REQ-AI-001 through REQ-AI-019.
+
+**Verification Method:** Test (verify interaction pattern)
+
+**Source:** AI Architecture Best Practice (2025-11-22)
+
+---
+
+**REQ-AI-057: AI Response Storage**
+
+**Statement:** Every AI response shall be stored in the database (ai_messages table) immediately upon receipt, including:
+- Response content
+- Timestamp
+- Model version
+- Token count
+- Associated conversation and project IDs
+
+**Priority:** CRITICAL
+
+**Rationale:** Complete audit trail for DO-178C compliance and context rebuilding.
+
+**Verification Method:** Test (verify storage completeness)
+
+**Source:** Audit requirement
+
+---
+
+**REQ-AI-058: User Decision Storage**
+
+**Statement:** Every user decision (approve, reject, modify) on AI proposals shall be stored in the database with:
+- Decision type
+- Original AI proposal
+- User modification (if any)
+- Timestamp
+- User ID
+
+**Priority:** CRITICAL
+
+**Rationale:** Complete traceability of human decisions on AI proposals.
+
+**Verification Method:** Test (verify decision tracking)
+
+**Source:** DO-178C Traceability requirement
 
 ---
 
@@ -1621,6 +1871,20 @@ Within each subsystem, requirements are further categorized:
 **Verification Method:** Test (instance tracking)
 
 **Source:** Distributed development requirement (REQ-DB-062)
+
+---
+
+**REQ-BE-030: Draft Project Creation at Interview Start**
+
+**Statement:** The backend shall create a draft project record in the database at the start of the project initialization interview (first user message), before the interview is complete. The project shall have status "initializing" until the interview completes.
+
+**Priority:** HIGH
+
+**Rationale:** Early project creation enables: (1) immediate conversation persistence linked to project, (2) audit trail from start of interview, (3) recovery if interview is interrupted. Supports REQ-AI-028 session persistence and REQ-AI-037 context storage.
+
+**Verification Method:** Test (verify project created on first interview message)
+
+**Source:** Implementation decision (2025-11-22) - supports session persistence requirements
 
 ---
 

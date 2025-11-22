@@ -17,6 +17,8 @@ interface Message {
 interface InitializationContext {
   stage: 'initial' | 'foundation' | 'planning' | 'execution' | 'complete'
   data: Record<string, any>
+  project_id?: number
+  conversation_id?: number
 }
 
 export default function ProjectInitializationWizard() {
@@ -51,6 +53,8 @@ export default function ProjectInitializationWizard() {
       // Call backend project initialization endpoint (REQ-AI-032)
       const response = await axios.post('/api/v1/projects/initialize', {
         user_input: userMessage,
+        project_id: context.project_id || null,
+        conversation_id: context.conversation_id || null,
         context: context.stage === 'initial' ? null : context
       })
 
@@ -62,10 +66,12 @@ export default function ProjectInitializationWizard() {
         content: data.next_question
       }])
 
-      // Update context
+      // Update context with project_id and conversation_id from response
       setContext({
         stage: data.stage,
-        data: data.context || {}
+        data: data.context || {},
+        project_id: data.project_id,
+        conversation_id: data.conversation_id
       })
 
       // Check if interview is complete

@@ -1,5 +1,6 @@
 # AISET Specification Roleplay - Session Status
 
+**Document Type:** [Level 4] Specification Roleplay Session Record
 **Session Started:** 2025-11-15
 **Last Updated:** 2025-11-15
 **Status:** COMPLETED

@@ -1,10 +1,10 @@
 # AISET Database Schema
 ## Complete ARP4754 / DO-178C / DO-254 Compliance
 
-**Version:** 2.0
-**Date:** 2025-11-14
-**Total Tables:** 42
-**Migration:** 002_add_compliance_schema_v2.sql
+**Version:** 3.0
+**Date:** 2025-11-22
+**Total Tables:** 47
+**Migration:** schema_v1.sql (1600+ lines)
 
 ---
 

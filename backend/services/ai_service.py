@@ -14,6 +14,7 @@ import httpx
 import logging
 
 from config.settings import settings
+from services.ai_context_loader import ai_context_loader
 
 logger = logging.getLogger(__name__)
 
@@ -131,10 +132,21 @@ class LMStudioProvider(AIProvider):
             Dict containing response text and metadata
         """
         try:
-            # Prepend system message if provided
+            # Build messages - some models only support user/assistant roles
+            # So we prepend system prompt to the first user message instead
             full_messages = messages.copy()
-            if system_prompt:
-                full_messages.insert(0, {"role": "system", "content": system_prompt})
+            if system_prompt and full_messages:
+                # Find first user message and prepend system context
+                for i, msg in enumerate(full_messages):
+                    if msg["role"] == "user":
+                        full_messages[i] = {
+                            "role": "user",
+                            "content": f"[System Instructions]\n{system_prompt}\n\n[User Message]\n{msg['content']}"
+                        }
+                        break
+                else:
+                    # No user message found, add system as user message
+                    full_messages.insert(0, {"role": "user", "content": system_prompt})
 
             async with httpx.AsyncClient() as client:
                 response = await client.post(
@@ -145,7 +157,7 @@ class LMStudioProvider(AIProvider):
                         "temperature": temperature,
                         "max_tokens": max_tokens
                     },
-                    timeout=60.0
+                    timeout=180.0  # 3 minutes for slower local models
                 )
                 response.raise_for_status()
                 data = response.json()
@@ -426,7 +438,8 @@ Return ONLY a JSON array. Example:
     async def project_initialization_interview(
         self,
         user_input: str,
-        context: Optional[Dict[str, Any]] = None
+        context: Optional[Dict[str, Any]] = None,
+        conversation_history: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Conduct structured project initialization interview.
@@ -440,6 +453,7 @@ Return ONLY a JSON array. Example:
         Args:
             user_input: User's response to current question
             context: Current interview context including stage and collected data
+            conversation_history: Full conversation history for AI memory
 
         Returns:
             Dict containing:
@@ -451,92 +465,159 @@ Return ONLY a JSON array. Example:
         if context is None:
             context = {
                 "stage": "initial",
-                "data": {}
+                "data": {},
+                "answered": []  # Track which questions have been answered
             }
 
         current_stage = context.get("stage", "initial")
         collected_data = context.get("data", {})
+        answered_questions = context.get("answered", [])
 
-        # Define interview stages
+        # Define all interview questions with their IDs
+        FOUNDATION_QUESTIONS = ["safety_critical", "industry", "product_type"]
+        PLANNING_QUESTIONS = ["standards", "dev_process", "architecture", "req_source"]
+        EXECUTION_QUESTIONS = ["lifecycle_phase", "verification", "team_size"]
+
+        # Build conversation context
+        history_context = ""
+        if conversation_history:
+            history_context = f"""
+PREVIOUS CONVERSATION:
+{conversation_history}
+
+Remember what the user told you above. Acknowledge their answer briefly.
+"""
+
+        # Get AI instruction context for database/schema knowledge
+        ai_instruction_context = ai_context_loader.get_project_context()
+
+        # Determine what to ask next based on stage and answered questions
+        next_question_id = None
+
         if current_stage == "initial":
-            system_prompt = """You are helping to initialize a new systems engineering project.
+            # Initial stage - just acknowledge and move to foundation
+            system_prompt = f"""You are the AISET project initialization assistant.
 
-Your job is to conduct a structured interview to gather critical project information.
+{ai_instruction_context}
 
-INTERVIEW STAGES:
-1. **Foundation Questions**: Safety criticality, DAL/SIL level, domain, product type
-2. **Planning Questions**: Regulatory standards, development process, architecture
-3. **Execution Questions**: Lifecycle phase, verification approach, team organization
+{history_context}
 
-CURRENT STAGE: INITIAL (Open-ended question)
+The user described their project. Briefly acknowledge what they said (1 sentence),
+then ask: "Is this a safety-critical system that could cause harm if it fails?" (Yes/No)
 
-Ask the user: "Can you describe the project as precisely as you can? If you want, you can provide me a list of requirements or any design information."
-
-Listen carefully to their response and extract key information about:
-- What they're building
-- Whether it's safety-critical
-- Industry/domain (aerospace, automotive, medical, etc.)
-- Any standards they mention
-
-After their response, you'll move to Foundation Questions."""
+Keep your response SHORT - 2-3 sentences max."""
+            next_question_id = "safety_critical"
 
         elif current_stage == "foundation":
-            system_prompt = f"""You are conducting the FOUNDATION stage of project initialization.
+            # Find next unanswered foundation question
+            for q in FOUNDATION_QUESTIONS:
+                if q not in answered_questions:
+                    next_question_id = q
+                    break
 
-COLLECTED DATA SO FAR:
-{collected_data}
+            # Base context for all foundation prompts
+            base_context = f"""You are the AISET project initialization assistant.
+{ai_instruction_context}
+{history_context}
+"""
 
-FOUNDATION QUESTIONS (ask ONE at a time, following REQ-AI-001):
-1. "Is this system safety-critical?" (Yes/No)
-2. If safety-critical: "What is the required Development Assurance Level (DAL) or Safety Integrity Level (SIL)?"
-   - DAL: A (highest) to D (lowest) for aerospace (DO-178C)
-   - SIL: SIL-1 to SIL-4 for industrial (IEC 61508)
-   - ASIL: ASIL-A to ASIL-D for automotive (ISO 26262)
-3. "What industry or domain is this for?" (aerospace, automotive, medical, industrial, other)
-4. "What type of product are you developing?" (software, hardware, system integration, etc.)
-
-Extract information from the user's response and ask the NEXT foundation question.
-When all foundation questions are answered, inform them you'll move to Planning Questions."""
+            if next_question_id == "safety_critical":
+                system_prompt = f"""{base_context}
+Ask the user: "Is this a safety-critical system?" (Yes/No)
+Keep it SHORT."""
+            elif next_question_id == "industry":
+                system_prompt = f"""{base_context}
+Acknowledge their previous answer briefly. Then ask:
+"What industry is this for?" (aerospace, automotive, medical, industrial, office/commercial, other)
+Keep it SHORT."""
+            elif next_question_id == "product_type":
+                system_prompt = f"""{base_context}
+Acknowledge briefly. Then ask:
+"What type of product is this?" (hardware, software, system/both)
+Keep it SHORT."""
+            else:
+                # All foundation done, move to planning
+                system_prompt = f"""{base_context}
+Say: "Great! Moving to Planning Questions."
+Then ask: "Do any regulatory standards apply to this project?" (e.g., DO-178C, ISO standards, or "none")
+Keep it SHORT."""
+                next_question_id = "standards"
 
         elif current_stage == "planning":
-            system_prompt = f"""You are conducting the PLANNING stage of project initialization.
+            for q in PLANNING_QUESTIONS:
+                if q not in answered_questions:
+                    next_question_id = q
+                    break
 
-COLLECTED DATA SO FAR:
-{collected_data}
+            # Base context for planning prompts
+            base_context = f"""You are the AISET project initialization assistant.
+{ai_instruction_context}
+{history_context}
+"""
 
-PLANNING QUESTIONS (ask ONE at a time):
-1. "Which regulatory standards apply to your project?"
-   - Examples: DO-178C, DO-254, DO-160 (aerospace)
-   - ISO 26262 (automotive), IEC 62304 (medical), IEC 61508 (industrial)
-2. "What development process will you follow?"
-   - V-model, iterative, agile-compliant, waterfall
-3. "What is your system architecture approach?"
-   - Monolithic, modular, microservices, layered, etc.
-4. "Where will requirements come from?"
-   - Customer specs, standards, internal definition, existing system
-
-Extract information and ask the next planning question.
-When done, move to Execution Questions."""
+            if next_question_id == "standards":
+                system_prompt = f"""{base_context}
+Ask: "Do any regulatory standards apply?" (DO-178C, ISO 26262, IEC standards, or "none")
+SHORT response."""
+            elif next_question_id == "dev_process":
+                system_prompt = f"""{base_context}
+Acknowledge briefly. Ask: "What development process will you follow?" (V-model, iterative, agile, simple/sequential)
+SHORT."""
+            elif next_question_id == "architecture":
+                system_prompt = f"""{base_context}
+Acknowledge briefly. Ask: "What is your architecture approach?" (modular, layered, simple component-based)
+SHORT."""
+            elif next_question_id == "req_source":
+                system_prompt = f"""{base_context}
+Acknowledge briefly. Ask: "Where will requirements come from?" (customer specs, internal definition, user needs)
+SHORT."""
+            else:
+                system_prompt = f"""{base_context}
+Say: "Moving to Execution Questions."
+Ask: "What lifecycle phase is this project in?" (concept, requirements, design, implementation, testing)
+SHORT."""
+                next_question_id = "lifecycle_phase"
 
         elif current_stage == "execution":
-            system_prompt = f"""You are conducting the EXECUTION stage of project initialization.
+            for q in EXECUTION_QUESTIONS:
+                if q not in answered_questions:
+                    next_question_id = q
+                    break
 
-COLLECTED DATA SO FAR:
+            # Base context for execution prompts
+            base_context = f"""You are the AISET project initialization assistant.
+{ai_instruction_context}
+{history_context}
+"""
+
+            if next_question_id == "lifecycle_phase":
+                system_prompt = f"""{base_context}
+Ask: "What lifecycle phase?" (concept, requirements, design, implementation, testing)
+SHORT."""
+            elif next_question_id == "verification":
+                system_prompt = f"""{base_context}
+Acknowledge briefly. Ask: "What verification approach?" (testing, inspection, review, combination)
+SHORT."""
+            elif next_question_id == "team_size":
+                system_prompt = f"""{base_context}
+Acknowledge briefly. Ask: "How large is your team?" (solo, small 2-5, medium 6-20, large 20+)
+SHORT."""
+            else:
+                # All done - provide summary
+                system_prompt = f"""{base_context}
+
+COLLECTED DATA:
 {collected_data}
 
-EXECUTION QUESTIONS (ask ONE at a time):
-1. "What lifecycle phase are you in?"
-   - Concept, requirements, design, implementation, verification, certification, production
-2. "What is your verification approach?"
-   - Requirements-based testing, code coverage, formal methods, simulation
-3. "How large is your team?"
-   - Solo, small (2-5), medium (6-20), large (20+)
-
-Extract information and ask the next execution question.
-When all questions answered, summarize and mark interview as COMPLETE."""
+Provide a brief SUMMARY of the project configuration, then say:
+"Interview COMPLETE. Your project is now configured."
+"""
+                next_question_id = "complete"
 
         else:  # complete
-            system_prompt = """Summarize the project initialization information and confirm with the user that everything is correct."""
+            system_prompt = f"""You are the AISET project initialization assistant.
+{ai_instruction_context}
+The interview is complete. Thank the user."""
 
         # Prepare messages for AI
         messages = [{"role": "user", "content": user_input}]
@@ -544,26 +625,58 @@ When all questions answered, summarize and mark interview as COMPLETE."""
         response = await self.provider.chat(
             messages=messages,
             system_prompt=system_prompt,
-            temperature=0.7
+            temperature=0.7,
+            max_tokens=512  # Limit response length for faster generation
         )
 
-        # Parse response and determine next stage
-        # This is simplified; in production, you'd want more sophisticated parsing
+        # Initialize next_stage with current stage (default: stay in same stage)
         next_stage = current_stage
-        if "foundation" in current_stage and "planning" in response["content"].lower():
-            next_stage = "planning"
-        elif "planning" in current_stage and "execution" in response["content"].lower():
-            next_stage = "execution"
-        elif "execution" in current_stage and "complete" in response["content"].lower():
-            next_stage = "complete"
-        elif current_stage == "initial":
+
+        # Track the question that was just asked and determine stage transitions
+        if current_stage == "initial":
+            # First response, move to foundation
             next_stage = "foundation"
+        elif current_stage == "foundation":
+            # Mark question as answered and check for stage transition
+            if next_question_id == "safety_critical" and "safety_critical" not in answered_questions:
+                answered_questions.append("safety_critical")
+            elif next_question_id == "industry" and "industry" not in answered_questions:
+                answered_questions.append("industry")
+            elif next_question_id == "product_type" and "product_type" not in answered_questions:
+                answered_questions.append("product_type")
+            elif next_question_id == "standards":
+                # Moving to planning
+                next_stage = "planning"
+            # Stay in foundation otherwise (next_stage already set to current_stage)
+        elif current_stage == "planning":
+            if next_question_id == "standards" and "standards" not in answered_questions:
+                answered_questions.append("standards")
+            elif next_question_id == "dev_process" and "dev_process" not in answered_questions:
+                answered_questions.append("dev_process")
+            elif next_question_id == "architecture" and "architecture" not in answered_questions:
+                answered_questions.append("architecture")
+            elif next_question_id == "req_source" and "req_source" not in answered_questions:
+                answered_questions.append("req_source")
+            elif next_question_id == "lifecycle_phase":
+                next_stage = "execution"
+            # Stay in planning otherwise
+        elif current_stage == "execution":
+            if next_question_id == "lifecycle_phase" and "lifecycle_phase" not in answered_questions:
+                answered_questions.append("lifecycle_phase")
+            elif next_question_id == "verification" and "verification" not in answered_questions:
+                answered_questions.append("verification")
+            elif next_question_id == "team_size" and "team_size" not in answered_questions:
+                answered_questions.append("team_size")
+            elif next_question_id == "complete":
+                next_stage = "complete"
+            # Stay in execution otherwise
 
         return {
             "next_question": response["content"],
             "stage": next_stage,
             "complete": next_stage == "complete",
-            "model": self.model if hasattr(self, 'model') else self.provider.get_model_name()
+            "model": self.model if hasattr(self, 'model') else self.provider.get_model_name(),
+            "answered": answered_questions  # Return updated list
         }
 
     def get_current_model(self) -> str:

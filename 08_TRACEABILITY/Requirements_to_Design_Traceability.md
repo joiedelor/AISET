@@ -1,8 +1,8 @@
 # AISET - Requirements to Design Traceability Matrix
 
 **Document Type:** [Level 1] AISET Tool Development - DO-178C DAL D
-**Document Version:** 1.0.0
-**Last Updated:** 2025-11-16
+**Document Version:** 1.2.0
+**Last Updated:** 2025-11-22
 **Status:** Draft - In Review
 **Applicable Standards:** DO-178C Section 6.3 (Traceability)
 
@@ -27,8 +27,8 @@ This document provides bidirectional traceability between AISET requirements (RE
 
 ### 1.3 Document References
 
-- `REQUIREMENTS.md` v0.8.0 - 167 requirements (44 AI, 23 FE, 29 BE, 70 DB, 1 DOC)
-- `03_DESIGN/HLD_High_Level_Design.md` v1.0.0
+- `02_REQUIREMENTS/SRS_Software_Requirements_Specification.md` v1.2.0 - 182 requirements (58 AI, 23 FE, 30 BE, 70 DB, 1 DOC)
+- `03_DESIGN/HLD_High_Level_Design.md` v1.2.0
 - `03_DESIGN/LLD_Database_Schema_Design.md` v1.0.0
 
 ---
@@ -39,16 +39,16 @@ This document provides bidirectional traceability between AISET requirements (RE
 
 | Requirement Category | Total Requirements | HLD Coverage | LLD Coverage | Notes |
 |---------------------|-------------------|--------------|--------------|-------|
-| AI Requirements (REQ-AI) | 44 | 44 (100%) | N/A | Section 4.4 |
+| AI Requirements (REQ-AI) | 58 | 58 (100%) | N/A | Section 4.4-4.8 |
 | Frontend Requirements (REQ-FE) | 23 | 23 (100%) | N/A | Section 4.1 |
-| Backend Requirements (REQ-BE) | 29 | 29 (100%) | N/A | Section 4.2 |
+| Backend Requirements (REQ-BE) | 30 | 30 (100%) | N/A | Section 4.2 |
 | Database Requirements (REQ-DB) | 70 | 70 (100%) | 70 (100%) | Section 4.3 + LLD |
-| Documentation Requirements (REQ-DOC) | 1 | 1 (100%) | N/A | Planned |
-| **TOTAL** | **167** | **167 (100%)** | **70 (100%)** | **Complete** |
+| Documentation Requirements (REQ-DOC) | 1 | 1 (100%) | N/A | Implemented |
+| **TOTAL** | **182** | **182 (100%)** | **70 (100%)** | **Complete** |
 
 ### 2.2 Traceability Status
 
-✅ **All 167 requirements traced to design**
+✅ **All 182 requirements traced to design**
 ✅ **All 70 database requirements traced to tables/columns**
 ✅ **No orphan design elements** (all design elements trace to requirements)
 

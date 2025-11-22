@@ -1,5 +1,9 @@
 # AISET Specification Roleplay - Rules and Principles
 
+**Document Type:** [Level 4] Specification Roleplay Methodology
+**Version:** 1.0.0
+**Last Updated:** 2025-11-22
+
 ## Purpose
 This roleplay is used to specify the AISET tool by simulating user interactions with the AI. Through roleplay, we identify requirements for frontend, backend, database, and AI components.
 

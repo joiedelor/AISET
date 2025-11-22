@@ -1,6 +1,10 @@
 # AI_INSTRUCTION.md
 ## Database Schema and Data Formatting Guide for AISET AI
 
+**Document Type:** [Level 1] AISET Tool Development - DO-178C DAL D
+**Version:** 1.0.0
+**Last Updated:** 2025-11-22
+
 ---
 
 ## Document Purpose

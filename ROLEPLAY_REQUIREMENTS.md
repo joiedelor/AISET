@@ -1,8 +1,10 @@
 # AISET Tool Requirements Specification
 
+**Document Type:** [Level 4] Specification Roleplay - Working File
 **Document Version:** 0.8.0
 **Last Updated:** 2025-11-16
 **Status:** Draft - Specification Complete
+**Note:** This is the working source file. Official SRS is in 02_REQUIREMENTS/SRS_Software_Requirements_Specification.md
 
 ## Document Purpose
 This document captures all requirements for the AISET (AI Systems Engineering Tool) identified through specification roleplay and analysis.
