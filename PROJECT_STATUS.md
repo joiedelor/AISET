@@ -1,12 +1,22 @@
 # AISET - Project Status & Resume Guide
 
-**Last Updated:** 2025-11-23 16:00 UTC
+**Last Updated:** 2025-11-23 18:00 UTC
 **Version:** 0.2.5
 **Status:** ✅ PRODUCT STRUCTURE/BOM COMPLETE | PROTOTYPE 70% MATURE | SRS v1.2.0 (182 REQUIREMENTS) | DO-178C 60%
 
 ---
 
 ## 🚨 MAJOR MILESTONES ACHIEVED (2025-11-23)
+
+**✅ LM STUDIO PROMPT OPTIMIZATION (2025-11-23 18:00):**
+- **Bug Fix:** Mistral 7B crashing with "Channel Error" on second message
+- **Root Cause:** System prompts too large (2000-3000 tokens) for local models
+- **Solution:** Implemented dual prompt system in `ai_service.py`
+  - Local models (LM Studio): Compact prompts (10-20 tokens)
+  - Cloud models (Claude): Full context prompts with ai_context_loader
+- **Files Modified:** `backend/services/ai_service.py`
+
+---
 
 **✅ PRODUCT STRUCTURE/BOM MANAGEMENT COMPLETE (2025-11-23 16:00):**
 - **REQ-AI-038: Product Structure Extraction** - Fully implemented

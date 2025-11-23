@@ -478,9 +478,12 @@ Return ONLY a JSON array. Example:
         PLANNING_QUESTIONS = ["standards", "dev_process", "architecture", "req_source"]
         EXECUTION_QUESTIONS = ["lifecycle_phase", "verification", "team_size"]
 
-        # Build conversation context
+        # Check if using local LM Studio (needs shorter prompts)
+        is_local_model = settings.ai_service == "lmstudio"
+
+        # Build conversation context - shorter for local models
         history_context = ""
-        if conversation_history:
+        if conversation_history and not is_local_model:
             history_context = f"""
 PREVIOUS CONVERSATION:
 {conversation_history}
@@ -488,15 +491,18 @@ PREVIOUS CONVERSATION:
 Remember what the user told you above. Acknowledge their answer briefly.
 """
 
-        # Get AI instruction context for database/schema knowledge
-        ai_instruction_context = ai_context_loader.get_project_context()
+        # Get AI instruction context - skip for local models to reduce token count
+        ai_instruction_context = "" if is_local_model else ai_context_loader.get_project_context()
 
         # Determine what to ask next based on stage and answered questions
         next_question_id = None
 
         if current_stage == "initial":
             # Initial stage - just acknowledge and move to foundation
-            system_prompt = f"""You are the AISET project initialization assistant.
+            if is_local_model:
+                system_prompt = "You are a project setup assistant. Acknowledge the user's project briefly, then ask: Is this safety-critical? (Yes/No). Be SHORT."
+            else:
+                system_prompt = f"""You are the AISET project initialization assistant.
 
 {ai_instruction_context}
 
@@ -515,33 +521,43 @@ Keep your response SHORT - 2-3 sentences max."""
                     next_question_id = q
                     break
 
-            # Base context for all foundation prompts
-            base_context = f"""You are the AISET project initialization assistant.
+            if is_local_model:
+                # Compact prompts for local models
+                if next_question_id == "safety_critical":
+                    system_prompt = "Ask: Is this safety-critical? (Yes/No). SHORT."
+                elif next_question_id == "industry":
+                    system_prompt = "Acknowledge briefly. Ask: What industry? (aerospace/automotive/medical/industrial/other). SHORT."
+                elif next_question_id == "product_type":
+                    system_prompt = "Acknowledge briefly. Ask: Product type? (hardware/software/both). SHORT."
+                else:
+                    system_prompt = "Say: Moving to Planning. Ask: Any regulatory standards? (DO-178C/ISO/none). SHORT."
+                    next_question_id = "standards"
+            else:
+                # Full prompts for cloud models
+                base_context = f"""You are the AISET project initialization assistant.
 {ai_instruction_context}
 {history_context}
 """
-
-            if next_question_id == "safety_critical":
-                system_prompt = f"""{base_context}
+                if next_question_id == "safety_critical":
+                    system_prompt = f"""{base_context}
 Ask the user: "Is this a safety-critical system?" (Yes/No)
 Keep it SHORT."""
-            elif next_question_id == "industry":
-                system_prompt = f"""{base_context}
+                elif next_question_id == "industry":
+                    system_prompt = f"""{base_context}
 Acknowledge their previous answer briefly. Then ask:
 "What industry is this for?" (aerospace, automotive, medical, industrial, office/commercial, other)
 Keep it SHORT."""
-            elif next_question_id == "product_type":
-                system_prompt = f"""{base_context}
+                elif next_question_id == "product_type":
+                    system_prompt = f"""{base_context}
 Acknowledge briefly. Then ask:
 "What type of product is this?" (hardware, software, system/both)
 Keep it SHORT."""
-            else:
-                # All foundation done, move to planning
-                system_prompt = f"""{base_context}
+                else:
+                    system_prompt = f"""{base_context}
 Say: "Great! Moving to Planning Questions."
 Then ask: "Do any regulatory standards apply to this project?" (e.g., DO-178C, ISO standards, or "none")
 Keep it SHORT."""
-                next_question_id = "standards"
+                    next_question_id = "standards"
 
         elif current_stage == "planning":
             for q in PLANNING_QUESTIONS:
@@ -549,34 +565,45 @@ Keep it SHORT."""
                     next_question_id = q
                     break
 
-            # Base context for planning prompts
-            base_context = f"""You are the AISET project initialization assistant.
+            if is_local_model:
+                if next_question_id == "standards":
+                    system_prompt = "Ask: Regulatory standards? (DO-178C/ISO/IEC/none). SHORT."
+                elif next_question_id == "dev_process":
+                    system_prompt = "Acknowledge. Ask: Development process? (V-model/iterative/agile). SHORT."
+                elif next_question_id == "architecture":
+                    system_prompt = "Acknowledge. Ask: Architecture? (modular/layered/simple). SHORT."
+                elif next_question_id == "req_source":
+                    system_prompt = "Acknowledge. Ask: Requirements source? (customer/internal/user needs). SHORT."
+                else:
+                    system_prompt = "Say: Execution Questions. Ask: Lifecycle phase? (concept/requirements/design/testing). SHORT."
+                    next_question_id = "lifecycle_phase"
+            else:
+                base_context = f"""You are the AISET project initialization assistant.
 {ai_instruction_context}
 {history_context}
 """
-
-            if next_question_id == "standards":
-                system_prompt = f"""{base_context}
+                if next_question_id == "standards":
+                    system_prompt = f"""{base_context}
 Ask: "Do any regulatory standards apply?" (DO-178C, ISO 26262, IEC standards, or "none")
 SHORT response."""
-            elif next_question_id == "dev_process":
-                system_prompt = f"""{base_context}
+                elif next_question_id == "dev_process":
+                    system_prompt = f"""{base_context}
 Acknowledge briefly. Ask: "What development process will you follow?" (V-model, iterative, agile, simple/sequential)
 SHORT."""
-            elif next_question_id == "architecture":
-                system_prompt = f"""{base_context}
+                elif next_question_id == "architecture":
+                    system_prompt = f"""{base_context}
 Acknowledge briefly. Ask: "What is your architecture approach?" (modular, layered, simple component-based)
 SHORT."""
-            elif next_question_id == "req_source":
-                system_prompt = f"""{base_context}
+                elif next_question_id == "req_source":
+                    system_prompt = f"""{base_context}
 Acknowledge briefly. Ask: "Where will requirements come from?" (customer specs, internal definition, user needs)
 SHORT."""
-            else:
-                system_prompt = f"""{base_context}
+                else:
+                    system_prompt = f"""{base_context}
 Say: "Moving to Execution Questions."
 Ask: "What lifecycle phase is this project in?" (concept, requirements, design, implementation, testing)
 SHORT."""
-                next_question_id = "lifecycle_phase"
+                    next_question_id = "lifecycle_phase"
 
         elif current_stage == "execution":
             for q in EXECUTION_QUESTIONS:
@@ -584,27 +611,35 @@ SHORT."""
                     next_question_id = q
                     break
 
-            # Base context for execution prompts
-            base_context = f"""You are the AISET project initialization assistant.
+            if is_local_model:
+                if next_question_id == "lifecycle_phase":
+                    system_prompt = "Ask: Lifecycle phase? (concept/requirements/design/testing). SHORT."
+                elif next_question_id == "verification":
+                    system_prompt = "Acknowledge. Ask: Verification approach? (testing/inspection/review). SHORT."
+                elif next_question_id == "team_size":
+                    system_prompt = "Acknowledge. Ask: Team size? (solo/small/medium/large). SHORT."
+                else:
+                    system_prompt = "Summarize project config briefly. Say: Interview COMPLETE."
+                    next_question_id = "complete"
+            else:
+                base_context = f"""You are the AISET project initialization assistant.
 {ai_instruction_context}
 {history_context}
 """
-
-            if next_question_id == "lifecycle_phase":
-                system_prompt = f"""{base_context}
+                if next_question_id == "lifecycle_phase":
+                    system_prompt = f"""{base_context}
 Ask: "What lifecycle phase?" (concept, requirements, design, implementation, testing)
 SHORT."""
-            elif next_question_id == "verification":
-                system_prompt = f"""{base_context}
+                elif next_question_id == "verification":
+                    system_prompt = f"""{base_context}
 Acknowledge briefly. Ask: "What verification approach?" (testing, inspection, review, combination)
 SHORT."""
-            elif next_question_id == "team_size":
-                system_prompt = f"""{base_context}
+                elif next_question_id == "team_size":
+                    system_prompt = f"""{base_context}
 Acknowledge briefly. Ask: "How large is your team?" (solo, small 2-5, medium 6-20, large 20+)
 SHORT."""
-            else:
-                # All done - provide summary
-                system_prompt = f"""{base_context}
+                else:
+                    system_prompt = f"""{base_context}
 
 COLLECTED DATA:
 {collected_data}
@@ -612,10 +647,13 @@ COLLECTED DATA:
 Provide a brief SUMMARY of the project configuration, then say:
 "Interview COMPLETE. Your project is now configured."
 """
-                next_question_id = "complete"
+                    next_question_id = "complete"
 
         else:  # complete
-            system_prompt = f"""You are the AISET project initialization assistant.
+            if is_local_model:
+                system_prompt = "Interview complete. Thank the user."
+            else:
+                system_prompt = f"""You are the AISET project initialization assistant.
 {ai_instruction_context}
 The interview is complete. Thank the user."""
 
