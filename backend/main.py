@@ -26,7 +26,8 @@ from routers import (
     documents,
     users,
     health,
-    approval
+    approval,
+    auth
 )
 
 # Configure logging
@@ -75,6 +76,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(health.router, prefix="/api/v1", tags=["Health"])
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(users.router, prefix="/api/v1", tags=["Users"])
 app.include_router(projects.router, prefix="/api/v1", tags=["Projects"])
 app.include_router(requirements.router, prefix="/api/v1", tags=["Requirements"])

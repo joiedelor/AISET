@@ -8,6 +8,7 @@ This package contains all API routers for the AISET application.
 
 __all__ = [
     "health",
+    "auth",
     "projects",
     "requirements",
     "design_components",

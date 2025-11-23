@@ -75,6 +75,8 @@ aiset/
 │   │   ├── ai_service.py             # Claude/LM Studio integration (REQ-SERVICE-001)
 │   │   ├── ai_context_loader.py      # AI context management (REQ-AI-045-047)
 │   │   ├── approval_service.py       # AI approval workflow (REQ-AI-017-019)
+│   │   ├── auth_service.py           # JWT authentication (REQ-BE-003, REQ-BE-004)
+│   │   ├── auth_dependencies.py      # FastAPI auth dependencies (REQ-BE-003)
 │   │   ├── requirements_service.py   # Requirements management (REQ-SERVICE-002)
 │   │   ├── traceability_service.py   # Traceability management (REQ-SERVICE-003)
 │   │   └── document_service.py       # Document generation (REQ-SERVICE-004)
@@ -82,6 +84,7 @@ aiset/
 │   ├── 📂 routers/                   # API endpoints
 │   │   ├── __init__.py               # Routers export (REQ-API-001)
 │   │   ├── health.py                 # Health check (REQ-API-002)
+│   │   ├── auth.py                   # Authentication API (REQ-BE-003, REQ-BE-004)
 │   │   ├── projects.py               # Projects API (REQ-API-003)
 │   │   ├── requirements.py           # Requirements API (REQ-API-004)
 │   │   ├── ai_conversation.py        # AI chat API (REQ-API-005)

@@ -177,4 +177,70 @@ export const healthApi = {
   version: () => api.get('/version'),
 }
 
+// Authentication API (REQ-BE-003, REQ-BE-004)
+export interface LoginRequest {
+  username: string
+  password: string
+}
+
+export interface RegisterRequest {
+  username: string
+  email: string
+  password: string
+  full_name?: string
+}
+
+export interface AuthToken {
+  access_token: string
+  token_type: string
+  expires_in: number
+}
+
+export interface UserInfo {
+  id: number
+  username: string
+  email: string
+  full_name?: string
+  role: string
+  is_active: boolean
+  is_verified: boolean
+  created_at: string
+  last_login?: string
+}
+
+export const authApi = {
+  // Login with username and password
+  login: (data: LoginRequest) =>
+    api.post<AuthToken>('/auth/login', data),
+
+  // Register new user
+  register: (data: RegisterRequest) =>
+    api.post<UserInfo>('/auth/register', data),
+
+  // Get current user info
+  me: () =>
+    api.get<UserInfo>('/auth/me'),
+
+  // Refresh access token
+  refresh: () =>
+    api.post<AuthToken>('/auth/refresh'),
+
+  // Logout (client-side)
+  logout: () =>
+    api.post('/auth/logout'),
+
+  // Verify token validity
+  verify: () =>
+    api.get<{ valid: boolean; user_id?: number; username?: string; role?: string }>('/auth/verify'),
+}
+
+// Add auth token to requests
+export const setAuthToken = (token: string | null) => {
+  if (token) {
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+  } else {
+    delete api.defaults.headers.common['Authorization']
+  }
+}
+
 export default api
