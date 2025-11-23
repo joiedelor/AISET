@@ -510,6 +510,7 @@ find /home/joiedelor/aiset -name "*.Zone.Identifier" -delete
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.3 | 2025-11-23 | Added Product Structure/BOM Management (REQ-AI-038-040): configuration_item.py model, configuration_item_service.py, configuration_items.py router, ProductStructure.tsx page |
 | 2.2 | 2025-11-23 | Enhanced Traceability.tsx with interactive matrix visualization (REQ-FE-012) |
 | 2.1 | 2025-11-23 | Added JWT authentication files: auth_service.py, auth_dependencies.py, auth.py router, AuthContext.tsx, Login.tsx, Register.tsx |
 | 2.0 | 2025-11-15 | **MAJOR:** Separated 4 documentation levels. Added level tags to all documents. Created DOCUMENTATION_LEVELS.md. Reorganized SSOT table by level. Critical clarification: PROJECT_PLAN.md is Level 2 (user framework), NOT Level 1 (AISET development). |

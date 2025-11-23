@@ -58,7 +58,7 @@ aiset/
 │   ├── 📂 database/                  # Database layer
 │   │   └── connection.py             # SQLAlchemy setup (REQ-DB-001)
 │   │
-│   ├── 📂 models/                    # SQLAlchemy ORM Models (16 tables)
+│   ├── 📂 models/                    # SQLAlchemy ORM Models (18 tables)
 │   │   ├── __init__.py               # Models export (REQ-DB-MODEL-001)
 │   │   ├── project.py                # Projects (REQ-DB-MODEL-002)
 │   │   ├── requirement.py            # Requirements (REQ-DB-MODEL-003)
@@ -69,7 +69,8 @@ aiset/
 │   │   ├── user.py                   # Users & auth (REQ-DB-MODEL-008)
 │   │   ├── traceability.py           # Traceability links & gaps (REQ-DB-MODEL-009)
 │   │   ├── audit.py                  # Version history & change requests (REQ-DB-MODEL-010)
-│   │   └── document_export.py        # Document exports (REQ-DB-MODEL-011)
+│   │   ├── document_export.py        # Document exports (REQ-DB-MODEL-011)
+│   │   └── configuration_item.py     # Configuration Items & BOM (REQ-AI-038-040)
 │   │
 │   ├── 📂 services/                  # Business logic layer
 │   │   ├── ai_service.py             # Claude/LM Studio integration (REQ-SERVICE-001)
@@ -79,7 +80,8 @@ aiset/
 │   │   ├── auth_dependencies.py      # FastAPI auth dependencies (REQ-BE-003)
 │   │   ├── requirements_service.py   # Requirements management (REQ-SERVICE-002)
 │   │   ├── traceability_service.py   # Traceability management (REQ-SERVICE-003)
-│   │   └── document_service.py       # Document generation (REQ-SERVICE-004)
+│   │   ├── document_service.py       # Document generation (REQ-SERVICE-004)
+│   │   └── configuration_item_service.py  # Product Structure/BOM (REQ-AI-038-040)
 │   │
 │   ├── 📂 routers/                   # API endpoints
 │   │   ├── __init__.py               # Routers export (REQ-API-001)
@@ -93,7 +95,8 @@ aiset/
 │   │   ├── documents.py              # Document generation API (REQ-API-007)
 │   │   ├── design_components.py      # Design API (REQ-API-008)
 │   │   ├── test_cases.py             # Test cases API (REQ-API-009)
-│   │   └── users.py                  # Users API (REQ-API-010)
+│   │   ├── users.py                  # Users API (REQ-API-010)
+│   │   └── configuration_items.py    # Product Structure/BOM API (REQ-AI-038-040)
 │   │
 │   └── 📂 tests/                     # Test suites
 │       ├── __init__.py               # Tests initialization
@@ -135,10 +138,12 @@ aiset/
 │           ├── Dashboard.tsx         # Dashboard page (REQ-FRONTEND-008)
 │           ├── Projects.tsx          # Projects list (REQ-FRONTEND-009)
 │           ├── ProjectDetails.tsx    # Project details (REQ-FRONTEND-010)
+│           ├── ProjectInitializationWizard.tsx  # Project init wizard (REQ-AI-032-037)
 │           ├── Requirements.tsx      # Requirements page (REQ-FRONTEND-011)
 │           ├── Chat.tsx              # AI chat page (REQ-FRONTEND-012)
 │           ├── Traceability.tsx      # Traceability matrix (REQ-FRONTEND-013)
 │           ├── Documents.tsx         # Document generation (REQ-FRONTEND-014)
+│           ├── ProductStructure.tsx  # Product Structure/BOM tree (REQ-AI-038-040)
 │           ├── Login.tsx             # Login page (REQ-BE-003)
 │           └── Register.tsx          # Registration page (REQ-BE-003)
 │
@@ -303,9 +308,9 @@ aiset/
 
 ---
 
-**Status:** ✅ Prototype 67% Complete
-**Version:** 0.2.4
-**Last Updated:** 2025-11-23 (Requirements 182, DO-178C 58%)
+**Status:** ✅ Prototype 70% Complete
+**Version:** 0.2.5
+**Last Updated:** 2025-11-23 (Requirements 182, DO-178C 60%)
 
 **⚠️ IMPORTANT:** All folders and sections now tagged with documentation levels.
 **See:** `DOCUMENTATION_LEVELS.md` for level definitions and anti-mixing guidelines.
