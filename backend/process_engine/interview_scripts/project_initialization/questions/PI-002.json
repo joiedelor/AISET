@@ -1,0 +1,37 @@
+{
+  "question_id": "PI-002",
+  "phase": "PROJECT_INITIALIZATION",
+  "sub_phase": "PI_INITIAL",
+  "order": 2,
+
+  "variants": [
+    "Please describe your project in a few sentences.",
+    "What is this project about? Please provide a brief description.",
+    "Can you tell me what this project aims to accomplish?"
+  ],
+
+  "help_text": "Provide a clear, concise description of what this project will develop. Include the main purpose and key functionality.",
+
+  "data_type": "textarea",
+  "required": true,
+
+  "validation": {
+    "rules": [
+      {"type": "required", "params": {}},
+      {"type": "min_length", "params": {"min": 20, "error": "Please provide at least 20 characters to describe your project"}}
+    ]
+  },
+
+  "target": {
+    "table": "projects",
+    "column": "description",
+    "transformation": "strip"
+  },
+
+  "on_answer": {
+    "default": {
+      "next_question": "PI-003",
+      "set_context": {"project_description": "$value"}
+    }
+  }
+}

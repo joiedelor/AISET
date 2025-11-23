@@ -1,0 +1,47 @@
+{
+  "question_id": "PI-005",
+  "phase": "PROJECT_INITIALIZATION",
+  "sub_phase": "PI_DOMAIN",
+  "order": 5,
+
+  "variants": [
+    "What type of product are you developing?",
+    "What kind of system or component is this?",
+    "Please describe the type of product."
+  ],
+
+  "help_text": "Select the type that best describes what you are developing. This affects the development process template used.",
+
+  "data_type": "selection",
+  "required": true,
+
+  "options": [
+    {"value": "complete_system", "label": "Complete System", "description": "A full system with multiple subsystems (e.g., flight management system, vehicle platform)"},
+    {"value": "subsystem", "label": "Subsystem", "description": "A major component within a larger system (e.g., navigation subsystem, brake control unit)"},
+    {"value": "software", "label": "Software Application", "description": "Standalone software or embedded software component"},
+    {"value": "hardware", "label": "Hardware Component", "description": "Electronic hardware, circuit boards, FPGAs"},
+    {"value": "mixed", "label": "Mixed Hardware/Software", "description": "Integrated hardware and software product"},
+    {"value": "equipment", "label": "Line Replaceable Unit (LRU)", "description": "Field-replaceable equipment or unit"},
+    {"value": "component", "label": "Component/Part", "description": "Individual component or part (mechanical, electrical)"}
+  ],
+
+  "validation": {
+    "rules": [
+      {"type": "required", "params": {}},
+      {"type": "allowed_values", "params": {"values": ["complete_system", "subsystem", "software", "hardware", "mixed", "equipment", "component"]}}
+    ]
+  },
+
+  "target": {
+    "table": "projects",
+    "column": "product_type",
+    "transformation": "lowercase"
+  },
+
+  "on_answer": {
+    "default": {
+      "next_question": "PI-006",
+      "set_context": {"product_type": "$value"}
+    }
+  }
+}

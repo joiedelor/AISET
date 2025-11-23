@@ -1,0 +1,39 @@
+{
+  "question_id": "PI-001",
+  "phase": "PROJECT_INITIALIZATION",
+  "sub_phase": "PI_INITIAL",
+  "order": 1,
+
+  "variants": [
+    "What is the name of your project?",
+    "Please provide a name for your project.",
+    "What would you like to call this project?"
+  ],
+
+  "help_text": "Choose a clear, descriptive name that identifies the project. This will be used throughout all documentation.",
+
+  "data_type": "text",
+  "required": true,
+
+  "validation": {
+    "rules": [
+      {"type": "required", "params": {}},
+      {"type": "min_length", "params": {"min": 3, "error": "Project name must be at least 3 characters"}},
+      {"type": "max_length", "params": {"max": 255, "error": "Project name must be less than 255 characters"}},
+      {"type": "pattern", "params": {"pattern": "^[a-zA-Z0-9][a-zA-Z0-9\\s\\-_]+$", "error": "Project name must start with a letter or number and contain only letters, numbers, spaces, hyphens, or underscores"}}
+    ]
+  },
+
+  "target": {
+    "table": "projects",
+    "column": "name",
+    "transformation": "strip"
+  },
+
+  "on_answer": {
+    "default": {
+      "next_question": "PI-002",
+      "set_context": {"project_name": "$value"}
+    }
+  }
+}

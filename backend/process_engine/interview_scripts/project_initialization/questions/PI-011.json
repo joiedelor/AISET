@@ -1,0 +1,45 @@
+{
+  "question_id": "PI-011",
+  "phase": "PROJECT_INITIALIZATION",
+  "sub_phase": "PI_STANDARDS",
+  "order": 11,
+
+  "variants": [
+    "Is certification by a regulatory authority required?",
+    "Will this product require certification approval?",
+    "Does this project need regulatory certification?"
+  ],
+
+  "help_text": "Certification involves formal approval by authorities (FAA, EASA, FDA, etc.). This significantly affects documentation and process requirements.",
+
+  "data_type": "selection",
+  "required": true,
+
+  "options": [
+    {"value": "yes_required", "label": "Yes, certification required", "description": "Must obtain formal regulatory approval"},
+    {"value": "yes_supplier", "label": "Yes, as part of customer certification", "description": "Our deliverables support customer's certification"},
+    {"value": "no_internal", "label": "No, internal standards only", "description": "Following standards for quality, not certification"},
+    {"value": "unknown", "label": "Not yet determined", "description": "Certification requirements being evaluated"}
+  ],
+
+  "validation": {
+    "rules": [
+      {"type": "required", "params": {}},
+      {"type": "allowed_values", "params": {"values": ["yes_required", "yes_supplier", "no_internal", "unknown"]}}
+    ]
+  },
+
+  "target": {
+    "table": "projects",
+    "column": "initialization_context",
+    "transformation": "json_merge",
+    "json_path": "certification_required"
+  },
+
+  "on_answer": {
+    "default": {
+      "next_question": "PI-012",
+      "set_context": {"certification_required": "$value"}
+    }
+  }
+}

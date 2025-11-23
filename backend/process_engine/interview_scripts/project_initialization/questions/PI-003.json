@@ -1,0 +1,42 @@
+{
+  "question_id": "PI-003",
+  "phase": "PROJECT_INITIALIZATION",
+  "sub_phase": "PI_INITIAL",
+  "order": 3,
+
+  "variants": [
+    "What is a short project code or identifier? (e.g., PROJ-2024-001)",
+    "Please provide a project code for internal reference.",
+    "What identifier should we use for this project?"
+  ],
+
+  "help_text": "A unique identifier used in documents and traceability. Format: letters, numbers, and hyphens.",
+
+  "data_type": "text",
+  "required": false,
+
+  "validation": {
+    "rules": [
+      {"type": "pattern", "params": {"pattern": "^[A-Za-z0-9\\-]+$", "error": "Project code can only contain letters, numbers, and hyphens"}}
+    ]
+  },
+
+  "target": {
+    "table": "projects",
+    "column": "project_code",
+    "transformation": "uppercase"
+  },
+
+  "auto_generate": {
+    "enabled": true,
+    "format": "{DOMAIN_PREFIX}-{YEAR}-{SEQ:03d}",
+    "description": "Auto-generate if not provided"
+  },
+
+  "on_answer": {
+    "default": {
+      "next_question": "PI-004",
+      "set_context": {"project_code": "$value"}
+    }
+  }
+}

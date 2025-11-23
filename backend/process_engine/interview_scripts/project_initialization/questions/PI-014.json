@@ -1,0 +1,47 @@
+{
+  "question_id": "PI-014",
+  "phase": "PROJECT_INITIALIZATION",
+  "sub_phase": "PI_PROCESS",
+  "order": 14,
+
+  "variants": [
+    "Where do requirements currently come from?",
+    "What is the source of your requirements?",
+    "How are requirements provided to this project?"
+  ],
+
+  "help_text": "Understanding requirement sources helps set up proper traceability and change management.",
+
+  "data_type": "multiselect",
+  "required": true,
+
+  "options": [
+    {"value": "system_requirements", "label": "System Requirements Specification", "description": "Formal SRS from systems engineering"},
+    {"value": "customer_spec", "label": "Customer Specification", "description": "Requirements from customer/contract"},
+    {"value": "standards", "label": "Standard Requirements", "description": "Requirements derived from standards"},
+    {"value": "stakeholder_interviews", "label": "Stakeholder Interviews", "description": "Requirements from user/stakeholder input"},
+    {"value": "legacy_system", "label": "Legacy System", "description": "Requirements from existing system"},
+    {"value": "market_research", "label": "Market Research", "description": "Requirements from market analysis"},
+    {"value": "not_defined", "label": "Not yet defined", "description": "Requirements sources being identified"}
+  ],
+
+  "validation": {
+    "rules": [
+      {"type": "required", "params": {}},
+      {"type": "min_selections", "params": {"min": 1, "error": "Please select at least one source"}}
+    ]
+  },
+
+  "target": {
+    "table": "projects",
+    "column": "requirements_source",
+    "transformation": "array_to_csv"
+  },
+
+  "on_answer": {
+    "default": {
+      "next_question": "PI-015",
+      "set_context": {"requirements_sources": "$value"}
+    }
+  }
+}

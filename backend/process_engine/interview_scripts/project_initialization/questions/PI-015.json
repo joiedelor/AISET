@@ -1,0 +1,46 @@
+{
+  "question_id": "PI-015",
+  "phase": "PROJECT_INITIALIZATION",
+  "sub_phase": "PI_TEAM",
+  "order": 15,
+
+  "variants": [
+    "How many people are on the development team?",
+    "What is the approximate team size?",
+    "How many engineers will work on this project?"
+  ],
+
+  "help_text": "Team size affects process tailoring, review strategies, and work distribution.",
+
+  "data_type": "selection",
+  "required": true,
+
+  "options": [
+    {"value": "solo", "label": "Solo (1 person)", "description": "Single developer/engineer"},
+    {"value": "small", "label": "Small (2-5 people)", "description": "Small team"},
+    {"value": "medium", "label": "Medium (6-15 people)", "description": "Medium-sized team"},
+    {"value": "large", "label": "Large (16-50 people)", "description": "Large team"},
+    {"value": "enterprise", "label": "Enterprise (50+ people)", "description": "Enterprise-scale team"}
+  ],
+
+  "validation": {
+    "rules": [
+      {"type": "required", "params": {}},
+      {"type": "allowed_values", "params": {"values": ["solo", "small", "medium", "large", "enterprise"]}}
+    ]
+  },
+
+  "target": {
+    "table": "projects",
+    "column": "initialization_context",
+    "transformation": "json_merge",
+    "json_path": "team_size"
+  },
+
+  "on_answer": {
+    "default": {
+      "next_question": "PI-016",
+      "set_context": {"team_size": "$value"}
+    }
+  }
+}

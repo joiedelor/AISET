@@ -1,0 +1,134 @@
+{
+  "question_id": "PI-007",
+  "phase": "PROJECT_INITIALIZATION",
+  "sub_phase": "PI_SAFETY",
+  "order": 7,
+
+  "variants": [
+    "What is the required assurance level for this system?",
+    "What safety integrity or design assurance level applies?",
+    "What certification level is required?"
+  ],
+
+  "help_text": "The assurance level determines the rigor of development and verification activities. Higher levels (DAL A, ASIL D, SIL 4) require more rigorous processes.",
+
+  "data_type": "selection",
+  "required": true,
+
+  "options": [
+    {
+      "value": "DAL_A",
+      "label": "DAL A (Aerospace)",
+      "description": "Catastrophic failure condition - most rigorous",
+      "condition": {"context.industry": ["aerospace"]}
+    },
+    {
+      "value": "DAL_B",
+      "label": "DAL B (Aerospace)",
+      "description": "Hazardous/Severe-Major failure condition",
+      "condition": {"context.industry": ["aerospace"]}
+    },
+    {
+      "value": "DAL_C",
+      "label": "DAL C (Aerospace)",
+      "description": "Major failure condition",
+      "condition": {"context.industry": ["aerospace"]}
+    },
+    {
+      "value": "DAL_D",
+      "label": "DAL D (Aerospace)",
+      "description": "Minor failure condition",
+      "condition": {"context.industry": ["aerospace"]}
+    },
+    {
+      "value": "ASIL_D",
+      "label": "ASIL D (Automotive)",
+      "description": "Highest automotive safety integrity",
+      "condition": {"context.industry": ["automotive"]}
+    },
+    {
+      "value": "ASIL_C",
+      "label": "ASIL C (Automotive)",
+      "description": "High automotive safety integrity",
+      "condition": {"context.industry": ["automotive"]}
+    },
+    {
+      "value": "ASIL_B",
+      "label": "ASIL B (Automotive)",
+      "description": "Medium automotive safety integrity",
+      "condition": {"context.industry": ["automotive"]}
+    },
+    {
+      "value": "ASIL_A",
+      "label": "ASIL A (Automotive)",
+      "description": "Low automotive safety integrity",
+      "condition": {"context.industry": ["automotive"]}
+    },
+    {
+      "value": "SIL_4",
+      "label": "SIL 4 (IEC 61508)",
+      "description": "Highest safety integrity level",
+      "condition": {"context.industry": ["industrial", "railway", "nuclear"]}
+    },
+    {
+      "value": "SIL_3",
+      "label": "SIL 3 (IEC 61508)",
+      "description": "High safety integrity level",
+      "condition": {"context.industry": ["industrial", "railway", "nuclear"]}
+    },
+    {
+      "value": "SIL_2",
+      "label": "SIL 2 (IEC 61508)",
+      "description": "Medium safety integrity level",
+      "condition": {"context.industry": ["industrial", "railway", "nuclear"]}
+    },
+    {
+      "value": "SIL_1",
+      "label": "SIL 1 (IEC 61508)",
+      "description": "Low safety integrity level",
+      "condition": {"context.industry": ["industrial", "railway", "nuclear"]}
+    },
+    {
+      "value": "CLASS_C",
+      "label": "Class C (IEC 62304)",
+      "description": "Could result in death or serious injury",
+      "condition": {"context.industry": ["medical"]}
+    },
+    {
+      "value": "CLASS_B",
+      "label": "Class B (IEC 62304)",
+      "description": "Could result in non-serious injury",
+      "condition": {"context.industry": ["medical"]}
+    },
+    {
+      "value": "CLASS_A",
+      "label": "Class A (IEC 62304)",
+      "description": "No injury or damage to health possible",
+      "condition": {"context.industry": ["medical"]}
+    },
+    {
+      "value": "UNKNOWN",
+      "label": "Not yet determined",
+      "description": "Will be determined through hazard analysis"
+    }
+  ],
+
+  "validation": {
+    "rules": [
+      {"type": "required", "params": {}}
+    ]
+  },
+
+  "target": {
+    "table": "projects",
+    "column": "dal_level",
+    "transformation": null
+  },
+
+  "on_answer": {
+    "default": {
+      "next_question": "PI-008",
+      "set_context": {"assurance_level": "$value"}
+    }
+  }
+}

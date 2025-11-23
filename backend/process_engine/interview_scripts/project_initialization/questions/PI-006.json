@@ -1,0 +1,55 @@
+{
+  "question_id": "PI-006",
+  "phase": "PROJECT_INITIALIZATION",
+  "sub_phase": "PI_SAFETY",
+  "order": 6,
+
+  "variants": [
+    "Is this a safety-critical system?",
+    "Does this system have safety implications?",
+    "Could a failure of this system cause harm to people or property?"
+  ],
+
+  "help_text": "A safety-critical system is one where a failure could result in death, injury, or significant property damage. This determines the level of rigor required in development.",
+
+  "data_type": "selection",
+  "required": true,
+
+  "options": [
+    {"value": "yes", "label": "Yes, it is safety-critical", "description": "System failure could cause harm"},
+    {"value": "no", "label": "No, it is not safety-critical", "description": "System failure would not cause harm"},
+    {"value": "unknown", "label": "I'm not sure", "description": "Need help determining safety criticality"}
+  ],
+
+  "validation": {
+    "rules": [
+      {"type": "required", "params": {}},
+      {"type": "allowed_values", "params": {"values": ["yes", "no", "unknown"]}}
+    ]
+  },
+
+  "target": {
+    "table": "projects",
+    "column": "safety_critical",
+    "transformation": "boolean_from_yes_no"
+  },
+
+  "on_answer": {
+    "yes": {
+      "next_question": "PI-007",
+      "set_context": {"is_safety_critical": true}
+    },
+    "no": {
+      "next_question": "PI-010",
+      "set_context": {"is_safety_critical": false},
+      "auto_set": [
+        {"table": "projects", "column": "dal_level", "value": null},
+        {"table": "projects", "column": "sil_level", "value": null}
+      ]
+    },
+    "unknown": {
+      "next_question": "PI-006-CLARIFY",
+      "set_context": {"safety_needs_clarification": true}
+    }
+  }
+}

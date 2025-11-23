@@ -1,0 +1,48 @@
+{
+  "question_id": "PI-012",
+  "phase": "PROJECT_INITIALIZATION",
+  "sub_phase": "PI_PROCESS",
+  "order": 12,
+
+  "variants": [
+    "What development process model will you follow?",
+    "Which lifecycle model best describes your approach?",
+    "What is your preferred development methodology?"
+  ],
+
+  "help_text": "Select the development process that matches your organization's approach. Safety-critical projects typically use V-model or iterative approaches with formal verification.",
+
+  "data_type": "selection",
+  "required": true,
+
+  "options": [
+    {"value": "v_model", "label": "V-Model", "description": "Traditional sequential with verification at each level - standard for safety-critical"},
+    {"value": "iterative", "label": "Iterative/Incremental", "description": "Multiple iterations with progressive refinement"},
+    {"value": "agile_safe", "label": "Agile (SAFe/Safety-compliant)", "description": "Agile with safety process integration"},
+    {"value": "waterfall", "label": "Waterfall", "description": "Traditional sequential development"},
+    {"value": "spiral", "label": "Spiral Model", "description": "Risk-driven iterative development"},
+    {"value": "hybrid", "label": "Hybrid/Custom", "description": "Combination of approaches"},
+    {"value": "undefined", "label": "Not yet defined", "description": "Will be determined during planning"}
+  ],
+
+  "validation": {
+    "rules": [
+      {"type": "required", "params": {}},
+      {"type": "allowed_values", "params": {"values": ["v_model", "iterative", "agile_safe", "waterfall", "spiral", "hybrid", "undefined"]}}
+    ]
+  },
+
+  "target": {
+    "table": "projects",
+    "column": "initialization_context",
+    "transformation": "json_merge",
+    "json_path": "development_process"
+  },
+
+  "on_answer": {
+    "default": {
+      "next_question": "PI-013",
+      "set_context": {"development_process": "$value"}
+    }
+  }
+}

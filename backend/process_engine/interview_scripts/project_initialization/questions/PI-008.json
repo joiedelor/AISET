@@ -1,0 +1,46 @@
+{
+  "question_id": "PI-008",
+  "phase": "PROJECT_INITIALIZATION",
+  "sub_phase": "PI_SAFETY",
+  "order": 8,
+
+  "variants": [
+    "Has a system-level safety assessment been performed?",
+    "Is there an existing Functional Hazard Assessment (FHA) or similar analysis?",
+    "Has the system safety analysis been completed?"
+  ],
+
+  "help_text": "System-level safety assessments (FHA, FMEA, etc.) provide the basis for software and hardware assurance levels. If not done, this should be performed as part of systems engineering.",
+
+  "data_type": "selection",
+  "required": true,
+
+  "options": [
+    {"value": "yes_complete", "label": "Yes, safety assessment is complete", "description": "FHA/FMEA or equivalent has been performed and documented"},
+    {"value": "yes_partial", "label": "Yes, but incomplete", "description": "Some analysis done but not comprehensive"},
+    {"value": "in_progress", "label": "Currently in progress", "description": "Analysis is being performed"},
+    {"value": "planned", "label": "Planned but not started", "description": "Will be done as part of this project"},
+    {"value": "not_applicable", "label": "Not applicable", "description": "This is not a safety-critical system"}
+  ],
+
+  "validation": {
+    "rules": [
+      {"type": "required", "params": {}},
+      {"type": "allowed_values", "params": {"values": ["yes_complete", "yes_partial", "in_progress", "planned", "not_applicable"]}}
+    ]
+  },
+
+  "target": {
+    "table": "projects",
+    "column": "initialization_context",
+    "transformation": "json_merge",
+    "json_path": "safety_assessment_status"
+  },
+
+  "on_answer": {
+    "default": {
+      "next_question": "PI-009",
+      "set_context": {"safety_assessment_status": "$value"}
+    }
+  }
+}

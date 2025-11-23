@@ -1,0 +1,59 @@
+{
+  "question_id": "PI-010",
+  "phase": "PROJECT_INITIALIZATION",
+  "sub_phase": "PI_STANDARDS",
+  "order": 10,
+
+  "variants": [
+    "Which regulatory standards apply to this project?",
+    "What standards must this project comply with?",
+    "Please select all applicable standards and regulations."
+  ],
+
+  "help_text": "Select all standards that apply. Multiple standards often apply to a single project (e.g., DO-178C for software AND DO-254 for hardware in an avionics system).",
+
+  "data_type": "multiselect",
+  "required": true,
+
+  "options": [
+    {"value": "DO-178C", "label": "DO-178C / ED-12C", "description": "Airborne software (required for aviation)", "condition": {"context.industry": ["aerospace"]}},
+    {"value": "DO-254", "label": "DO-254 / ED-80", "description": "Airborne hardware (complex electronics)", "condition": {"context.industry": ["aerospace"]}},
+    {"value": "ARP4754A", "label": "ARP4754A / ED-79A", "description": "Aircraft systems development process", "condition": {"context.industry": ["aerospace"]}},
+    {"value": "ARP4761", "label": "ARP4761", "description": "Safety assessment process", "condition": {"context.industry": ["aerospace"]}},
+    {"value": "DO-330", "label": "DO-330 / ED-215", "description": "Tool qualification", "condition": {"context.industry": ["aerospace"]}},
+    {"value": "ISO_26262", "label": "ISO 26262", "description": "Automotive functional safety"},
+    {"value": "IEC_61508", "label": "IEC 61508", "description": "Functional safety (general/industrial)"},
+    {"value": "IEC_62304", "label": "IEC 62304", "description": "Medical device software lifecycle", "condition": {"context.industry": ["medical"]}},
+    {"value": "ISO_14971", "label": "ISO 14971", "description": "Medical device risk management", "condition": {"context.industry": ["medical"]}},
+    {"value": "EN_50128", "label": "EN 50128", "description": "Railway software", "condition": {"context.industry": ["railway"]}},
+    {"value": "EN_50129", "label": "EN 50129", "description": "Railway safety systems", "condition": {"context.industry": ["railway"]}},
+    {"value": "MIL_STD_882", "label": "MIL-STD-882", "description": "System safety (defense)", "condition": {"context.industry": ["defense"]}},
+    {"value": "ASPICE", "label": "Automotive SPICE", "description": "Automotive process assessment"},
+    {"value": "CMMI", "label": "CMMI", "description": "Capability Maturity Model Integration"},
+    {"value": "ISO_9001", "label": "ISO 9001", "description": "Quality management system"},
+    {"value": "AS9100", "label": "AS9100", "description": "Aerospace quality management"},
+    {"value": "OTHER", "label": "Other (specify)", "description": "Other standards not listed"},
+    {"value": "NONE", "label": "No specific standards", "description": "General best practices only"}
+  ],
+
+  "validation": {
+    "rules": [
+      {"type": "required", "params": {}},
+      {"type": "min_selections", "params": {"min": 1, "error": "Please select at least one option"}}
+    ]
+  },
+
+  "target": {
+    "table": "projects",
+    "column": "initialization_context",
+    "transformation": "json_merge",
+    "json_path": "applicable_standards"
+  },
+
+  "on_answer": {
+    "default": {
+      "next_question": "PI-011",
+      "set_context": {"applicable_standards": "$value"}
+    }
+  }
+}

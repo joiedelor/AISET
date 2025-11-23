@@ -28,7 +28,8 @@ from routers import (
     health,
     approval,
     auth,
-    configuration_items
+    configuration_items,
+    process_engine
 )
 
 # Configure logging
@@ -88,6 +89,7 @@ app.include_router(approval.router, prefix="/api/v1/approval", tags=["Approval W
 app.include_router(traceability.router, prefix="/api/v1", tags=["Traceability"])
 app.include_router(documents.router, prefix="/api/v1", tags=["Documents"])
 app.include_router(configuration_items.router, prefix="/api/v1", tags=["Configuration Items"])
+app.include_router(process_engine.router, prefix="/api/v1", tags=["Process Engine"])
 
 
 @app.get("/")

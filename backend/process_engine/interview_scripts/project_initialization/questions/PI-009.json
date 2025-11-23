@@ -1,0 +1,35 @@
+{
+  "question_id": "PI-009",
+  "phase": "PROJECT_INITIALIZATION",
+  "sub_phase": "PI_SAFETY",
+  "order": 9,
+
+  "variants": [
+    "Are there any specific failure conditions or safety requirements already identified?",
+    "What are the key safety concerns for this system?",
+    "Please describe any known safety requirements or hazards."
+  ],
+
+  "help_text": "List any known failure conditions, safety requirements, or hazards that have been identified. This helps prioritize safety-critical functionality.",
+
+  "data_type": "textarea",
+  "required": false,
+
+  "validation": {
+    "rules": []
+  },
+
+  "target": {
+    "table": "projects",
+    "column": "initialization_context",
+    "transformation": "json_merge",
+    "json_path": "known_safety_requirements"
+  },
+
+  "on_answer": {
+    "default": {
+      "next_question": "PI-010",
+      "set_context": {"known_safety_requirements": "$value"}
+    }
+  }
+}

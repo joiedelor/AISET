@@ -18,5 +18,6 @@ __all__ = [
     "traceability",
     "documents",
     "users",
-    "configuration_items"
+    "configuration_items",
+    "process_engine"
 ]

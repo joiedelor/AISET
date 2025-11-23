@@ -1,0 +1,69 @@
+{
+  "question_id": "PI-006-CLARIFY",
+  "phase": "PROJECT_INITIALIZATION",
+  "sub_phase": "PI_SAFETY",
+  "order": 6.1,
+
+  "variants": [
+    "Let me help you determine safety criticality. Answer these questions: Could a malfunction of this system directly or indirectly lead to injury or death?",
+    "To help determine safety criticality: What is the worst-case scenario if this system fails completely?"
+  ],
+
+  "help_text": "Consider: (1) Could system failure cause physical harm? (2) Is the system part of a safety chain? (3) Are there regulatory requirements for safety certification?",
+
+  "data_type": "selection",
+  "required": true,
+
+  "options": [
+    {"value": "direct_harm", "label": "Yes, could cause direct harm to people", "description": "System directly controls safety functions"},
+    {"value": "indirect_harm", "label": "Yes, could indirectly contribute to harm", "description": "System affects safety through other systems"},
+    {"value": "property_damage", "label": "Property/equipment damage only", "description": "No personal injury, but significant damage possible"},
+    {"value": "economic_loss", "label": "Economic or operational loss only", "description": "No physical harm or major damage"},
+    {"value": "minimal_impact", "label": "Minimal impact if it fails", "description": "System failure has negligible consequences"}
+  ],
+
+  "validation": {
+    "rules": [
+      {"type": "required", "params": {}},
+      {"type": "allowed_values", "params": {"values": ["direct_harm", "indirect_harm", "property_damage", "economic_loss", "minimal_impact"]}}
+    ]
+  },
+
+  "on_answer": {
+    "direct_harm": {
+      "next_question": "PI-007",
+      "set_context": {"is_safety_critical": true, "safety_impact": "direct_harm"},
+      "auto_set": [
+        {"table": "projects", "column": "safety_critical", "value": true}
+      ]
+    },
+    "indirect_harm": {
+      "next_question": "PI-007",
+      "set_context": {"is_safety_critical": true, "safety_impact": "indirect_harm"},
+      "auto_set": [
+        {"table": "projects", "column": "safety_critical", "value": true}
+      ]
+    },
+    "property_damage": {
+      "next_question": "PI-007",
+      "set_context": {"is_safety_critical": true, "safety_impact": "property_damage"},
+      "auto_set": [
+        {"table": "projects", "column": "safety_critical", "value": true}
+      ]
+    },
+    "economic_loss": {
+      "next_question": "PI-010",
+      "set_context": {"is_safety_critical": false, "safety_impact": "economic_loss"},
+      "auto_set": [
+        {"table": "projects", "column": "safety_critical", "value": false}
+      ]
+    },
+    "minimal_impact": {
+      "next_question": "PI-010",
+      "set_context": {"is_safety_critical": false, "safety_impact": "minimal_impact"},
+      "auto_set": [
+        {"table": "projects", "column": "safety_critical", "value": false}
+      ]
+    }
+  }
+}

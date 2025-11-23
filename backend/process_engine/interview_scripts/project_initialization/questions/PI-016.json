@@ -1,0 +1,35 @@
+{
+  "question_id": "PI-016",
+  "phase": "PROJECT_INITIALIZATION",
+  "sub_phase": "PI_TEAM",
+  "order": 16,
+
+  "variants": [
+    "Is there anything else important about this project you'd like to share?",
+    "Any additional context or constraints we should know about?",
+    "Please share any other relevant information about the project."
+  ],
+
+  "help_text": "Optional: Add any additional context, constraints, special requirements, or background that would help in project setup.",
+
+  "data_type": "textarea",
+  "required": false,
+
+  "validation": {
+    "rules": []
+  },
+
+  "target": {
+    "table": "projects",
+    "column": "initialization_context",
+    "transformation": "json_merge",
+    "json_path": "additional_context"
+  },
+
+  "on_answer": {
+    "default": {
+      "next_question": null,
+      "set_context": {"additional_context": "$value", "initialization_complete": true}
+    }
+  }
+}

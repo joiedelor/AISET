@@ -1,0 +1,51 @@
+{
+  "question_id": "PI-013",
+  "phase": "PROJECT_INITIALIZATION",
+  "sub_phase": "PI_PROCESS",
+  "order": 13,
+
+  "variants": [
+    "What is the current lifecycle phase of the project?",
+    "Where are you in the development lifecycle?",
+    "What phase is this project currently in?"
+  ],
+
+  "help_text": "Select the current phase to determine which activities and documents are most relevant to start with.",
+
+  "data_type": "selection",
+  "required": true,
+
+  "options": [
+    {"value": "concept", "label": "Concept/Pre-development", "description": "Initial concept, feasibility studies"},
+    {"value": "planning", "label": "Planning", "description": "Creating plans, defining processes"},
+    {"value": "requirements", "label": "Requirements Definition", "description": "Capturing and analyzing requirements"},
+    {"value": "design", "label": "Design", "description": "Architecture and detailed design"},
+    {"value": "implementation", "label": "Implementation/Coding", "description": "Active development"},
+    {"value": "verification", "label": "Verification/Testing", "description": "Testing and verification activities"},
+    {"value": "integration", "label": "Integration", "description": "System integration"},
+    {"value": "qualification", "label": "Qualification", "description": "Final verification and validation"},
+    {"value": "production", "label": "Production/Deployment", "description": "In production or deployment"},
+    {"value": "maintenance", "label": "Maintenance", "description": "Post-deployment changes"}
+  ],
+
+  "validation": {
+    "rules": [
+      {"type": "required", "params": {}},
+      {"type": "allowed_values", "params": {"values": ["concept", "planning", "requirements", "design", "implementation", "verification", "integration", "qualification", "production", "maintenance"]}}
+    ]
+  },
+
+  "target": {
+    "table": "projects",
+    "column": "initialization_context",
+    "transformation": "json_merge",
+    "json_path": "current_lifecycle_phase"
+  },
+
+  "on_answer": {
+    "default": {
+      "next_question": "PI-014",
+      "set_context": {"current_lifecycle_phase": "$value"}
+    }
+  }
+}

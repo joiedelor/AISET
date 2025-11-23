@@ -1,0 +1,69 @@
+{
+  "question_id": "PI-004",
+  "phase": "PROJECT_INITIALIZATION",
+  "sub_phase": "PI_DOMAIN",
+  "order": 4,
+
+  "variants": [
+    "What industry domain does this project belong to?",
+    "Which industry sector is this project for?",
+    "What is the primary application domain?"
+  ],
+
+  "help_text": "Select the industry that best describes where this product will be used. This determines applicable standards and processes.",
+
+  "data_type": "selection",
+  "required": true,
+
+  "options": [
+    {"value": "aerospace", "label": "Aerospace / Aviation", "description": "Aircraft, avionics, space systems - DO-178C, DO-254, ARP4754A apply"},
+    {"value": "automotive", "label": "Automotive", "description": "Vehicle systems, ADAS, powertrain - ISO 26262 applies"},
+    {"value": "medical", "label": "Medical Devices", "description": "Medical equipment, diagnostics - IEC 62304, FDA regulations apply"},
+    {"value": "industrial", "label": "Industrial Automation", "description": "Factory automation, process control - IEC 61508 applies"},
+    {"value": "railway", "label": "Railway", "description": "Train control systems, signaling - EN 50128, EN 50129 apply"},
+    {"value": "nuclear", "label": "Nuclear", "description": "Nuclear power systems - IEC 61513 applies"},
+    {"value": "defense", "label": "Defense / Military", "description": "Defense systems - MIL-STD standards apply"},
+    {"value": "consumer", "label": "Consumer Electronics", "description": "Consumer products - general quality standards"},
+    {"value": "other", "label": "Other", "description": "Other domain not listed"}
+  ],
+
+  "validation": {
+    "rules": [
+      {"type": "required", "params": {}},
+      {"type": "allowed_values", "params": {"values": ["aerospace", "automotive", "medical", "industrial", "railway", "nuclear", "defense", "consumer", "other"]}}
+    ]
+  },
+
+  "target": {
+    "table": "projects",
+    "column": "domain",
+    "transformation": "lowercase"
+  },
+
+  "on_answer": {
+    "aerospace": {
+      "next_question": "PI-005",
+      "set_context": {"industry": "aerospace", "default_standards": ["DO-178C", "DO-254", "ARP4754A"]}
+    },
+    "automotive": {
+      "next_question": "PI-005",
+      "set_context": {"industry": "automotive", "default_standards": ["ISO 26262"]}
+    },
+    "medical": {
+      "next_question": "PI-005",
+      "set_context": {"industry": "medical", "default_standards": ["IEC 62304", "ISO 14971"]}
+    },
+    "industrial": {
+      "next_question": "PI-005",
+      "set_context": {"industry": "industrial", "default_standards": ["IEC 61508"]}
+    },
+    "railway": {
+      "next_question": "PI-005",
+      "set_context": {"industry": "railway", "default_standards": ["EN 50128", "EN 50129"]}
+    },
+    "default": {
+      "next_question": "PI-005",
+      "set_context": {"industry": "$value"}
+    }
+  }
+}

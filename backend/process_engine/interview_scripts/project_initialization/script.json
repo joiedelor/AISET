@@ -1,0 +1,70 @@
+{
+  "script_id": "PI_SCRIPT_V1",
+  "name": "Project Initialization Interview",
+  "description": "Structured interview to gather project context, safety criticality, standards, and development approach",
+  "version": "1.0.0",
+  "phase": "PROJECT_INITIALIZATION",
+
+  "sub_phases": [
+    {
+      "sub_phase_id": "PI_INITIAL",
+      "name": "Initial Project Description",
+      "order": 1,
+      "description": "Capture basic project information",
+      "questions": ["PI-001", "PI-002", "PI-003"]
+    },
+    {
+      "sub_phase_id": "PI_DOMAIN",
+      "name": "Domain Identification",
+      "order": 2,
+      "description": "Identify industry domain and product type",
+      "questions": ["PI-004", "PI-005"]
+    },
+    {
+      "sub_phase_id": "PI_SAFETY",
+      "name": "Safety Criticality Assessment",
+      "order": 3,
+      "description": "Determine safety criticality and assurance level",
+      "questions": ["PI-006", "PI-007", "PI-008", "PI-009"]
+    },
+    {
+      "sub_phase_id": "PI_STANDARDS",
+      "name": "Standards Identification",
+      "order": 4,
+      "description": "Identify applicable regulatory standards",
+      "questions": ["PI-010", "PI-011"]
+    },
+    {
+      "sub_phase_id": "PI_PROCESS",
+      "name": "Process Selection",
+      "order": 5,
+      "description": "Select development process and approach",
+      "questions": ["PI-012", "PI-013", "PI-014"]
+    },
+    {
+      "sub_phase_id": "PI_TEAM",
+      "name": "Team Context",
+      "order": 6,
+      "description": "Capture team size and project lifecycle context",
+      "questions": ["PI-015", "PI-016"]
+    }
+  ],
+
+  "completion_criteria": {
+    "required_fields": [
+      "project_name",
+      "project_description",
+      "industry",
+      "is_safety_critical"
+    ],
+    "conditional_fields": {
+      "is_safety_critical=true": ["assurance_level", "applicable_standards"]
+    }
+  },
+
+  "metadata": {
+    "author": "AISET Development Team",
+    "created_date": "2025-11-23",
+    "traceability": ["REQ-AI-032", "REQ-AI-033", "REQ-AI-034", "REQ-AI-035", "REQ-AI-036", "REQ-AI-037"]
+  }
+}

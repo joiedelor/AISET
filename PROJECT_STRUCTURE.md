@@ -72,20 +72,32 @@ aiset/
 │   │   ├── document_export.py        # Document exports (REQ-DB-MODEL-011)
 │   │   └── configuration_item.py     # Configuration Items & BOM (REQ-AI-038-040)
 │   │
-│   ├── 📂 process_engine/            # **NEW** State Machine Framework (REQ-SM, REQ-IS, REQ-DC, REQ-AG)
-│   │   ├── __init__.py               # Package exports
+│   ├── 📂 process_engine/            # State Machine Framework (REQ-SM, REQ-IS, REQ-DC, REQ-AG)
+│   │   ├── __init__.py               # Package exports (updated with all services)
 │   │   ├── README.md                 # Process engine documentation
 │   │   ├── 📂 schemas/
 │   │   │   ├── process_template_schema.json  # JSON Schema for templates
-│   │   │   └── process_engine_ddl.sql        # Database schema (9 tables)
+│   │   │   └── process_engine_ddl.sql        # Database schema (10 tables)
 │   │   ├── 📂 services/
-│   │   │   └── state_machine_generator.py    # Core state machine logic (~550 lines)
-│   │   └── 📂 templates/
-│   │       ├── arp4754a_system_process.json  # ARP4754A (10 phases)
-│   │       ├── do178c_software_process.json  # DO-178C (9 phases)
-│   │       ├── do254_hardware_process.json   # DO-254 (8 phases)
-│   │       ├── product_development_process.json  # Physical products (7 phases)
-│   │       └── component_part_process.json   # Components/Parts (5 phases)
+│   │   │   ├── state_machine_generator.py    # Core state machine logic (~550 lines)
+│   │   │   ├── data_capture.py               # **NEW** Validation & storage (~350 lines)
+│   │   │   ├── interview_executor.py         # **NEW** Script execution (~400 lines)
+│   │   │   └── artifact_generator.py         # **NEW** Document generation (~400 lines)
+│   │   ├── 📂 templates/             # Process definition templates
+│   │   │   ├── arp4754a_system_process.json  # ARP4754A (10 phases)
+│   │   │   ├── do178c_software_process.json  # DO-178C (9 phases)
+│   │   │   ├── do254_hardware_process.json   # DO-254 (8 phases)
+│   │   │   ├── product_development_process.json  # Physical products (7 phases)
+│   │   │   └── component_part_process.json   # Components/Parts (5 phases)
+│   │   ├── 📂 interview_scripts/     # **NEW** Interview script definitions
+│   │   │   └── 📂 project_initialization/
+│   │   │       ├── script.json               # Main script (6 sub-phases)
+│   │   │       └── 📂 questions/             # 17 question JSON files
+│   │   │           └── PI-001.json through PI-016.json
+│   │   └── 📂 document_templates/    # **NEW** Jinja2 document templates
+│   │       ├── SRS_template.md               # Software Requirements Spec
+│   │       ├── RTM_template.md               # Requirements Traceability Matrix
+│   │       └── Gap_Analysis_template.md      # Gap Analysis Report
 │   │
 │   ├── 📂 services/                  # Business logic layer
 │   │   ├── ai_service.py             # Claude/LM Studio integration (REQ-SERVICE-001)
@@ -111,7 +123,8 @@ aiset/
 │   │   ├── design_components.py      # Design API (REQ-API-008)
 │   │   ├── test_cases.py             # Test cases API (REQ-API-009)
 │   │   ├── users.py                  # Users API (REQ-API-010)
-│   │   └── configuration_items.py    # Product Structure/BOM API (REQ-AI-038-040)
+│   │   ├── configuration_items.py    # Product Structure/BOM API (REQ-AI-038-040)
+│   │   └── process_engine.py         # **NEW** Process Engine API (REQ-SM, REQ-IS)
 │   │
 │   └── 📂 tests/                     # Test suites
 │       ├── __init__.py               # Tests initialization
