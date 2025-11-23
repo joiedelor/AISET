@@ -27,7 +27,8 @@ from routers import (
     users,
     health,
     approval,
-    auth
+    auth,
+    configuration_items
 )
 
 # Configure logging
@@ -86,6 +87,7 @@ app.include_router(ai_conversation.router, prefix="/api/v1", tags=["AI"])
 app.include_router(approval.router, prefix="/api/v1/approval", tags=["Approval Workflow"])
 app.include_router(traceability.router, prefix="/api/v1", tags=["Traceability"])
 app.include_router(documents.router, prefix="/api/v1", tags=["Documents"])
+app.include_router(configuration_items.router, prefix="/api/v1", tags=["Configuration Items"])
 
 
 @app.get("/")

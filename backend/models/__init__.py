@@ -22,6 +22,15 @@ from .traceability import (
 from .audit import VersionHistory, ChangeRequest, ValidationDecision
 from .user import User
 from .document_export import DocumentExport
+from .configuration_item import (
+    ConfigurationItem,
+    BillOfMaterials,
+    CIType,
+    CILifecyclePhase,
+    CIControlLevel,
+    CIStatus,
+    BOMType
+)
 
 __all__ = [
     # Core entities
@@ -47,4 +56,13 @@ __all__ = [
     "ChangeRequest",
     "ValidationDecision",
     "DocumentExport",
+
+    # Configuration Management
+    "ConfigurationItem",
+    "BillOfMaterials",
+    "CIType",
+    "CILifecyclePhase",
+    "CIControlLevel",
+    "CIStatus",
+    "BOMType",
 ]

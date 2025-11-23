@@ -17,5 +17,6 @@ __all__ = [
     "approval",
     "traceability",
     "documents",
-    "users"
+    "users",
+    "configuration_items"
 ]

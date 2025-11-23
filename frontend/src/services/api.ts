@@ -243,4 +243,83 @@ export const setAuthToken = (token: string | null) => {
   }
 }
 
+// Configuration Items API (REQ-AI-038, REQ-AI-039, REQ-AI-040)
+export interface ConfigurationItemCreate {
+  ci_identifier: string
+  name: string
+  ci_type?: string
+  parent_id?: number | null
+  description?: string
+  part_number?: string
+  revision?: string
+  version?: string
+  lifecycle_phase?: string
+  control_level?: string
+  status?: string
+  criticality?: string
+  supplier?: string
+  notes?: string
+}
+
+export const configurationItemsApi = {
+  // Get all CIs for a project
+  list: (projectId: number, params?: { ci_type?: string; root_only?: boolean }) =>
+    api.get(`/projects/${projectId}/configuration-items`, { params }),
+
+  // Get product structure tree
+  getProductStructure: (projectId: number) =>
+    api.get(`/projects/${projectId}/product-structure`),
+
+  // Get CI statistics
+  getStatistics: (projectId: number) =>
+    api.get(`/projects/${projectId}/ci-statistics`),
+
+  // Create CI
+  create: (projectId: number, data: ConfigurationItemCreate) =>
+    api.post(`/projects/${projectId}/configuration-items`, data),
+
+  // Get single CI
+  get: (ciId: number) =>
+    api.get(`/configuration-items/${ciId}`),
+
+  // Update CI
+  update: (ciId: number, data: Partial<ConfigurationItemCreate>) =>
+    api.put(`/configuration-items/${ciId}`, data),
+
+  // Delete CI
+  delete: (ciId: number) =>
+    api.delete(`/configuration-items/${ciId}`),
+
+  // Get CI children
+  getChildren: (ciId: number) =>
+    api.get(`/configuration-items/${ciId}/children`),
+
+  // Classify CI
+  classify: (ciId: number) =>
+    api.get(`/configuration-items/${ciId}/classify`),
+
+  // BOM operations
+  getBOM: (ciId: number, bomType?: string) =>
+    api.get(`/configuration-items/${ciId}/bom`, { params: bomType ? { bom_type: bomType } : undefined }),
+
+  addBOMEntry: (ciId: number, data: {
+    parent_ci_id: number
+    child_ci_id: number
+    quantity?: number
+    bom_type?: string
+    unit_of_measure?: string
+    position_reference?: string
+    find_number?: string
+    is_alternate?: boolean
+    notes?: string
+  }) =>
+    api.post(`/configuration-items/${ciId}/bom`, data),
+
+  getWhereUsed: (ciId: number) =>
+    api.get(`/configuration-items/${ciId}/where-used`),
+
+  deleteBOMEntry: (bomId: number) =>
+    api.delete(`/bom/${bomId}`),
+}
+
 export default api

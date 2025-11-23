@@ -104,6 +104,7 @@ class Project(Base):
     ai_conversations = relationship("AIConversation", back_populates="project", cascade="all, delete-orphan")
     change_requests = relationship("ChangeRequest", back_populates="project", cascade="all, delete-orphan")
     document_exports = relationship("DocumentExport", back_populates="project", cascade="all, delete-orphan")
+    configuration_items = relationship("ConfigurationItem", back_populates="project", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Project(id={self.id}, name='{self.name}', code='{self.project_code}')>"
