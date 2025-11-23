@@ -101,7 +101,8 @@ aiset/
 │       ├── test_traceability_service.py  # Traceability tests (REQ-TEST-002)
 │       ├── test_ai_behavior.py           # AI behavior tests (REQ-AI-001-010)
 │       ├── test_project_initialization.py # Project init tests (REQ-AI-032-037)
-│       └── test_approval_workflow.py     # Approval workflow tests (REQ-AI-017-019)
+│       ├── test_approval_workflow.py     # Approval workflow tests (REQ-AI-017-019)
+│       └── test_auth_service.py          # Auth service tests (REQ-BE-003, REQ-BE-004)
 │
 ├── 📂 **[Level 1]** frontend/        # AISET Tool Source Code (React TypeScript)
 │   ├── package.json                  # NPM dependencies
@@ -127,6 +128,9 @@ aiset/
 │       ├── 📂 components/            # React components
 │       │   └── Layout.tsx            # Main layout (REQ-FRONTEND-007)
 │       │
+│       ├── 📂 contexts/              # React contexts
+│       │   └── AuthContext.tsx       # Auth state management (REQ-BE-003, REQ-BE-004)
+│       │
 │       └── 📂 pages/                 # Page components
 │           ├── Dashboard.tsx         # Dashboard page (REQ-FRONTEND-008)
 │           ├── Projects.tsx          # Projects list (REQ-FRONTEND-009)
@@ -134,7 +138,9 @@ aiset/
 │           ├── Requirements.tsx      # Requirements page (REQ-FRONTEND-011)
 │           ├── Chat.tsx              # AI chat page (REQ-FRONTEND-012)
 │           ├── Traceability.tsx      # Traceability matrix (REQ-FRONTEND-013)
-│           └── Documents.tsx         # Document generation (REQ-FRONTEND-014)
+│           ├── Documents.tsx         # Document generation (REQ-FRONTEND-014)
+│           ├── Login.tsx             # Login page (REQ-BE-003)
+│           └── Register.tsx          # Registration page (REQ-BE-003)
 │
 ├── 📂 docs/                          # Reference Documentation (PHYSICALLY SEPARATED BY LEVEL)
 │   ├── README.md                     # ⭐ Explains level separation
@@ -297,9 +303,9 @@ aiset/
 
 ---
 
-**Status:** ✅ Prototype 58% Complete
-**Version:** 0.2.0
-**Last Updated:** 2025-11-22 (Requirements 182, DO-178C 52%)
+**Status:** ✅ Prototype 65% Complete
+**Version:** 0.2.3
+**Last Updated:** 2025-11-23 (Requirements 182, DO-178C 57%)
 
 **⚠️ IMPORTANT:** All folders and sections now tagged with documentation levels.
 **See:** `DOCUMENTATION_LEVELS.md` for level definitions and anti-mixing guidelines.
