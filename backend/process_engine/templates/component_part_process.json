@@ -1,0 +1,162 @@
+{
+  "template_id": "COMPONENT_PART_V1",
+  "name": "Component/Part Development Process",
+  "description": "Simplified development process for lower-level components and parts",
+  "standard": "GENERIC",
+  "version": "1.0.0",
+  "applicable_ci_types": ["COMPONENT", "PART"],
+  "dal_levels": ["NONE", "SIL_1", "SIL_2", "SIL_3", "SIL_4"],
+
+  "phases": [
+    {
+      "phase_id": "PH_PART_SPEC",
+      "name": "Phase 1: Part Specification",
+      "description": "Define part requirements and specifications",
+      "order": 1,
+      "entry_criteria": [{"criterion_id": "CR_PARENT_ALLOC", "description": "Requirements allocated from parent", "check_type": "ARTIFACT_EXISTS"}],
+      "exit_criteria": [{"criterion_id": "CR_SPEC_DONE", "description": "Specification approved", "check_type": "ARTIFACT_APPROVED"}],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_PART_REQ",
+          "name": "Part Requirements",
+          "order": 1,
+          "activities": [
+            {"activity_id": "ACT_PART_REQ", "name": "Capture Part Requirements", "type": "INTERVIEW", "required": true, "output_artifacts": ["PART_REQUIREMENTS"]},
+            {"activity_id": "ACT_PART_SPEC", "name": "Part Specification", "type": "DOCUMENT_CREATION", "required": true, "output_artifacts": ["PART_SPEC"]}
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_PART_SPEC", "name": "Part Specification", "artifact_type": "SPECIFICATION", "required": true}
+      ],
+      "reviews": [],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+    {
+      "phase_id": "PH_PART_DESIGN",
+      "name": "Phase 2: Part Design",
+      "description": "Design the part",
+      "order": 2,
+      "entry_criteria": [{"criterion_id": "CR_SPEC_OK", "description": "Specification approved", "check_type": "ARTIFACT_APPROVED"}],
+      "exit_criteria": [{"criterion_id": "CR_DESIGN_OK", "description": "Design approved", "check_type": "ARTIFACT_APPROVED"}],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_PART_DESIGN",
+          "name": "Part Design",
+          "order": 1,
+          "activities": [
+            {"activity_id": "ACT_PART_CAD", "name": "CAD Model", "type": "DESIGN", "required": true, "output_artifacts": ["PART_CAD"]},
+            {"activity_id": "ACT_PART_DWG", "name": "Part Drawing", "type": "DESIGN", "required": true, "output_artifacts": ["PART_DRAWING"]},
+            {"activity_id": "ACT_PART_MAT", "name": "Material Specification", "type": "DOCUMENT_CREATION", "required": true, "output_artifacts": ["MATERIAL_SPEC"]}
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_PART_CAD", "name": "Part CAD Model", "artifact_type": "SOURCE_CODE", "required": true},
+        {"deliverable_id": "DEL_PART_DWG", "name": "Part Drawing", "artifact_type": "DESIGN_DOCUMENT", "required": true}
+      ],
+      "reviews": [{"review_id": "REV_PART_DESIGN", "name": "Part Design Review", "type": "PEER_REVIEW", "entry_artifacts": ["PART_CAD", "PART_DRAWING"], "exit_artifacts": ["PART_DESIGN_REVIEW"]}],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+    {
+      "phase_id": "PH_PART_MFG",
+      "name": "Phase 3: Part Manufacturing",
+      "description": "Manufacture or procure the part",
+      "order": 3,
+      "entry_criteria": [{"criterion_id": "CR_DESIGN_DONE", "description": "Design approved", "check_type": "ARTIFACT_APPROVED"}],
+      "exit_criteria": [{"criterion_id": "CR_PART_MADE", "description": "Part available", "check_type": "ARTIFACT_EXISTS"}],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_MAKE_BUY",
+          "name": "Make/Buy Decision",
+          "order": 1,
+          "activities": [
+            {"activity_id": "ACT_MAKE_BUY", "name": "Make/Buy Analysis", "type": "ANALYSIS", "required": true, "output_artifacts": ["MAKE_BUY_DECISION"]}
+          ]
+        },
+        {
+          "sub_phase_id": "SP_PROCUREMENT",
+          "name": "Procurement/Manufacturing",
+          "order": 2,
+          "activities": [
+            {"activity_id": "ACT_PROCURE", "name": "Procure Part", "type": "IMPLEMENTATION", "required": false, "output_artifacts": ["PROCUREMENT_RECORD"]},
+            {"activity_id": "ACT_MANUFACTURE", "name": "Manufacture Part", "type": "IMPLEMENTATION", "required": false, "output_artifacts": ["MFG_RECORD"]}
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_PART", "name": "Part", "artifact_type": "OTHER", "required": true}
+      ],
+      "reviews": [],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+    {
+      "phase_id": "PH_PART_INSPECT",
+      "name": "Phase 4: Part Inspection",
+      "description": "Inspect and verify the part",
+      "order": 4,
+      "entry_criteria": [{"criterion_id": "CR_PART_AVAIL", "description": "Part available", "check_type": "ARTIFACT_EXISTS"}],
+      "exit_criteria": [{"criterion_id": "CR_INSPECT_PASS", "description": "Inspection passed", "check_type": "ARTIFACT_APPROVED"}],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_INSPECTION",
+          "name": "Inspection",
+          "order": 1,
+          "activities": [
+            {"activity_id": "ACT_VISUAL", "name": "Visual Inspection", "type": "VERIFICATION", "required": true, "output_artifacts": ["VISUAL_INSPECT"]},
+            {"activity_id": "ACT_DIMENSIONAL", "name": "Dimensional Inspection", "type": "VERIFICATION", "required": true, "output_artifacts": ["DIM_INSPECT"]},
+            {"activity_id": "ACT_MATERIAL_CERT", "name": "Material Certification Review", "type": "DOCUMENT_REVIEW", "required": true, "output_artifacts": ["MAT_CERT_REVIEW"]}
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_INSPECT_REPORT", "name": "Inspection Report", "artifact_type": "TEST_REPORT", "required": true},
+        {"deliverable_id": "DEL_COC", "name": "Certificate of Conformity", "artifact_type": "ACCOMPLISHMENT_SUMMARY", "required": true}
+      ],
+      "reviews": [],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+    {
+      "phase_id": "PH_PART_RELEASE",
+      "name": "Phase 5: Part Release",
+      "description": "Release part for use in assembly",
+      "order": 5,
+      "entry_criteria": [{"criterion_id": "CR_INSPECT_OK", "description": "Inspection passed", "check_type": "ARTIFACT_APPROVED"}],
+      "exit_criteria": [{"criterion_id": "CR_RELEASED", "description": "Part released", "check_type": "MANUAL_APPROVAL"}],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_RELEASE",
+          "name": "Release",
+          "order": 1,
+          "activities": [
+            {"activity_id": "ACT_BASELINE", "name": "Baseline Part", "type": "BASELINE", "required": true, "output_artifacts": ["PART_BASELINE"]},
+            {"activity_id": "ACT_RELEASE", "name": "Release for Use", "type": "APPROVAL", "required": true, "output_artifacts": ["RELEASE_RECORD"]}
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_RELEASE", "name": "Part Release Record", "artifact_type": "OTHER", "required": true}
+      ],
+      "reviews": [],
+      "parallel_allowed": false,
+      "rollback_allowed": false
+    }
+  ],
+
+  "phase_dependencies": [
+    {"from_phase": "PH_PART_SPEC", "to_phase": "PH_PART_DESIGN", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_PART_DESIGN", "to_phase": "PH_PART_MFG", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_PART_MFG", "to_phase": "PH_PART_INSPECT", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_PART_INSPECT", "to_phase": "PH_PART_RELEASE", "dependency_type": "FINISH_TO_START"}
+  ],
+
+  "metadata": {
+    "author": "AISET Development Team",
+    "created_date": "2025-11-23",
+    "references": ["Generic Part Development Process"]
+  }
+}

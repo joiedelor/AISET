@@ -1,0 +1,475 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://aiset.io/schemas/process_template.json",
+  "title": "AISET Process Template Schema",
+  "description": "Schema for defining development process templates (ARP4754A, DO-178C, DO-254, etc.)",
+  "version": "1.0.0",
+
+  "type": "object",
+  "required": ["template_id", "name", "standard", "version", "applicable_ci_types", "phases"],
+
+  "properties": {
+    "template_id": {
+      "type": "string",
+      "pattern": "^[A-Z0-9_]+$",
+      "description": "Unique identifier for the template (e.g., ARP4754A_SYSTEM_V1)"
+    },
+
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the process"
+    },
+
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the process"
+    },
+
+    "standard": {
+      "type": "string",
+      "enum": ["ARP4754A", "DO-178C", "DO-254", "ISO26262", "IEC61508", "IEC62304", "GENERIC"],
+      "description": "Primary standard this process implements"
+    },
+
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Template version (semantic versioning)"
+    },
+
+    "applicable_ci_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["SYSTEM", "SUBSYSTEM", "EQUIPMENT", "SOFTWARE", "HARDWARE", "ASSEMBLY", "COMPONENT", "PART", "DOCUMENT", "PHYSICAL_PRODUCT"]
+      },
+      "description": "CI types this process applies to"
+    },
+
+    "dal_levels": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["DAL_A", "DAL_B", "DAL_C", "DAL_D", "DAL_E", "ASIL_D", "ASIL_C", "ASIL_B", "ASIL_A", "QM", "SIL_4", "SIL_3", "SIL_2", "SIL_1", "NONE"]
+      },
+      "description": "Applicable Development Assurance Levels"
+    },
+
+    "phases": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/phase" },
+      "minItems": 1,
+      "description": "Ordered list of development phases"
+    },
+
+    "phase_dependencies": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/phase_dependency" },
+      "description": "Dependencies between phases (for parallel execution)"
+    },
+
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "author": { "type": "string" },
+        "created_date": { "type": "string", "format": "date" },
+        "last_modified": { "type": "string", "format": "date" },
+        "references": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  },
+
+  "definitions": {
+    "phase": {
+      "type": "object",
+      "required": ["phase_id", "name", "order", "sub_phases"],
+      "properties": {
+        "phase_id": {
+          "type": "string",
+          "pattern": "^PH_[A-Z0-9_]+$",
+          "description": "Unique phase identifier within template"
+        },
+
+        "name": {
+          "type": "string",
+          "description": "Phase name"
+        },
+
+        "description": {
+          "type": "string",
+          "description": "Phase description and purpose"
+        },
+
+        "order": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Sequential order (1-based)"
+        },
+
+        "standard_reference": {
+          "type": "string",
+          "description": "Reference to standard section (e.g., 'ARP4754A Section 5.1')"
+        },
+
+        "entry_criteria": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/criterion" },
+          "description": "Conditions that must be met to enter this phase"
+        },
+
+        "exit_criteria": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/criterion" },
+          "description": "Conditions that must be met to complete this phase"
+        },
+
+        "sub_phases": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/sub_phase" },
+          "minItems": 1,
+          "description": "Ordered list of sub-phases/activities"
+        },
+
+        "deliverables": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/deliverable" },
+          "description": "Required outputs from this phase"
+        },
+
+        "reviews": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/review" },
+          "description": "Required reviews/gates in this phase"
+        },
+
+        "parallel_allowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Can this phase run in parallel with subsequent phases?"
+        },
+
+        "rollback_allowed": {
+          "type": "boolean",
+          "default": true,
+          "description": "Can the process roll back to this phase?"
+        }
+      }
+    },
+
+    "sub_phase": {
+      "type": "object",
+      "required": ["sub_phase_id", "name", "order", "activities"],
+      "properties": {
+        "sub_phase_id": {
+          "type": "string",
+          "pattern": "^SP_[A-Z0-9_]+$",
+          "description": "Unique sub-phase identifier"
+        },
+
+        "name": {
+          "type": "string",
+          "description": "Sub-phase name"
+        },
+
+        "description": {
+          "type": "string"
+        },
+
+        "order": {
+          "type": "integer",
+          "minimum": 1
+        },
+
+        "activities": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/activity" },
+          "description": "Activities to perform in this sub-phase"
+        },
+
+        "interview_script_id": {
+          "type": "string",
+          "description": "Reference to interview script for data capture"
+        },
+
+        "completion_criteria": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/criterion" }
+        }
+      }
+    },
+
+    "activity": {
+      "type": "object",
+      "required": ["activity_id", "name", "type"],
+      "properties": {
+        "activity_id": {
+          "type": "string",
+          "pattern": "^ACT_[A-Z0-9_]+$"
+        },
+
+        "name": {
+          "type": "string"
+        },
+
+        "description": {
+          "type": "string"
+        },
+
+        "type": {
+          "type": "string",
+          "enum": [
+            "INTERVIEW",
+            "DOCUMENT_CREATION",
+            "DOCUMENT_REVIEW",
+            "ANALYSIS",
+            "DESIGN",
+            "IMPLEMENTATION",
+            "TEST",
+            "VERIFICATION",
+            "VALIDATION",
+            "APPROVAL",
+            "BASELINE",
+            "AUDIT"
+          ]
+        },
+
+        "required": {
+          "type": "boolean",
+          "default": true
+        },
+
+        "dal_required": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Only required for these DAL levels"
+        },
+
+        "interview_questions": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/question_ref" },
+          "description": "Questions to capture data for this activity"
+        },
+
+        "output_artifacts": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Artifact types produced by this activity"
+        },
+
+        "input_artifacts": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Required input artifacts"
+        }
+      }
+    },
+
+    "criterion": {
+      "type": "object",
+      "required": ["criterion_id", "description", "check_type"],
+      "properties": {
+        "criterion_id": {
+          "type": "string",
+          "pattern": "^CR_[A-Z0-9_]+$"
+        },
+
+        "description": {
+          "type": "string"
+        },
+
+        "check_type": {
+          "type": "string",
+          "enum": [
+            "ARTIFACT_EXISTS",
+            "ARTIFACT_APPROVED",
+            "ALL_ITEMS_COMPLETE",
+            "REVIEW_PASSED",
+            "TRACEABILITY_COMPLETE",
+            "COVERAGE_THRESHOLD",
+            "MANUAL_APPROVAL",
+            "CUSTOM"
+          ]
+        },
+
+        "check_config": {
+          "type": "object",
+          "description": "Configuration for the check (e.g., artifact type, threshold value)"
+        },
+
+        "required": {
+          "type": "boolean",
+          "default": true
+        },
+
+        "dal_required": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+
+    "deliverable": {
+      "type": "object",
+      "required": ["deliverable_id", "name", "artifact_type"],
+      "properties": {
+        "deliverable_id": {
+          "type": "string",
+          "pattern": "^DEL_[A-Z0-9_]+$"
+        },
+
+        "name": {
+          "type": "string"
+        },
+
+        "description": {
+          "type": "string"
+        },
+
+        "artifact_type": {
+          "type": "string",
+          "enum": [
+            "PLAN",
+            "SPECIFICATION",
+            "DESIGN_DOCUMENT",
+            "TEST_PLAN",
+            "TEST_PROCEDURE",
+            "TEST_REPORT",
+            "ANALYSIS_REPORT",
+            "REVIEW_RECORD",
+            "TRACEABILITY_MATRIX",
+            "SAFETY_ASSESSMENT",
+            "ACCOMPLISHMENT_SUMMARY",
+            "SOURCE_CODE",
+            "EXECUTABLE",
+            "CONFIGURATION_INDEX",
+            "OTHER"
+          ]
+        },
+
+        "template_id": {
+          "type": "string",
+          "description": "Reference to document template for generation"
+        },
+
+        "required": {
+          "type": "boolean",
+          "default": true
+        },
+
+        "dal_required": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+
+    "review": {
+      "type": "object",
+      "required": ["review_id", "name", "type"],
+      "properties": {
+        "review_id": {
+          "type": "string",
+          "pattern": "^REV_[A-Z0-9_]+$"
+        },
+
+        "name": {
+          "type": "string"
+        },
+
+        "description": {
+          "type": "string"
+        },
+
+        "type": {
+          "type": "string",
+          "enum": [
+            "SRR",
+            "SDR",
+            "PDR",
+            "CDR",
+            "TRR",
+            "PRR",
+            "FCA",
+            "PCA",
+            "GATE_REVIEW",
+            "PEER_REVIEW",
+            "MANAGEMENT_REVIEW"
+          ],
+          "description": "Review type (SRR=System Req Review, SDR=System Design Review, etc.)"
+        },
+
+        "standard_reference": {
+          "type": "string"
+        },
+
+        "required_attendees": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+
+        "entry_artifacts": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Artifacts required before review"
+        },
+
+        "exit_artifacts": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Artifacts produced by review (e.g., Review Record)"
+        }
+      }
+    },
+
+    "question_ref": {
+      "type": "object",
+      "required": ["question_id"],
+      "properties": {
+        "question_id": {
+          "type": "string",
+          "description": "Reference to question in interview scripts"
+        },
+
+        "required": {
+          "type": "boolean",
+          "default": true
+        },
+
+        "condition": {
+          "type": "string",
+          "description": "Condition for when to ask this question"
+        }
+      }
+    },
+
+    "phase_dependency": {
+      "type": "object",
+      "required": ["from_phase", "to_phase", "dependency_type"],
+      "properties": {
+        "from_phase": {
+          "type": "string",
+          "description": "Source phase ID"
+        },
+
+        "to_phase": {
+          "type": "string",
+          "description": "Target phase ID"
+        },
+
+        "dependency_type": {
+          "type": "string",
+          "enum": ["FINISH_TO_START", "START_TO_START", "FINISH_TO_FINISH"],
+          "description": "Type of dependency"
+        },
+
+        "condition": {
+          "type": "string",
+          "description": "Optional condition for dependency"
+        }
+      }
+    }
+  }
+}

@@ -9,8 +9,8 @@
 |------|-------|
 | **Document ID** | AISET-SRS-001 |
 | **Document Title** | Software Requirements Specification |
-| **Version** | 1.2.0 |
-| **Date** | 2025-11-22 |
+| **Version** | 1.3.0 |
+| **Date** | 2025-11-23 |
 | **Status** | Released for Review |
 | **Approval Status** | Pending Review |
 | **DO-178C Compliance** | Section 5.1 - Software High-Level Requirements |
@@ -26,6 +26,7 @@
 | 1.0.0 | 2025-11-16 | Development Team | Initial release - Transformed from specification roleplay artifacts (ROLEPLAY_REQUIREMENTS.md v0.8.0) |
 | 1.1.0 | 2025-11-22 | Development Team | Added REQ-BE-030 (Draft Project Creation), clarified REQ-AI-030 implementation details |
 | 1.2.0 | 2025-11-22 | Development Team | Added AI Controller (REQ-AI-045-047), Guardrails (REQ-AI-048-051), AI Roles (REQ-AI-052-055), Micro-Interaction (REQ-AI-056-058) requirements. Total: 182 requirements |
+| 1.3.0 | 2025-11-23 | Development Team | Added reference to Process Engine Requirements (SRS_Process_Engine_Requirements.md) - 31 new requirements for State Machine (REQ-SM), Interview Scripts (REQ-IS), Data Capture (REQ-DC), Artifact Generation (REQ-AG), Process Phase (REQ-PP), NLP Wrapper (REQ-NL). Total: 213 requirements |
 
 ---
 
@@ -133,9 +134,29 @@ Requirements in this SRS were derived from:
 | Backend Subsystem | 30 | REQ-BE-001 to REQ-BE-030 |
 | Database Subsystem | 70 | REQ-DB-001 to REQ-DB-070 |
 | Documentation | 1 | REQ-DOC-001 |
-| **TOTAL** | **182** | |
+| **Subtotal (Main SRS)** | **182** | |
+| **Process Engine (Extension)** | **31** | See SRS_Process_Engine_Requirements.md |
+| **TOTAL** | **213** | |
 
-### 3.3 Requirements Format
+### 3.3 Process Engine Requirements (Extension Document)
+
+The Process Engine requirements are documented in a separate extension document:
+
+**Document:** `02_REQUIREMENTS/SRS_Process_Engine_Requirements.md` (v1.0.0)
+
+This extension specifies the "Codification of the Systems Engineer" - the deterministic process engine that drives AISET's behavior without requiring AI intelligence:
+
+| Category | Count | Range |
+|----------|-------|-------|
+| State Machine | 6 | REQ-SM-001 to REQ-SM-006 |
+| Interview Scripts | 8 | REQ-IS-001 to REQ-IS-008 |
+| Data Capture | 6 | REQ-DC-001 to REQ-DC-006 |
+| Artifact Generation | 5 | REQ-AG-001 to REQ-AG-005 |
+| Process Phase | 3 | REQ-PP-001 to REQ-PP-003 |
+| NLP Wrapper | 3 | REQ-NL-001 to REQ-NL-003 |
+| **Total** | **31** | |
+
+### 3.4 Requirements Format
 
 Each requirement follows this format:
 
@@ -169,9 +190,11 @@ Each requirement follows this format:
 | Document ID | Title | Location |
 |-------------|-------|----------|
 | HLD-001 | High-Level Design | `03_DESIGN/HLD_High_Level_Design.md` |
+| HLD-PE-001 | Process Engine High-Level Design | `03_DESIGN/HLD_Process_Engine_Architecture.md` |
 | LLD-DB-001 | Low-Level Design - Database Schema | `03_DESIGN/LLD_Database_Schema_Design.md` |
 | TM-001 | Requirements to Design Traceability Matrix | `08_TRACEABILITY/Requirements_to_Design_Traceability.md` |
 | SDP-001 | Software Development Plan | `01_PLANNING/SDP_Software_Development_Plan.md` |
+| SRS-PE-001 | Process Engine Requirements | `02_REQUIREMENTS/SRS_Process_Engine_Requirements.md` |
 
 ### 4.3 Source Documents
 

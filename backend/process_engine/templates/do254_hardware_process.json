@@ -1,0 +1,256 @@
+{
+  "template_id": "DO254_HARDWARE_V1",
+  "name": "DO-254 Hardware Development Process",
+  "description": "Hardware development lifecycle per DO-254 Design Assurance Guidance for Airborne Electronic Hardware",
+  "standard": "DO-254",
+  "version": "1.0.0",
+  "applicable_ci_types": ["HARDWARE"],
+  "dal_levels": ["DAL_A", "DAL_B", "DAL_C", "DAL_D"],
+
+  "phases": [
+    {
+      "phase_id": "PH_HW_PLANNING",
+      "name": "Hardware Planning Process",
+      "description": "Define hardware development and verification processes",
+      "order": 1,
+      "standard_reference": "DO-254 Section 4",
+      "entry_criteria": [{"criterion_id": "CR_SYS_REQ", "description": "System requirements allocated", "check_type": "ARTIFACT_EXISTS"}],
+      "exit_criteria": [{"criterion_id": "CR_PLANS", "description": "Plans approved", "check_type": "ARTIFACT_APPROVED"}],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_HW_PLANS",
+          "name": "Plan Development",
+          "order": 1,
+          "activities": [
+            {"activity_id": "ACT_PHAC", "name": "Plan for Hardware Aspects of Certification", "type": "DOCUMENT_CREATION", "required": true, "output_artifacts": ["PHAC"]},
+            {"activity_id": "ACT_HDP", "name": "Hardware Development Plan", "type": "DOCUMENT_CREATION", "required": true, "output_artifacts": ["HDP"]},
+            {"activity_id": "ACT_HVP", "name": "Hardware Verification Plan", "type": "DOCUMENT_CREATION", "required": true, "output_artifacts": ["HVP"]},
+            {"activity_id": "ACT_HCMP", "name": "Hardware CM Plan", "type": "DOCUMENT_CREATION", "required": true, "output_artifacts": ["HCMP"]}
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_PHAC", "name": "PHAC", "artifact_type": "PLAN", "required": true},
+        {"deliverable_id": "DEL_HDP", "name": "Hardware Development Plan", "artifact_type": "PLAN", "required": true},
+        {"deliverable_id": "DEL_HVP", "name": "Hardware Verification Plan", "artifact_type": "PLAN", "required": true}
+      ],
+      "reviews": [],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+    {
+      "phase_id": "PH_HW_REQUIREMENTS",
+      "name": "Hardware Requirements Process",
+      "description": "Capture and document hardware requirements",
+      "order": 2,
+      "standard_reference": "DO-254 Section 5.1",
+      "entry_criteria": [{"criterion_id": "CR_PLANS_DONE", "description": "Plans complete", "check_type": "ARTIFACT_EXISTS"}],
+      "exit_criteria": [{"criterion_id": "CR_HW_REQ", "description": "HW requirements complete", "check_type": "ARTIFACT_APPROVED"}],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_HW_REQ_CAP",
+          "name": "Requirements Capture",
+          "order": 1,
+          "activities": [
+            {"activity_id": "ACT_HW_REQ", "name": "Capture Hardware Requirements", "type": "INTERVIEW", "required": true, "output_artifacts": ["HW_REQUIREMENTS"]},
+            {"activity_id": "ACT_HW_DERIVED", "name": "Identify Derived Requirements", "type": "ANALYSIS", "required": true, "output_artifacts": ["HW_DERIVED_REQS"]}
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_HRS", "name": "Hardware Requirements Specification", "artifact_type": "SPECIFICATION", "required": true}
+      ],
+      "reviews": [{"review_id": "REV_HRR", "name": "Hardware Requirements Review", "type": "PEER_REVIEW", "entry_artifacts": ["HW_REQUIREMENTS"], "exit_artifacts": ["HRR_RECORD"]}],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+    {
+      "phase_id": "PH_HW_CONCEPTUAL",
+      "name": "Conceptual Design Process",
+      "description": "High-level hardware design and architecture",
+      "order": 3,
+      "standard_reference": "DO-254 Section 5.2",
+      "entry_criteria": [{"criterion_id": "CR_REQ_DONE", "description": "Requirements approved", "check_type": "ARTIFACT_APPROVED"}],
+      "exit_criteria": [{"criterion_id": "CR_CONCEPT", "description": "Conceptual design approved", "check_type": "ARTIFACT_APPROVED"}],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_HW_CONCEPT",
+          "name": "Conceptual Design",
+          "order": 1,
+          "activities": [
+            {"activity_id": "ACT_HW_ARCH", "name": "Hardware Architecture", "type": "DESIGN", "required": true, "output_artifacts": ["HW_ARCHITECTURE"]},
+            {"activity_id": "ACT_PART_SELECT", "name": "Part Selection", "type": "ANALYSIS", "required": true, "output_artifacts": ["PART_SELECTION"]}
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_HW_CONCEPT", "name": "Hardware Conceptual Design", "artifact_type": "DESIGN_DOCUMENT", "required": true}
+      ],
+      "reviews": [{"review_id": "REV_HCD", "name": "Conceptual Design Review", "type": "PDR", "entry_artifacts": ["HW_ARCHITECTURE"], "exit_artifacts": ["HCD_RECORD"]}],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+    {
+      "phase_id": "PH_HW_DETAILED",
+      "name": "Detailed Design Process",
+      "description": "Detailed hardware design including schematics and HDL",
+      "order": 4,
+      "standard_reference": "DO-254 Section 5.3",
+      "entry_criteria": [{"criterion_id": "CR_CONCEPT_DONE", "description": "Conceptual design approved", "check_type": "ARTIFACT_APPROVED"}],
+      "exit_criteria": [{"criterion_id": "CR_DETAILED", "description": "Detailed design approved", "check_type": "ARTIFACT_APPROVED"}],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_HW_DETAILED",
+          "name": "Detailed Design",
+          "order": 1,
+          "activities": [
+            {"activity_id": "ACT_SCHEMATICS", "name": "Schematic Design", "type": "DESIGN", "required": true, "output_artifacts": ["SCHEMATICS"]},
+            {"activity_id": "ACT_HDL", "name": "HDL/FPGA Design", "type": "DESIGN", "required": false, "output_artifacts": ["HDL_CODE"]},
+            {"activity_id": "ACT_PCB", "name": "PCB Layout", "type": "DESIGN", "required": true, "output_artifacts": ["PCB_LAYOUT"]}
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_HW_DETAIL", "name": "Hardware Detailed Design", "artifact_type": "DESIGN_DOCUMENT", "required": true},
+        {"deliverable_id": "DEL_SCHEMATICS", "name": "Schematics", "artifact_type": "SOURCE_CODE", "required": true}
+      ],
+      "reviews": [{"review_id": "REV_HDR", "name": "Detailed Design Review", "type": "CDR", "entry_artifacts": ["SCHEMATICS", "PCB_LAYOUT"], "exit_artifacts": ["HDR_RECORD"]}],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+    {
+      "phase_id": "PH_HW_IMPL",
+      "name": "Implementation Process",
+      "description": "Hardware fabrication and assembly",
+      "order": 5,
+      "standard_reference": "DO-254 Section 5.4",
+      "entry_criteria": [{"criterion_id": "CR_DESIGN_DONE", "description": "Design approved", "check_type": "ARTIFACT_APPROVED"}],
+      "exit_criteria": [{"criterion_id": "CR_IMPL", "description": "Hardware built", "check_type": "ARTIFACT_EXISTS"}],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_HW_FAB",
+          "name": "Fabrication",
+          "order": 1,
+          "activities": [
+            {"activity_id": "ACT_FAB", "name": "PCB Fabrication", "type": "IMPLEMENTATION", "required": true, "output_artifacts": ["PCB"]},
+            {"activity_id": "ACT_ASSEMBLY", "name": "Assembly", "type": "IMPLEMENTATION", "required": true, "output_artifacts": ["HW_ASSEMBLY"]},
+            {"activity_id": "ACT_FPGA_LOAD", "name": "FPGA Programming", "type": "IMPLEMENTATION", "required": false, "output_artifacts": ["PROGRAMMED_FPGA"]}
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_HW_ITEM", "name": "Hardware Item", "artifact_type": "OTHER", "required": true}
+      ],
+      "reviews": [],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+    {
+      "phase_id": "PH_HW_VERIFICATION",
+      "name": "Hardware Verification Process",
+      "description": "Verify hardware meets requirements",
+      "order": 6,
+      "standard_reference": "DO-254 Section 6",
+      "entry_criteria": [{"criterion_id": "CR_HW_BUILT", "description": "Hardware built", "check_type": "ARTIFACT_EXISTS"}],
+      "exit_criteria": [{"criterion_id": "CR_VERIF", "description": "Verification complete", "check_type": "COVERAGE_THRESHOLD", "check_config": {"threshold": 100}}],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_HW_TEST",
+          "name": "Hardware Testing",
+          "order": 1,
+          "activities": [
+            {"activity_id": "ACT_HW_REQ_TEST", "name": "Requirements-Based Testing", "type": "TEST", "required": true, "output_artifacts": ["HW_REQ_TEST_RESULTS"]},
+            {"activity_id": "ACT_HW_FUNC_TEST", "name": "Functional Testing", "type": "TEST", "required": true, "output_artifacts": ["HW_FUNC_TEST_RESULTS"]},
+            {"activity_id": "ACT_HW_ENV_TEST", "name": "Environmental Testing", "type": "TEST", "required": true, "output_artifacts": ["HW_ENV_TEST_RESULTS"]}
+          ]
+        },
+        {
+          "sub_phase_id": "SP_HW_ANALYSIS",
+          "name": "Hardware Analyses",
+          "order": 2,
+          "activities": [
+            {"activity_id": "ACT_WCA", "name": "Worst Case Analysis", "type": "ANALYSIS", "required": true, "dal_required": ["DAL_A", "DAL_B"], "output_artifacts": ["WCA_REPORT"]},
+            {"activity_id": "ACT_SAFETY_ANALYSIS", "name": "Safety Analysis", "type": "ANALYSIS", "required": true, "dal_required": ["DAL_A", "DAL_B", "DAL_C"], "output_artifacts": ["HW_SAFETY_REPORT"]}
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_HVR", "name": "Hardware Verification Results", "artifact_type": "TEST_REPORT", "required": true},
+        {"deliverable_id": "DEL_HW_TRACE", "name": "Hardware Traceability", "artifact_type": "TRACEABILITY_MATRIX", "required": true}
+      ],
+      "reviews": [{"review_id": "REV_HVR", "name": "Verification Results Review", "type": "PEER_REVIEW", "entry_artifacts": ["HW_TEST_RESULTS"], "exit_artifacts": ["HVR_RECORD"]}],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+    {
+      "phase_id": "PH_HW_CM",
+      "name": "Hardware Configuration Management",
+      "description": "Control hardware configuration",
+      "order": 7,
+      "standard_reference": "DO-254 Section 7",
+      "entry_criteria": [],
+      "exit_criteria": [{"criterion_id": "CR_HW_CM", "description": "CM complete", "check_type": "ARTIFACT_EXISTS"}],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_HW_CM",
+          "name": "Configuration Control",
+          "order": 1,
+          "activities": [
+            {"activity_id": "ACT_HW_BASELINE", "name": "Establish Baselines", "type": "BASELINE", "required": true, "output_artifacts": ["HW_BASELINE"]},
+            {"activity_id": "ACT_HW_CHANGE", "name": "Change Control", "type": "APPROVAL", "required": true, "output_artifacts": ["HW_CHANGE_RECORDS"]}
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_HCI", "name": "Hardware Configuration Index", "artifact_type": "CONFIGURATION_INDEX", "required": true}
+      ],
+      "reviews": [
+        {"review_id": "REV_HW_FCA", "name": "HW Functional Config Audit", "type": "FCA", "entry_artifacts": ["HW_BASELINE"], "exit_artifacts": ["HW_FCA_RECORD"]},
+        {"review_id": "REV_HW_PCA", "name": "HW Physical Config Audit", "type": "PCA", "entry_artifacts": ["HW_ITEM"], "exit_artifacts": ["HW_PCA_RECORD"]}
+      ],
+      "parallel_allowed": true,
+      "rollback_allowed": false
+    },
+    {
+      "phase_id": "PH_HW_CERTIFICATION",
+      "name": "Hardware Certification Liaison",
+      "description": "Prepare certification data",
+      "order": 8,
+      "standard_reference": "DO-254 Section 9",
+      "entry_criteria": [{"criterion_id": "CR_VERIF_DONE", "description": "Verification complete", "check_type": "ARTIFACT_EXISTS"}],
+      "exit_criteria": [{"criterion_id": "CR_HAS", "description": "HAS complete", "check_type": "ARTIFACT_APPROVED"}],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_HW_CERT",
+          "name": "Certification Data",
+          "order": 1,
+          "activities": [
+            {"activity_id": "ACT_HAS", "name": "Hardware Accomplishment Summary", "type": "DOCUMENT_CREATION", "required": true, "output_artifacts": ["HAS"]}
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_HAS", "name": "Hardware Accomplishment Summary (HAS)", "artifact_type": "ACCOMPLISHMENT_SUMMARY", "required": true}
+      ],
+      "reviews": [],
+      "parallel_allowed": false,
+      "rollback_allowed": false
+    }
+  ],
+
+  "phase_dependencies": [
+    {"from_phase": "PH_HW_PLANNING", "to_phase": "PH_HW_REQUIREMENTS", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_HW_REQUIREMENTS", "to_phase": "PH_HW_CONCEPTUAL", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_HW_CONCEPTUAL", "to_phase": "PH_HW_DETAILED", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_HW_DETAILED", "to_phase": "PH_HW_IMPL", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_HW_IMPL", "to_phase": "PH_HW_VERIFICATION", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_HW_VERIFICATION", "to_phase": "PH_HW_CERTIFICATION", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_HW_PLANNING", "to_phase": "PH_HW_CM", "dependency_type": "START_TO_START"}
+  ],
+
+  "metadata": {
+    "author": "AISET Development Team",
+    "created_date": "2025-11-23",
+    "references": ["DO-254 - Design Assurance Guidance for Airborne Electronic Hardware (April 2000)"]
+  }
+}

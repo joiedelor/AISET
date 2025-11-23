@@ -1,0 +1,298 @@
+{
+  "template_id": "PRODUCT_DEV_V1",
+  "name": "Physical Product Development Process",
+  "description": "Product development lifecycle for physical parts, assemblies, and components (non-software, non-electronic)",
+  "standard": "GENERIC",
+  "version": "1.0.0",
+  "applicable_ci_types": ["PHYSICAL_PRODUCT", "ASSEMBLY"],
+  "dal_levels": ["NONE", "SIL_1", "SIL_2", "SIL_3", "SIL_4"],
+
+  "phases": [
+    {
+      "phase_id": "PH_PROD_CONCEPT",
+      "name": "Phase 1: Product Concept & Requirements",
+      "description": "Define product concept, market requirements, and initial specifications",
+      "order": 1,
+      "standard_reference": "Generic Product Development",
+      "entry_criteria": [{"criterion_id": "CR_PROJECT", "description": "Project initiated", "check_type": "ARTIFACT_EXISTS"}],
+      "exit_criteria": [{"criterion_id": "CR_SPEC", "description": "Product specification approved", "check_type": "ARTIFACT_APPROVED"}],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_MARKET_REQ",
+          "name": "Market Requirements",
+          "order": 1,
+          "activities": [
+            {"activity_id": "ACT_MARKET_ANALYSIS", "name": "Market Analysis", "type": "ANALYSIS", "required": true, "output_artifacts": ["MARKET_ANALYSIS"]},
+            {"activity_id": "ACT_CUSTOMER_REQ", "name": "Customer Requirements", "type": "INTERVIEW", "required": true, "output_artifacts": ["CUSTOMER_REQS"]}
+          ]
+        },
+        {
+          "sub_phase_id": "SP_PROD_SPEC",
+          "name": "Product Specification",
+          "order": 2,
+          "activities": [
+            {"activity_id": "ACT_PROD_SPEC", "name": "Product Specification", "type": "DOCUMENT_CREATION", "required": true, "output_artifacts": ["PRODUCT_SPEC"]},
+            {"activity_id": "ACT_FEASIBILITY", "name": "Feasibility Study", "type": "ANALYSIS", "required": true, "output_artifacts": ["FEASIBILITY_REPORT"]}
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_PROD_SPEC", "name": "Product Specification", "artifact_type": "SPECIFICATION", "required": true},
+        {"deliverable_id": "DEL_FEASIBILITY", "name": "Feasibility Report", "artifact_type": "ANALYSIS_REPORT", "required": true}
+      ],
+      "reviews": [{"review_id": "REV_CONCEPT", "name": "Concept Review", "type": "GATE_REVIEW", "entry_artifacts": ["PRODUCT_SPEC"], "exit_artifacts": ["CONCEPT_REVIEW_RECORD"]}],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+    {
+      "phase_id": "PH_PROD_DESIGN",
+      "name": "Phase 2: Product Design",
+      "description": "Detailed product design including mechanical, materials, and manufacturing considerations",
+      "order": 2,
+      "standard_reference": "Generic Product Development",
+      "entry_criteria": [{"criterion_id": "CR_CONCEPT_OK", "description": "Concept approved", "check_type": "ARTIFACT_APPROVED"}],
+      "exit_criteria": [{"criterion_id": "CR_DESIGN_OK", "description": "Design approved", "check_type": "ARTIFACT_APPROVED"}],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_PRELIM_DESIGN",
+          "name": "Preliminary Design",
+          "order": 1,
+          "activities": [
+            {"activity_id": "ACT_CONCEPT_DESIGN", "name": "Concept Design", "type": "DESIGN", "required": true, "output_artifacts": ["CONCEPT_DESIGN"]},
+            {"activity_id": "ACT_MATERIAL_SELECT", "name": "Material Selection", "type": "ANALYSIS", "required": true, "output_artifacts": ["MATERIAL_SPECS"]}
+          ]
+        },
+        {
+          "sub_phase_id": "SP_DETAILED_DESIGN",
+          "name": "Detailed Design",
+          "order": 2,
+          "activities": [
+            {"activity_id": "ACT_CAD_MODEL", "name": "CAD Modeling", "type": "DESIGN", "required": true, "output_artifacts": ["CAD_MODELS"]},
+            {"activity_id": "ACT_DRAWINGS", "name": "Engineering Drawings", "type": "DESIGN", "required": true, "output_artifacts": ["ENG_DRAWINGS"]},
+            {"activity_id": "ACT_BOM_DEF", "name": "Bill of Materials Definition", "type": "DOCUMENT_CREATION", "required": true, "output_artifacts": ["BOM"]},
+            {"activity_id": "ACT_TOLERANCE", "name": "Tolerance Analysis", "type": "ANALYSIS", "required": true, "output_artifacts": ["TOLERANCE_ANALYSIS"]}
+          ]
+        },
+        {
+          "sub_phase_id": "SP_DFM",
+          "name": "Design for Manufacturing",
+          "order": 3,
+          "activities": [
+            {"activity_id": "ACT_DFM", "name": "DFM Analysis", "type": "ANALYSIS", "required": true, "output_artifacts": ["DFM_REPORT"]},
+            {"activity_id": "ACT_DFA", "name": "DFA Analysis", "type": "ANALYSIS", "required": false, "output_artifacts": ["DFA_REPORT"]}
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_DESIGN_DOC", "name": "Product Design Document", "artifact_type": "DESIGN_DOCUMENT", "required": true},
+        {"deliverable_id": "DEL_CAD", "name": "CAD Models", "artifact_type": "SOURCE_CODE", "required": true},
+        {"deliverable_id": "DEL_DRAWINGS", "name": "Engineering Drawings", "artifact_type": "DESIGN_DOCUMENT", "required": true},
+        {"deliverable_id": "DEL_BOM", "name": "Bill of Materials", "artifact_type": "CONFIGURATION_INDEX", "required": true}
+      ],
+      "reviews": [
+        {"review_id": "REV_PDR", "name": "Preliminary Design Review", "type": "PDR", "entry_artifacts": ["CONCEPT_DESIGN"], "exit_artifacts": ["PDR_RECORD"]},
+        {"review_id": "REV_CDR", "name": "Critical Design Review", "type": "CDR", "entry_artifacts": ["CAD_MODELS", "ENG_DRAWINGS", "BOM"], "exit_artifacts": ["CDR_RECORD"]}
+      ],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+    {
+      "phase_id": "PH_PROTOTYPE",
+      "name": "Phase 3: Prototyping",
+      "description": "Build and evaluate prototypes",
+      "order": 3,
+      "standard_reference": "Generic Product Development",
+      "entry_criteria": [{"criterion_id": "CR_DESIGN_DONE", "description": "Design approved at CDR", "check_type": "REVIEW_PASSED"}],
+      "exit_criteria": [{"criterion_id": "CR_PROTO_OK", "description": "Prototype validated", "check_type": "ARTIFACT_APPROVED"}],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_PROTO_BUILD",
+          "name": "Prototype Build",
+          "order": 1,
+          "activities": [
+            {"activity_id": "ACT_PROTO_FAB", "name": "Prototype Fabrication", "type": "IMPLEMENTATION", "required": true, "output_artifacts": ["PROTOTYPE"]},
+            {"activity_id": "ACT_PROTO_INSPECT", "name": "Prototype Inspection", "type": "VERIFICATION", "required": true, "output_artifacts": ["INSPECTION_REPORT"]}
+          ]
+        },
+        {
+          "sub_phase_id": "SP_PROTO_TEST",
+          "name": "Prototype Testing",
+          "order": 2,
+          "activities": [
+            {"activity_id": "ACT_FUNC_TEST", "name": "Functional Testing", "type": "TEST", "required": true, "output_artifacts": ["FUNC_TEST_RESULTS"]},
+            {"activity_id": "ACT_FIT_TEST", "name": "Fit and Form Testing", "type": "TEST", "required": true, "output_artifacts": ["FIT_TEST_RESULTS"]},
+            {"activity_id": "ACT_DURABILITY", "name": "Durability Testing", "type": "TEST", "required": false, "output_artifacts": ["DURABILITY_RESULTS"]}
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_PROTO", "name": "Prototype", "artifact_type": "OTHER", "required": true},
+        {"deliverable_id": "DEL_PROTO_REPORT", "name": "Prototype Test Report", "artifact_type": "TEST_REPORT", "required": true}
+      ],
+      "reviews": [{"review_id": "REV_PROTO", "name": "Prototype Review", "type": "GATE_REVIEW", "entry_artifacts": ["PROTOTYPE", "TEST_RESULTS"], "exit_artifacts": ["PROTO_REVIEW_RECORD"]}],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+    {
+      "phase_id": "PH_PROD_VERIF",
+      "name": "Phase 4: Product Verification",
+      "description": "Verify product meets all requirements",
+      "order": 4,
+      "standard_reference": "Generic Product Development",
+      "entry_criteria": [{"criterion_id": "CR_PROTO_VALID", "description": "Prototype validated", "check_type": "ARTIFACT_APPROVED"}],
+      "exit_criteria": [{"criterion_id": "CR_VERIF_DONE", "description": "Verification complete", "check_type": "COVERAGE_THRESHOLD", "check_config": {"threshold": 100}}],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_VERIF_TEST",
+          "name": "Verification Testing",
+          "order": 1,
+          "activities": [
+            {"activity_id": "ACT_REQ_VERIF", "name": "Requirements Verification", "type": "TEST", "required": true, "output_artifacts": ["REQ_VERIF_RESULTS"]},
+            {"activity_id": "ACT_ENV_TEST", "name": "Environmental Testing", "type": "TEST", "required": true, "output_artifacts": ["ENV_TEST_RESULTS"]},
+            {"activity_id": "ACT_SAFETY_TEST", "name": "Safety Testing", "type": "TEST", "required": true, "output_artifacts": ["SAFETY_TEST_RESULTS"]}
+          ]
+        },
+        {
+          "sub_phase_id": "SP_CERT_TEST",
+          "name": "Certification Testing",
+          "order": 2,
+          "activities": [
+            {"activity_id": "ACT_CERT_TEST", "name": "Certification Testing", "type": "TEST", "required": false, "output_artifacts": ["CERT_TEST_RESULTS"]},
+            {"activity_id": "ACT_COMPLIANCE", "name": "Compliance Verification", "type": "VERIFICATION", "required": true, "output_artifacts": ["COMPLIANCE_REPORT"]}
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_VER_REPORT", "name": "Verification Report", "artifact_type": "TEST_REPORT", "required": true},
+        {"deliverable_id": "DEL_COMPLIANCE", "name": "Compliance Report", "artifact_type": "ACCOMPLISHMENT_SUMMARY", "required": true}
+      ],
+      "reviews": [{"review_id": "REV_TRR", "name": "Test Readiness Review", "type": "TRR", "entry_artifacts": ["TEST_PROCEDURES"], "exit_artifacts": ["TRR_RECORD"]}],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+    {
+      "phase_id": "PH_INDUSTRIALIZATION",
+      "name": "Phase 5: Industrialization",
+      "description": "Prepare for production: tooling, processes, suppliers",
+      "order": 5,
+      "standard_reference": "Generic Product Development",
+      "entry_criteria": [{"criterion_id": "CR_VERIF_OK", "description": "Verification passed", "check_type": "ARTIFACT_APPROVED"}],
+      "exit_criteria": [{"criterion_id": "CR_PROD_READY", "description": "Production ready", "check_type": "MANUAL_APPROVAL"}],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_MFG_PREP",
+          "name": "Manufacturing Preparation",
+          "order": 1,
+          "activities": [
+            {"activity_id": "ACT_TOOLING", "name": "Tooling Design", "type": "DESIGN", "required": true, "output_artifacts": ["TOOLING_DESIGN"]},
+            {"activity_id": "ACT_MFG_PROC", "name": "Manufacturing Processes", "type": "DOCUMENT_CREATION", "required": true, "output_artifacts": ["MFG_PROCEDURES"]},
+            {"activity_id": "ACT_QC_PROC", "name": "Quality Control Procedures", "type": "DOCUMENT_CREATION", "required": true, "output_artifacts": ["QC_PROCEDURES"]}
+          ]
+        },
+        {
+          "sub_phase_id": "SP_SUPPLIER",
+          "name": "Supplier Qualification",
+          "order": 2,
+          "activities": [
+            {"activity_id": "ACT_SUPPLIER_SEL", "name": "Supplier Selection", "type": "ANALYSIS", "required": true, "output_artifacts": ["SUPPLIER_LIST"]},
+            {"activity_id": "ACT_SUPPLIER_QUAL", "name": "Supplier Qualification", "type": "AUDIT", "required": true, "output_artifacts": ["SUPPLIER_QUAL_RECORDS"]}
+          ]
+        },
+        {
+          "sub_phase_id": "SP_PILOT",
+          "name": "Pilot Production",
+          "order": 3,
+          "activities": [
+            {"activity_id": "ACT_PILOT_RUN", "name": "Pilot Production Run", "type": "IMPLEMENTATION", "required": true, "output_artifacts": ["PILOT_UNITS"]},
+            {"activity_id": "ACT_PILOT_EVAL", "name": "Pilot Evaluation", "type": "VERIFICATION", "required": true, "output_artifacts": ["PILOT_EVAL_REPORT"]}
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_MFG_PACK", "name": "Manufacturing Package", "artifact_type": "PLAN", "required": true},
+        {"deliverable_id": "DEL_PPAP", "name": "Production Part Approval", "artifact_type": "ACCOMPLISHMENT_SUMMARY", "required": true}
+      ],
+      "reviews": [{"review_id": "REV_PRR", "name": "Production Readiness Review", "type": "PRR", "entry_artifacts": ["MFG_PROCEDURES", "PILOT_EVAL"], "exit_artifacts": ["PRR_RECORD"]}],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+    {
+      "phase_id": "PH_PRODUCTION",
+      "name": "Phase 6: Production",
+      "description": "Full-scale production",
+      "order": 6,
+      "standard_reference": "Generic Product Development",
+      "entry_criteria": [{"criterion_id": "CR_PRR_PASS", "description": "PRR passed", "check_type": "REVIEW_PASSED"}],
+      "exit_criteria": [{"criterion_id": "CR_PROD_STABLE", "description": "Production stable", "check_type": "MANUAL_APPROVAL"}],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_PROD_LAUNCH",
+          "name": "Production Launch",
+          "order": 1,
+          "activities": [
+            {"activity_id": "ACT_PROD_START", "name": "Start Production", "type": "IMPLEMENTATION", "required": true, "output_artifacts": ["PRODUCTION_UNITS"]},
+            {"activity_id": "ACT_QC_MONITOR", "name": "Quality Monitoring", "type": "VERIFICATION", "required": true, "output_artifacts": ["QC_DATA"]}
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_PROD_UNITS", "name": "Production Units", "artifact_type": "OTHER", "required": true},
+        {"deliverable_id": "DEL_COC", "name": "Certificate of Conformity", "artifact_type": "ACCOMPLISHMENT_SUMMARY", "required": true}
+      ],
+      "reviews": [],
+      "parallel_allowed": true,
+      "rollback_allowed": false
+    },
+    {
+      "phase_id": "PH_SUPPORT",
+      "name": "Phase 7: Product Support",
+      "description": "In-service support and continuous improvement",
+      "order": 7,
+      "standard_reference": "Generic Product Development",
+      "entry_criteria": [{"criterion_id": "CR_PROD_RUNNING", "description": "Production running", "check_type": "MANUAL_APPROVAL"}],
+      "exit_criteria": [{"criterion_id": "CR_EOL", "description": "End of life", "check_type": "MANUAL_APPROVAL"}],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_FIELD_SUPPORT",
+          "name": "Field Support",
+          "order": 1,
+          "activities": [
+            {"activity_id": "ACT_WARRANTY", "name": "Warranty Support", "type": "IMPLEMENTATION", "required": true, "output_artifacts": ["WARRANTY_RECORDS"]},
+            {"activity_id": "ACT_SPARE_PARTS", "name": "Spare Parts Supply", "type": "IMPLEMENTATION", "required": true, "output_artifacts": ["SPARE_PARTS_LOG"]}
+          ]
+        },
+        {
+          "sub_phase_id": "SP_IMPROVEMENT",
+          "name": "Continuous Improvement",
+          "order": 2,
+          "activities": [
+            {"activity_id": "ACT_FIELD_DATA", "name": "Field Data Collection", "type": "ANALYSIS", "required": true, "output_artifacts": ["FIELD_DATA"]},
+            {"activity_id": "ACT_IMPROVEMENTS", "name": "Design Improvements", "type": "DESIGN", "required": false, "output_artifacts": ["ECN"]}
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_SERVICE_MANUAL", "name": "Service Manual", "artifact_type": "OTHER", "required": true},
+        {"deliverable_id": "DEL_FIELD_REPORT", "name": "Field Performance Report", "artifact_type": "ANALYSIS_REPORT", "required": true}
+      ],
+      "reviews": [],
+      "parallel_allowed": true,
+      "rollback_allowed": false
+    }
+  ],
+
+  "phase_dependencies": [
+    {"from_phase": "PH_PROD_CONCEPT", "to_phase": "PH_PROD_DESIGN", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_PROD_DESIGN", "to_phase": "PH_PROTOTYPE", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_PROTOTYPE", "to_phase": "PH_PROD_VERIF", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_PROD_VERIF", "to_phase": "PH_INDUSTRIALIZATION", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_INDUSTRIALIZATION", "to_phase": "PH_PRODUCTION", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_PRODUCTION", "to_phase": "PH_SUPPORT", "dependency_type": "START_TO_START"}
+  ],
+
+  "metadata": {
+    "author": "AISET Development Team",
+    "created_date": "2025-11-23",
+    "references": ["Generic Product Development Process", "APQP - Advanced Product Quality Planning"]
+  }
+}

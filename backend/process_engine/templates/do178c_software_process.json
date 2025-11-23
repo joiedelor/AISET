@@ -1,0 +1,800 @@
+{
+  "template_id": "DO178C_SOFTWARE_V1",
+  "name": "DO-178C Software Development Process",
+  "description": "Software development lifecycle per DO-178C Software Considerations in Airborne Systems and Equipment Certification",
+  "standard": "DO-178C",
+  "version": "1.0.0",
+  "applicable_ci_types": ["SOFTWARE"],
+  "dal_levels": ["DAL_A", "DAL_B", "DAL_C", "DAL_D"],
+
+  "phases": [
+    {
+      "phase_id": "PH_SW_PLANNING",
+      "name": "Software Planning Process",
+      "description": "Define software development and verification processes, standards, and environment",
+      "order": 1,
+      "standard_reference": "DO-178C Section 4",
+      "entry_criteria": [
+        {
+          "criterion_id": "CR_SYSTEM_REQ_ALLOCATED",
+          "description": "System requirements allocated to this software component",
+          "check_type": "ARTIFACT_EXISTS"
+        }
+      ],
+      "exit_criteria": [
+        {
+          "criterion_id": "CR_PLANS_APPROVED",
+          "description": "All software plans approved",
+          "check_type": "ARTIFACT_APPROVED"
+        }
+      ],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_PLAN_DEV",
+          "name": "Plan Development",
+          "order": 1,
+          "activities": [
+            {
+              "activity_id": "ACT_PSAC",
+              "name": "Plan for Software Aspects of Certification",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["PSAC"]
+            },
+            {
+              "activity_id": "ACT_SDP",
+              "name": "Software Development Plan",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["SW_SDP"]
+            },
+            {
+              "activity_id": "ACT_SVP",
+              "name": "Software Verification Plan",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["SW_SVP"]
+            },
+            {
+              "activity_id": "ACT_SCMP",
+              "name": "Software Configuration Management Plan",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["SCMP"]
+            },
+            {
+              "activity_id": "ACT_SQAP",
+              "name": "Software Quality Assurance Plan",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["SQAP"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_STANDARDS_DEF",
+          "name": "Standards Definition",
+          "order": 2,
+          "activities": [
+            {
+              "activity_id": "ACT_SRS_STD",
+              "name": "Software Requirements Standards",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["SW_REQ_STANDARDS"]
+            },
+            {
+              "activity_id": "ACT_SDS_STD",
+              "name": "Software Design Standards",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["SW_DESIGN_STANDARDS"]
+            },
+            {
+              "activity_id": "ACT_SCS_STD",
+              "name": "Software Code Standards",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["SW_CODE_STANDARDS"]
+            }
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_PSAC", "name": "Plan for Software Aspects of Certification", "artifact_type": "PLAN", "required": true},
+        {"deliverable_id": "DEL_SDP", "name": "Software Development Plan", "artifact_type": "PLAN", "required": true},
+        {"deliverable_id": "DEL_SVP", "name": "Software Verification Plan", "artifact_type": "PLAN", "required": true},
+        {"deliverable_id": "DEL_SCMP", "name": "Software Configuration Management Plan", "artifact_type": "PLAN", "required": true},
+        {"deliverable_id": "DEL_SQAP", "name": "Software Quality Assurance Plan", "artifact_type": "PLAN", "required": true}
+      ],
+      "reviews": [
+        {
+          "review_id": "REV_PLAN_REVIEW",
+          "name": "Planning Review",
+          "type": "PEER_REVIEW",
+          "entry_artifacts": ["PSAC", "SDP", "SVP", "SCMP", "SQAP"],
+          "exit_artifacts": ["PLAN_REVIEW_RECORD"]
+        }
+      ],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+
+    {
+      "phase_id": "PH_SW_REQUIREMENTS",
+      "name": "Software Requirements Process",
+      "description": "Develop high-level software requirements from system requirements",
+      "order": 2,
+      "standard_reference": "DO-178C Section 5.1",
+      "entry_criteria": [
+        {
+          "criterion_id": "CR_PLANS_COMPLETE",
+          "description": "Software plans complete",
+          "check_type": "ARTIFACT_EXISTS"
+        }
+      ],
+      "exit_criteria": [
+        {
+          "criterion_id": "CR_HLR_COMPLETE",
+          "description": "High-Level Requirements complete and reviewed",
+          "check_type": "ARTIFACT_APPROVED"
+        }
+      ],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_HLR_CAPTURE",
+          "name": "High-Level Requirements Capture",
+          "order": 1,
+          "activities": [
+            {
+              "activity_id": "ACT_HLR_DEV",
+              "name": "Develop High-Level Requirements",
+              "type": "INTERVIEW",
+              "required": true,
+              "output_artifacts": ["SW_HLR"]
+            },
+            {
+              "activity_id": "ACT_DERIVED_HLR",
+              "name": "Identify Derived High-Level Requirements",
+              "type": "ANALYSIS",
+              "required": true,
+              "output_artifacts": ["DERIVED_HLR"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_HLR_REVIEW",
+          "name": "Requirements Review",
+          "order": 2,
+          "activities": [
+            {
+              "activity_id": "ACT_HLR_REVIEW",
+              "name": "High-Level Requirements Review",
+              "type": "DOCUMENT_REVIEW",
+              "required": true,
+              "output_artifacts": ["HLR_REVIEW_RECORD"]
+            },
+            {
+              "activity_id": "ACT_HLR_TRACE",
+              "name": "Trace HLR to System Requirements",
+              "type": "VERIFICATION",
+              "required": true,
+              "output_artifacts": ["HLR_TRACE_DATA"]
+            }
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_SRS", "name": "Software Requirements Specification (HLR)", "artifact_type": "SPECIFICATION", "required": true},
+        {"deliverable_id": "DEL_HLR_TRACE", "name": "HLR Traceability Data", "artifact_type": "TRACEABILITY_MATRIX", "required": true}
+      ],
+      "reviews": [
+        {
+          "review_id": "REV_SRR",
+          "name": "Software Requirements Review",
+          "type": "PEER_REVIEW",
+          "entry_artifacts": ["SW_HLR"],
+          "exit_artifacts": ["SRR_RECORD"]
+        }
+      ],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+
+    {
+      "phase_id": "PH_SW_DESIGN",
+      "name": "Software Design Process",
+      "description": "Develop software architecture and low-level requirements",
+      "order": 3,
+      "standard_reference": "DO-178C Section 5.2",
+      "entry_criteria": [
+        {
+          "criterion_id": "CR_HLR_APPROVED",
+          "description": "HLR approved",
+          "check_type": "ARTIFACT_APPROVED"
+        }
+      ],
+      "exit_criteria": [
+        {
+          "criterion_id": "CR_DESIGN_COMPLETE",
+          "description": "Software design complete",
+          "check_type": "ARTIFACT_APPROVED"
+        }
+      ],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_ARCH_DESIGN",
+          "name": "Software Architecture Design",
+          "order": 1,
+          "activities": [
+            {
+              "activity_id": "ACT_SW_ARCH",
+              "name": "Define Software Architecture",
+              "type": "DESIGN",
+              "required": true,
+              "output_artifacts": ["SW_ARCHITECTURE"]
+            },
+            {
+              "activity_id": "ACT_DATA_FLOW",
+              "name": "Define Data and Control Flow",
+              "type": "DESIGN",
+              "required": true,
+              "output_artifacts": ["SW_DATA_FLOW"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_LLR_DEV",
+          "name": "Low-Level Requirements Development",
+          "order": 2,
+          "activities": [
+            {
+              "activity_id": "ACT_LLR_DEV",
+              "name": "Develop Low-Level Requirements",
+              "type": "DESIGN",
+              "required": true,
+              "dal_required": ["DAL_A", "DAL_B", "DAL_C"],
+              "output_artifacts": ["SW_LLR"]
+            },
+            {
+              "activity_id": "ACT_DERIVED_LLR",
+              "name": "Identify Derived Low-Level Requirements",
+              "type": "ANALYSIS",
+              "required": true,
+              "dal_required": ["DAL_A", "DAL_B", "DAL_C"],
+              "output_artifacts": ["DERIVED_LLR"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_DESIGN_REVIEW",
+          "name": "Design Review",
+          "order": 3,
+          "activities": [
+            {
+              "activity_id": "ACT_DESIGN_REVIEW",
+              "name": "Software Design Review",
+              "type": "DOCUMENT_REVIEW",
+              "required": true,
+              "output_artifacts": ["DESIGN_REVIEW_RECORD"]
+            },
+            {
+              "activity_id": "ACT_LLR_TRACE",
+              "name": "Trace LLR to HLR",
+              "type": "VERIFICATION",
+              "required": true,
+              "dal_required": ["DAL_A", "DAL_B", "DAL_C"],
+              "output_artifacts": ["LLR_TRACE_DATA"]
+            }
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_SDD", "name": "Software Design Description", "artifact_type": "DESIGN_DOCUMENT", "required": true},
+        {"deliverable_id": "DEL_LLR", "name": "Low-Level Requirements", "artifact_type": "SPECIFICATION", "required": true, "dal_required": ["DAL_A", "DAL_B", "DAL_C"]},
+        {"deliverable_id": "DEL_LLR_TRACE", "name": "LLR Traceability Data", "artifact_type": "TRACEABILITY_MATRIX", "required": true, "dal_required": ["DAL_A", "DAL_B", "DAL_C"]}
+      ],
+      "reviews": [
+        {
+          "review_id": "REV_SDR",
+          "name": "Software Design Review",
+          "type": "PDR",
+          "entry_artifacts": ["SW_ARCHITECTURE", "SW_LLR"],
+          "exit_artifacts": ["SDR_RECORD"]
+        }
+      ],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+
+    {
+      "phase_id": "PH_SW_CODING",
+      "name": "Software Coding Process",
+      "description": "Implement source code from software design",
+      "order": 4,
+      "standard_reference": "DO-178C Section 5.3",
+      "entry_criteria": [
+        {
+          "criterion_id": "CR_DESIGN_APPROVED",
+          "description": "Design approved",
+          "check_type": "ARTIFACT_APPROVED"
+        }
+      ],
+      "exit_criteria": [
+        {
+          "criterion_id": "CR_CODE_COMPLETE",
+          "description": "Source code complete and reviewed",
+          "check_type": "ARTIFACT_APPROVED"
+        }
+      ],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_CODE_IMPL",
+          "name": "Code Implementation",
+          "order": 1,
+          "activities": [
+            {
+              "activity_id": "ACT_CODING",
+              "name": "Source Code Implementation",
+              "type": "IMPLEMENTATION",
+              "required": true,
+              "output_artifacts": ["SOURCE_CODE"]
+            },
+            {
+              "activity_id": "ACT_CODE_TRACE",
+              "name": "Trace Source Code to LLR/HLR",
+              "type": "VERIFICATION",
+              "required": true,
+              "output_artifacts": ["CODE_TRACE_DATA"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_CODE_REVIEW",
+          "name": "Code Review",
+          "order": 2,
+          "activities": [
+            {
+              "activity_id": "ACT_CODE_REVIEW",
+              "name": "Source Code Review",
+              "type": "DOCUMENT_REVIEW",
+              "required": true,
+              "output_artifacts": ["CODE_REVIEW_RECORD"]
+            },
+            {
+              "activity_id": "ACT_CODE_STD_CHECK",
+              "name": "Code Standards Compliance Check",
+              "type": "VERIFICATION",
+              "required": true,
+              "output_artifacts": ["CODE_STD_COMPLIANCE"]
+            }
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_SOURCE", "name": "Source Code", "artifact_type": "SOURCE_CODE", "required": true},
+        {"deliverable_id": "DEL_CODE_TRACE", "name": "Code Traceability Data", "artifact_type": "TRACEABILITY_MATRIX", "required": true}
+      ],
+      "reviews": [
+        {
+          "review_id": "REV_CODE",
+          "name": "Code Review",
+          "type": "PEER_REVIEW",
+          "entry_artifacts": ["SOURCE_CODE"],
+          "exit_artifacts": ["CODE_REVIEW_RECORD"]
+        }
+      ],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+
+    {
+      "phase_id": "PH_SW_INTEGRATION",
+      "name": "Software Integration Process",
+      "description": "Combine software components and load into target hardware",
+      "order": 5,
+      "standard_reference": "DO-178C Section 5.4",
+      "entry_criteria": [
+        {
+          "criterion_id": "CR_CODE_APPROVED",
+          "description": "Source code reviewed and approved",
+          "check_type": "ARTIFACT_APPROVED"
+        }
+      ],
+      "exit_criteria": [
+        {
+          "criterion_id": "CR_INT_COMPLETE",
+          "description": "Integration complete",
+          "check_type": "ALL_ITEMS_COMPLETE"
+        }
+      ],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_SW_INT",
+          "name": "Software Component Integration",
+          "order": 1,
+          "activities": [
+            {
+              "activity_id": "ACT_SW_BUILD",
+              "name": "Build Executable Object Code",
+              "type": "IMPLEMENTATION",
+              "required": true,
+              "output_artifacts": ["EXECUTABLE"]
+            },
+            {
+              "activity_id": "ACT_LOAD_TARGET",
+              "name": "Load to Target Hardware",
+              "type": "IMPLEMENTATION",
+              "required": true,
+              "output_artifacts": ["LOADED_SW"]
+            }
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_EXEC", "name": "Executable Object Code", "artifact_type": "EXECUTABLE", "required": true}
+      ],
+      "reviews": [],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+
+    {
+      "phase_id": "PH_SW_VERIFICATION",
+      "name": "Software Verification Process",
+      "description": "Verify software meets requirements through reviews, analyses, and testing",
+      "order": 6,
+      "standard_reference": "DO-178C Section 6",
+      "entry_criteria": [
+        {
+          "criterion_id": "CR_SW_INTEGRATED",
+          "description": "Software integrated",
+          "check_type": "ARTIFACT_EXISTS"
+        }
+      ],
+      "exit_criteria": [
+        {
+          "criterion_id": "CR_VERIF_COMPLETE",
+          "description": "All verification activities complete",
+          "check_type": "COVERAGE_THRESHOLD",
+          "check_config": {"threshold": 100}
+        }
+      ],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_REQ_VERIF",
+          "name": "Requirements-Based Testing",
+          "order": 1,
+          "activities": [
+            {
+              "activity_id": "ACT_HLR_TEST",
+              "name": "High-Level Requirements Testing",
+              "type": "TEST",
+              "required": true,
+              "output_artifacts": ["HLR_TEST_RESULTS"]
+            },
+            {
+              "activity_id": "ACT_LLR_TEST",
+              "name": "Low-Level Requirements Testing",
+              "type": "TEST",
+              "required": true,
+              "dal_required": ["DAL_A", "DAL_B", "DAL_C"],
+              "output_artifacts": ["LLR_TEST_RESULTS"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_COVERAGE",
+          "name": "Structural Coverage Analysis",
+          "order": 2,
+          "activities": [
+            {
+              "activity_id": "ACT_STMT_COV",
+              "name": "Statement Coverage Analysis",
+              "type": "ANALYSIS",
+              "required": true,
+              "dal_required": ["DAL_A", "DAL_B", "DAL_C"],
+              "output_artifacts": ["STMT_COVERAGE"]
+            },
+            {
+              "activity_id": "ACT_DEC_COV",
+              "name": "Decision Coverage Analysis",
+              "type": "ANALYSIS",
+              "required": true,
+              "dal_required": ["DAL_A", "DAL_B"],
+              "output_artifacts": ["DEC_COVERAGE"]
+            },
+            {
+              "activity_id": "ACT_MCDC_COV",
+              "name": "MC/DC Coverage Analysis",
+              "type": "ANALYSIS",
+              "required": true,
+              "dal_required": ["DAL_A"],
+              "output_artifacts": ["MCDC_COVERAGE"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_ANALYSIS",
+          "name": "Analysis Activities",
+          "order": 3,
+          "activities": [
+            {
+              "activity_id": "ACT_DATA_COUPLING",
+              "name": "Data Coupling Analysis",
+              "type": "ANALYSIS",
+              "required": true,
+              "dal_required": ["DAL_A", "DAL_B"],
+              "output_artifacts": ["DATA_COUPLING_REPORT"]
+            },
+            {
+              "activity_id": "ACT_CTRL_COUPLING",
+              "name": "Control Coupling Analysis",
+              "type": "ANALYSIS",
+              "required": true,
+              "dal_required": ["DAL_A", "DAL_B"],
+              "output_artifacts": ["CTRL_COUPLING_REPORT"]
+            },
+            {
+              "activity_id": "ACT_TIMING",
+              "name": "Timing and Memory Analysis",
+              "type": "ANALYSIS",
+              "required": true,
+              "output_artifacts": ["TIMING_ANALYSIS"]
+            }
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_SVR", "name": "Software Verification Results", "artifact_type": "TEST_REPORT", "required": true},
+        {"deliverable_id": "DEL_COVERAGE", "name": "Structural Coverage Analysis", "artifact_type": "ANALYSIS_REPORT", "required": true, "dal_required": ["DAL_A", "DAL_B", "DAL_C"]},
+        {"deliverable_id": "DEL_TEST_CASES", "name": "Software Test Cases and Procedures", "artifact_type": "TEST_PROCEDURE", "required": true}
+      ],
+      "reviews": [
+        {
+          "review_id": "REV_VERIF",
+          "name": "Verification Results Review",
+          "type": "PEER_REVIEW",
+          "entry_artifacts": ["TEST_RESULTS", "COVERAGE"],
+          "exit_artifacts": ["VERIF_REVIEW_RECORD"]
+        }
+      ],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+
+    {
+      "phase_id": "PH_SW_CM",
+      "name": "Software Configuration Management",
+      "description": "Identify, control, and track software configuration items",
+      "order": 7,
+      "standard_reference": "DO-178C Section 7",
+      "entry_criteria": [],
+      "exit_criteria": [
+        {
+          "criterion_id": "CR_CONFIG_COMPLETE",
+          "description": "Configuration management complete",
+          "check_type": "ARTIFACT_EXISTS"
+        }
+      ],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_CONFIG_ID",
+          "name": "Configuration Identification",
+          "order": 1,
+          "activities": [
+            {
+              "activity_id": "ACT_SCI_ID",
+              "name": "Identify Software Configuration Items",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["SCI_LIST"]
+            },
+            {
+              "activity_id": "ACT_BASELINE",
+              "name": "Establish Baselines",
+              "type": "BASELINE",
+              "required": true,
+              "output_artifacts": ["SW_BASELINE"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_CHANGE_CTRL",
+          "name": "Change Control",
+          "order": 2,
+          "activities": [
+            {
+              "activity_id": "ACT_PR_MGMT",
+              "name": "Problem Report Management",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["PROBLEM_REPORTS"]
+            },
+            {
+              "activity_id": "ACT_CHANGE_CTRL",
+              "name": "Change Control Board",
+              "type": "APPROVAL",
+              "required": true,
+              "output_artifacts": ["CHANGE_RECORDS"]
+            }
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_SCI", "name": "Software Configuration Index", "artifact_type": "CONFIGURATION_INDEX", "required": true},
+        {"deliverable_id": "DEL_PR", "name": "Problem Reports", "artifact_type": "OTHER", "required": true}
+      ],
+      "reviews": [
+        {
+          "review_id": "REV_FCA",
+          "name": "Functional Configuration Audit",
+          "type": "FCA",
+          "entry_artifacts": ["SCI", "TEST_RESULTS"],
+          "exit_artifacts": ["FCA_RECORD"]
+        },
+        {
+          "review_id": "REV_PCA",
+          "name": "Physical Configuration Audit",
+          "type": "PCA",
+          "entry_artifacts": ["SCI", "SOURCE_CODE", "EXECUTABLE"],
+          "exit_artifacts": ["PCA_RECORD"]
+        }
+      ],
+      "parallel_allowed": true,
+      "rollback_allowed": false
+    },
+
+    {
+      "phase_id": "PH_SW_QA",
+      "name": "Software Quality Assurance",
+      "description": "Ensure software development processes are followed",
+      "order": 8,
+      "standard_reference": "DO-178C Section 8",
+      "entry_criteria": [],
+      "exit_criteria": [
+        {
+          "criterion_id": "CR_QA_COMPLETE",
+          "description": "QA activities complete",
+          "check_type": "ARTIFACT_EXISTS"
+        }
+      ],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_QA_AUDIT",
+          "name": "QA Audits",
+          "order": 1,
+          "activities": [
+            {
+              "activity_id": "ACT_PROCESS_AUDIT",
+              "name": "Process Audits",
+              "type": "AUDIT",
+              "required": true,
+              "output_artifacts": ["AUDIT_RECORDS"]
+            },
+            {
+              "activity_id": "ACT_PROD_AUDIT",
+              "name": "Product Audits",
+              "type": "AUDIT",
+              "required": true,
+              "output_artifacts": ["PRODUCT_AUDIT_RECORDS"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_CONFORMITY",
+          "name": "Conformity Review",
+          "order": 2,
+          "activities": [
+            {
+              "activity_id": "ACT_CONFORMITY",
+              "name": "Software Conformity Review",
+              "type": "DOCUMENT_REVIEW",
+              "required": true,
+              "output_artifacts": ["CONFORMITY_REVIEW"]
+            }
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_QA_RECORDS", "name": "Software QA Records", "artifact_type": "REVIEW_RECORD", "required": true}
+      ],
+      "reviews": [],
+      "parallel_allowed": true,
+      "rollback_allowed": false
+    },
+
+    {
+      "phase_id": "PH_SW_CERTIFICATION",
+      "name": "Software Certification Liaison",
+      "description": "Prepare certification data and liaise with certification authority",
+      "order": 9,
+      "standard_reference": "DO-178C Section 9",
+      "entry_criteria": [
+        {
+          "criterion_id": "CR_VERIF_COMPLETE",
+          "description": "Verification complete",
+          "check_type": "ARTIFACT_EXISTS"
+        },
+        {
+          "criterion_id": "CR_QA_COMPLETE",
+          "description": "QA complete",
+          "check_type": "ARTIFACT_EXISTS"
+        }
+      ],
+      "exit_criteria": [
+        {
+          "criterion_id": "CR_SAS_COMPLETE",
+          "description": "Software Accomplishment Summary complete",
+          "check_type": "ARTIFACT_APPROVED"
+        }
+      ],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_CERT_DATA",
+          "name": "Certification Data Preparation",
+          "order": 1,
+          "activities": [
+            {
+              "activity_id": "ACT_SAS",
+              "name": "Software Accomplishment Summary",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["SAS"]
+            },
+            {
+              "activity_id": "ACT_CERT_PACKAGE",
+              "name": "Compile Certification Package",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["CERT_PACKAGE"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_AUTHORITY",
+          "name": "Authority Liaison",
+          "order": 2,
+          "activities": [
+            {
+              "activity_id": "ACT_SOI",
+              "name": "Stage of Involvement Reviews",
+              "type": "APPROVAL",
+              "required": true,
+              "output_artifacts": ["SOI_RECORDS"]
+            }
+          ]
+        }
+      ],
+      "deliverables": [
+        {"deliverable_id": "DEL_SAS", "name": "Software Accomplishment Summary (SAS)", "artifact_type": "ACCOMPLISHMENT_SUMMARY", "required": true},
+        {"deliverable_id": "DEL_SLECI", "name": "Software Life Cycle Environment CI", "artifact_type": "CONFIGURATION_INDEX", "required": true}
+      ],
+      "reviews": [],
+      "parallel_allowed": false,
+      "rollback_allowed": false
+    }
+  ],
+
+  "phase_dependencies": [
+    {"from_phase": "PH_SW_PLANNING", "to_phase": "PH_SW_REQUIREMENTS", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_SW_REQUIREMENTS", "to_phase": "PH_SW_DESIGN", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_SW_DESIGN", "to_phase": "PH_SW_CODING", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_SW_CODING", "to_phase": "PH_SW_INTEGRATION", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_SW_INTEGRATION", "to_phase": "PH_SW_VERIFICATION", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_SW_VERIFICATION", "to_phase": "PH_SW_CERTIFICATION", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_SW_PLANNING", "to_phase": "PH_SW_CM", "dependency_type": "START_TO_START"},
+    {"from_phase": "PH_SW_PLANNING", "to_phase": "PH_SW_QA", "dependency_type": "START_TO_START"}
+  ],
+
+  "metadata": {
+    "author": "AISET Development Team",
+    "created_date": "2025-11-23",
+    "last_modified": "2025-11-23",
+    "references": [
+      "DO-178C - Software Considerations in Airborne Systems and Equipment Certification (December 2011)",
+      "DO-330 - Software Tool Qualification Considerations (December 2011)",
+      "DO-331 - Model-Based Development and Verification Supplement (December 2011)"
+    ]
+  }
+}

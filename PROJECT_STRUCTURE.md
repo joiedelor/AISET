@@ -72,6 +72,21 @@ aiset/
 │   │   ├── document_export.py        # Document exports (REQ-DB-MODEL-011)
 │   │   └── configuration_item.py     # Configuration Items & BOM (REQ-AI-038-040)
 │   │
+│   ├── 📂 process_engine/            # **NEW** State Machine Framework (REQ-SM, REQ-IS, REQ-DC, REQ-AG)
+│   │   ├── __init__.py               # Package exports
+│   │   ├── README.md                 # Process engine documentation
+│   │   ├── 📂 schemas/
+│   │   │   ├── process_template_schema.json  # JSON Schema for templates
+│   │   │   └── process_engine_ddl.sql        # Database schema (9 tables)
+│   │   ├── 📂 services/
+│   │   │   └── state_machine_generator.py    # Core state machine logic (~550 lines)
+│   │   └── 📂 templates/
+│   │       ├── arp4754a_system_process.json  # ARP4754A (10 phases)
+│   │       ├── do178c_software_process.json  # DO-178C (9 phases)
+│   │       ├── do254_hardware_process.json   # DO-254 (8 phases)
+│   │       ├── product_development_process.json  # Physical products (7 phases)
+│   │       └── component_part_process.json   # Components/Parts (5 phases)
+│   │
 │   ├── 📂 services/                  # Business logic layer
 │   │   ├── ai_service.py             # Claude/LM Studio integration (REQ-SERVICE-001)
 │   │   ├── ai_context_loader.py      # AI context management (REQ-AI-045-047)

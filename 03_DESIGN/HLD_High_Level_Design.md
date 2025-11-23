@@ -1,8 +1,8 @@
 # AISET - High-Level Design (HLD)
 
 **Document Type:** [Level 1] AISET Tool Development - DO-178C DAL D
-**Document Version:** 1.2.0
-**Last Updated:** 2025-11-22
+**Document Version:** 1.3.0
+**Last Updated:** 2025-11-23
 **Status:** Draft - In Review
 **Applicable Standards:** DO-178C (Software), ARP4754A (System), DO-254 (Hardware reference)
 
@@ -17,6 +17,7 @@
 | 1.0.0 | 2025-11-16 | Claude + User | Initial HLD creation - Architecture definition |
 | 1.1.0 | 2025-11-22 | Claude + User | Added Project Initialization Interview Flow (Section 5.1), conversation persistence architecture |
 | 1.2.0 | 2025-11-22 | Claude + User | Added AI Controller Architecture (4.5), Guardrails Middleware (4.6), AI Roles (4.7), Micro-Interaction Pattern (4.8) |
+| 1.3.0 | 2025-11-23 | Claude + User | Added Process Engine reference (Section 4.9) - Codification of Systems Engineer |
 
 ### Approval
 
@@ -835,6 +836,93 @@ CONSTRAINTS:
 4. Context can be rebuilt at any time
 
 **Traces to:** REQ-AI-056 through REQ-AI-058
+
+---
+
+### 4.9 Process Engine (Codification of Systems Engineer)
+
+The Process Engine is the deterministic core of AISET that replaces "AI intelligence" with "process knowledge". This component enables AISET to function without requiring AI for core functionality.
+
+#### 4.9.1 Design Philosophy
+
+**Key Insight:** The AISET-AI is NOT an intelligent decision-maker. It is a **rigorous process executor**.
+
+| Aspect | Process Engine (Deterministic) | AI Engine (Optional) |
+|--------|-------------------------------|----------------------|
+| What questions to ask | Hardcoded interview scripts | N/A |
+| What order to ask | State machine transitions | N/A |
+| Where to store data | Schema mapping definitions | N/A |
+| Validation rules | Coded validation logic | N/A |
+| Question phrasing | Multiple variants in scripts | AI rephrases naturally |
+| Handling unexpected input | Validation + retry | AI interprets |
+
+#### 4.9.2 Process Engine Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                      PROCESS ENGINE                                      │
+│                                                                          │
+│  ┌──────────────────┐    ┌──────────────────┐    ┌───────────────────┐ │
+│  │  State Machine   │    │  Interview       │    │  Data Capture     │ │
+│  │  Controller      │───▶│  Script Executor │───▶│  Pipeline         │ │
+│  │  (Phase/Sub-     │    │  (Question       │    │  (Validate,       │ │
+│  │   phase flow)    │    │   selection)     │    │   Transform,      │ │
+│  └──────────────────┘    └──────────────────┘    │   Store)          │ │
+│                                                   └───────────────────┘ │
+│           │                                               │             │
+│           ▼                                               ▼             │
+│  ┌──────────────────┐                          ┌───────────────────┐   │
+│  │  Artifact        │                          │  NLP Wrapper      │   │
+│  │  Generator       │                          │  (OPTIONAL)       │   │
+│  │  (Templates)     │                          │  AI polish only   │   │
+│  └──────────────────┘                          └───────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+#### 4.9.3 Core Components
+
+1. **State Machine Controller**
+   - Manages 10 development lifecycle phases
+   - Enforces phase preconditions and completion criteria
+   - Supports parallel phases and rollback
+   - **Traces to:** REQ-SM-001 through REQ-SM-006
+
+2. **Interview Script Executor**
+   - Loads JSON-defined interview scripts
+   - Selects questions based on context
+   - Handles conditional branching
+   - **Traces to:** REQ-IS-001 through REQ-IS-008
+
+3. **Data Capture Pipeline**
+   - Validates all input against rules
+   - Transforms data for storage
+   - Auto-populates derived fields
+   - Creates traceability links automatically
+   - **Traces to:** REQ-DC-001 through REQ-DC-006
+
+4. **Artifact Generator**
+   - Template-based document generation (Jinja2)
+   - Generates SRS, HLD, RTM, Gap Analysis
+   - Incremental updates on data change
+   - **Traces to:** REQ-AG-001 through REQ-AG-005
+
+5. **NLP Wrapper (Optional)**
+   - Optional AI layer for natural language polish
+   - System works fully without this component
+   - **Traces to:** REQ-NL-001 through REQ-NL-003
+
+#### 4.9.4 Detailed Design Reference
+
+For complete Process Engine design including:
+- State machine data models
+- Interview script JSON schema
+- Data capture service implementation
+- Template engine architecture
+- Database schema extensions
+
+See: **`03_DESIGN/HLD_Process_Engine_Architecture.md`** (v1.0.0)
+
+**Requirements Reference:** **`02_REQUIREMENTS/SRS_Process_Engine_Requirements.md`** (v1.0.0)
 
 ---
 

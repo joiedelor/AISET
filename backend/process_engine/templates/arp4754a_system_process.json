@@ -1,0 +1,1431 @@
+{
+  "template_id": "ARP4754A_SYSTEM_V1",
+  "name": "ARP4754A System Development Process",
+  "description": "Complete system development lifecycle per ARP4754A Guidelines for Development of Civil Aircraft and Systems, aligned with Project_Plan.md 10-phase process",
+  "standard": "ARP4754A",
+  "version": "1.0.0",
+  "applicable_ci_types": ["SYSTEM", "SUBSYSTEM"],
+  "dal_levels": ["DAL_A", "DAL_B", "DAL_C", "DAL_D", "DAL_E"],
+
+  "phases": [
+    {
+      "phase_id": "PH_REQUIREMENTS_CAPTURE",
+      "name": "Phase 1: Requirements Capture & Definition",
+      "description": "Capture stakeholder needs, develop system requirements, conduct initial safety assessment, plan architecture",
+      "order": 1,
+      "standard_reference": "ARP4754A Section 5.1",
+      "entry_criteria": [
+        {
+          "criterion_id": "CR_PROJECT_CREATED",
+          "description": "Project has been created in AISET",
+          "check_type": "ARTIFACT_EXISTS",
+          "check_config": {"artifact_type": "PROJECT"}
+        }
+      ],
+      "exit_criteria": [
+        {
+          "criterion_id": "CR_STRS_COMPLETE",
+          "description": "Stakeholder Requirements Specification complete",
+          "check_type": "ARTIFACT_EXISTS",
+          "check_config": {"artifact_type": "SPECIFICATION", "name_pattern": "StRS*"}
+        },
+        {
+          "criterion_id": "CR_SYRS_COMPLETE",
+          "description": "System Requirements Specification complete",
+          "check_type": "ARTIFACT_EXISTS",
+          "check_config": {"artifact_type": "SPECIFICATION", "name_pattern": "SyRS*"}
+        },
+        {
+          "criterion_id": "CR_FHA_COMPLETE",
+          "description": "Functional Hazard Assessment complete",
+          "check_type": "ARTIFACT_EXISTS",
+          "check_config": {"artifact_type": "SAFETY_ASSESSMENT", "name_pattern": "FHA*"},
+          "dal_required": ["DAL_A", "DAL_B", "DAL_C", "DAL_D"]
+        }
+      ],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_STAKEHOLDER_NEEDS",
+          "name": "Stakeholder Needs Capture",
+          "description": "Capture functional, performance, safety, security, environmental, regulatory, and cost requirements from stakeholders",
+          "order": 1,
+          "activities": [
+            {
+              "activity_id": "ACT_CAPTURE_FUNCTIONAL",
+              "name": "Capture Functional Requirements",
+              "type": "INTERVIEW",
+              "required": true,
+              "interview_questions": [
+                {"question_id": "Q_FUNC_001", "required": true},
+                {"question_id": "Q_FUNC_002", "required": true}
+              ],
+              "output_artifacts": ["STAKEHOLDER_REQ_FUNCTIONAL"]
+            },
+            {
+              "activity_id": "ACT_CAPTURE_PERFORMANCE",
+              "name": "Capture Performance Requirements",
+              "type": "INTERVIEW",
+              "required": true,
+              "output_artifacts": ["STAKEHOLDER_REQ_PERFORMANCE"]
+            },
+            {
+              "activity_id": "ACT_CAPTURE_SAFETY",
+              "name": "Capture Safety Requirements",
+              "type": "INTERVIEW",
+              "required": true,
+              "output_artifacts": ["STAKEHOLDER_REQ_SAFETY"]
+            },
+            {
+              "activity_id": "ACT_CAPTURE_SECURITY",
+              "name": "Capture Security Requirements",
+              "type": "INTERVIEW",
+              "required": false,
+              "output_artifacts": ["STAKEHOLDER_REQ_SECURITY"]
+            },
+            {
+              "activity_id": "ACT_CAPTURE_ENV",
+              "name": "Capture Environmental Requirements",
+              "type": "INTERVIEW",
+              "required": true,
+              "output_artifacts": ["STAKEHOLDER_REQ_ENVIRONMENTAL"]
+            },
+            {
+              "activity_id": "ACT_CAPTURE_REGULATORY",
+              "name": "Capture Regulatory Requirements",
+              "type": "INTERVIEW",
+              "required": true,
+              "output_artifacts": ["STAKEHOLDER_REQ_REGULATORY"]
+            }
+          ],
+          "completion_criteria": [
+            {
+              "criterion_id": "CR_STAKEHOLDER_REQS",
+              "description": "At least one stakeholder requirement captured",
+              "check_type": "ALL_ITEMS_COMPLETE"
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_SYSTEM_REQUIREMENTS",
+          "name": "System Requirements Development",
+          "description": "Derive technical system requirements from stakeholder needs",
+          "order": 2,
+          "activities": [
+            {
+              "activity_id": "ACT_DERIVE_SYSTEM_REQ",
+              "name": "Derive System Requirements",
+              "type": "INTERVIEW",
+              "required": true,
+              "input_artifacts": ["STAKEHOLDER_REQ_FUNCTIONAL", "STAKEHOLDER_REQ_PERFORMANCE"],
+              "output_artifacts": ["SYSTEM_REQUIREMENTS"]
+            },
+            {
+              "activity_id": "ACT_DEFINE_OPS_ENV",
+              "name": "Define Operational & Environmental Conditions",
+              "type": "INTERVIEW",
+              "required": true,
+              "output_artifacts": ["OPS_ENV_DEFINITION"]
+            },
+            {
+              "activity_id": "ACT_ESTABLISH_DERIVED",
+              "name": "Establish Derived Requirements",
+              "type": "ANALYSIS",
+              "required": true,
+              "output_artifacts": ["DERIVED_REQUIREMENTS"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_SAFETY_ASSESSMENT",
+          "name": "Initial Safety & Risk Assessment",
+          "description": "Conduct Functional Hazard Assessment per ARP4761",
+          "order": 3,
+          "activities": [
+            {
+              "activity_id": "ACT_FHA",
+              "name": "Functional Hazard Assessment",
+              "type": "ANALYSIS",
+              "required": true,
+              "dal_required": ["DAL_A", "DAL_B", "DAL_C", "DAL_D"],
+              "output_artifacts": ["FHA_REPORT"]
+            },
+            {
+              "activity_id": "ACT_HAZARD_ID",
+              "name": "Identify Hazards and Failure Conditions",
+              "type": "INTERVIEW",
+              "required": true,
+              "output_artifacts": ["HAZARD_LIST"]
+            },
+            {
+              "activity_id": "ACT_SAFETY_OBJ",
+              "name": "Establish Safety Objectives",
+              "type": "ANALYSIS",
+              "required": true,
+              "output_artifacts": ["SAFETY_OBJECTIVES"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_ARCH_PLANNING",
+          "name": "Architecture Planning",
+          "description": "Explore system architecture alternatives and conduct trade studies",
+          "order": 4,
+          "activities": [
+            {
+              "activity_id": "ACT_ARCH_ALTERNATIVES",
+              "name": "Explore Architecture Alternatives",
+              "type": "DESIGN",
+              "required": true,
+              "output_artifacts": ["ARCH_ALTERNATIVES"]
+            },
+            {
+              "activity_id": "ACT_TRADE_STUDIES",
+              "name": "Conduct Trade Studies",
+              "type": "ANALYSIS",
+              "required": true,
+              "output_artifacts": ["TRADE_STUDY_REPORT"]
+            },
+            {
+              "activity_id": "ACT_DEFINE_BOUNDARIES",
+              "name": "Define System Boundaries and Interfaces",
+              "type": "DESIGN",
+              "required": true,
+              "output_artifacts": ["SYSTEM_BOUNDARIES"]
+            }
+          ]
+        }
+      ],
+      "deliverables": [
+        {
+          "deliverable_id": "DEL_STRS",
+          "name": "Stakeholder Requirements Specification (StRS)",
+          "artifact_type": "SPECIFICATION",
+          "template_id": "TPL_STRS",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_SYRS",
+          "name": "System Requirements Specification (SyRS)",
+          "artifact_type": "SPECIFICATION",
+          "template_id": "TPL_SYRS",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_OPS_ENV",
+          "name": "Operational & Environmental Definition Document",
+          "artifact_type": "SPECIFICATION",
+          "template_id": "TPL_OPS_ENV",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_FHA",
+          "name": "Functional Hazard Assessment (FHA)",
+          "artifact_type": "SAFETY_ASSESSMENT",
+          "template_id": "TPL_FHA",
+          "required": true,
+          "dal_required": ["DAL_A", "DAL_B", "DAL_C", "DAL_D"]
+        },
+        {
+          "deliverable_id": "DEL_SDP",
+          "name": "System Development Plan (SDP)",
+          "artifact_type": "PLAN",
+          "template_id": "TPL_SDP",
+          "required": true
+        }
+      ],
+      "reviews": [
+        {
+          "review_id": "REV_SRR",
+          "name": "System Requirements Review (SRR)",
+          "type": "SRR",
+          "standard_reference": "ARP4754A Section 5.4",
+          "entry_artifacts": ["STAKEHOLDER_REQ", "SYSTEM_REQ", "FHA"],
+          "exit_artifacts": ["SRR_RECORD"]
+        }
+      ],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+
+    {
+      "phase_id": "PH_ARCHITECTURE_DEFINITION",
+      "name": "Phase 2: System Architecture Definition & Allocation",
+      "description": "Define functional and physical architecture, allocate requirements, assign DAL levels",
+      "order": 2,
+      "standard_reference": "ARP4754A Section 5.2",
+      "entry_criteria": [
+        {
+          "criterion_id": "CR_PHASE1_COMPLETE",
+          "description": "Phase 1 requirements capture complete",
+          "check_type": "ARTIFACT_APPROVED",
+          "check_config": {"phase": "PH_REQUIREMENTS_CAPTURE"}
+        }
+      ],
+      "exit_criteria": [
+        {
+          "criterion_id": "CR_ARCH_COMPLETE",
+          "description": "System Architecture Description complete and approved",
+          "check_type": "ARTIFACT_APPROVED",
+          "check_config": {"artifact_type": "DESIGN_DOCUMENT", "name_pattern": "SAD*"}
+        },
+        {
+          "criterion_id": "CR_DAL_ASSIGNED",
+          "description": "DAL levels assigned to all subsystems",
+          "check_type": "ALL_ITEMS_COMPLETE",
+          "check_config": {"item_type": "DAL_ASSIGNMENT"}
+        }
+      ],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_FUNCTIONAL_ARCH",
+          "name": "Functional Architecture Development",
+          "description": "Define functions and data flows",
+          "order": 1,
+          "activities": [
+            {
+              "activity_id": "ACT_DEFINE_FUNCTIONS",
+              "name": "Define System Functions",
+              "type": "DESIGN",
+              "required": true,
+              "output_artifacts": ["FUNCTIONAL_ARCHITECTURE"]
+            },
+            {
+              "activity_id": "ACT_DATA_FLOWS",
+              "name": "Define Data Flows",
+              "type": "DESIGN",
+              "required": true,
+              "output_artifacts": ["DATA_FLOW_DIAGRAMS"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_PHYSICAL_ARCH",
+          "name": "Physical Architecture Development",
+          "description": "Define physical components, locations, redundancy",
+          "order": 2,
+          "activities": [
+            {
+              "activity_id": "ACT_PHYSICAL_COMPONENTS",
+              "name": "Define Physical Components",
+              "type": "DESIGN",
+              "required": true,
+              "output_artifacts": ["PHYSICAL_ARCHITECTURE"]
+            },
+            {
+              "activity_id": "ACT_PARTITIONING",
+              "name": "Establish Partitioning Strategy",
+              "type": "DESIGN",
+              "required": true,
+              "dal_required": ["DAL_A", "DAL_B", "DAL_C"],
+              "output_artifacts": ["PARTITIONING_STRATEGY"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_REQ_ALLOCATION",
+          "name": "Requirements Allocation",
+          "description": "Allocate system requirements to subsystems and components",
+          "order": 3,
+          "activities": [
+            {
+              "activity_id": "ACT_ALLOCATE_REQS",
+              "name": "Allocate Requirements to Subsystems",
+              "type": "ANALYSIS",
+              "required": true,
+              "output_artifacts": ["ALLOCATION_MATRIX"]
+            },
+            {
+              "activity_id": "ACT_INTERFACE_REQS",
+              "name": "Establish Interface Requirements",
+              "type": "DESIGN",
+              "required": true,
+              "output_artifacts": ["INTERFACE_REQUIREMENTS"]
+            },
+            {
+              "activity_id": "ACT_DERIVED_SUBSYS",
+              "name": "Identify Derived Requirements at Subsystem Level",
+              "type": "ANALYSIS",
+              "required": true,
+              "output_artifacts": ["SUBSYSTEM_DERIVED_REQS"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_SAFETY_ASSURANCE",
+          "name": "Safety & Assurance",
+          "description": "Update safety analysis and assign DAL levels",
+          "order": 4,
+          "activities": [
+            {
+              "activity_id": "ACT_PSSA",
+              "name": "Preliminary System Safety Assessment",
+              "type": "ANALYSIS",
+              "required": true,
+              "dal_required": ["DAL_A", "DAL_B", "DAL_C", "DAL_D"],
+              "output_artifacts": ["PSSA_REPORT"]
+            },
+            {
+              "activity_id": "ACT_DAL_ASSIGNMENT",
+              "name": "Assign Development Assurance Levels",
+              "type": "ANALYSIS",
+              "required": true,
+              "output_artifacts": ["DAL_ASSIGNMENTS"]
+            },
+            {
+              "activity_id": "ACT_CCA_STRATEGY",
+              "name": "Establish Common Cause Analysis Strategy",
+              "type": "ANALYSIS",
+              "required": true,
+              "dal_required": ["DAL_A", "DAL_B"],
+              "output_artifacts": ["CCA_STRATEGY"]
+            }
+          ]
+        }
+      ],
+      "deliverables": [
+        {
+          "deliverable_id": "DEL_SAD",
+          "name": "System Architecture Description",
+          "artifact_type": "DESIGN_DOCUMENT",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_ALLOC_MATRIX",
+          "name": "Requirements Allocation Matrix",
+          "artifact_type": "TRACEABILITY_MATRIX",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_ICD",
+          "name": "Interface Control Documents (ICDs)",
+          "artifact_type": "SPECIFICATION",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_PSSA",
+          "name": "Preliminary System Safety Assessment (PSSA)",
+          "artifact_type": "SAFETY_ASSESSMENT",
+          "required": true,
+          "dal_required": ["DAL_A", "DAL_B", "DAL_C", "DAL_D"]
+        },
+        {
+          "deliverable_id": "DEL_SVP",
+          "name": "System Verification Plan",
+          "artifact_type": "PLAN",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_SVALP",
+          "name": "System Validation Plan",
+          "artifact_type": "PLAN",
+          "required": true
+        }
+      ],
+      "reviews": [
+        {
+          "review_id": "REV_SDR",
+          "name": "System Design Review (SDR)",
+          "type": "SDR",
+          "standard_reference": "ARP4754A Section 5.4",
+          "entry_artifacts": ["SYSTEM_ARCHITECTURE", "ALLOCATION_MATRIX", "PSSA"],
+          "exit_artifacts": ["SDR_RECORD"]
+        }
+      ],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+
+    {
+      "phase_id": "PH_DETAILED_DESIGN",
+      "name": "Phase 3: Subsystem & Component Detailed Design",
+      "description": "Detailed design per subsystem domain, implementation, subsystem verification",
+      "order": 3,
+      "standard_reference": "ARP4754A Section 5.3, DO-178C, DO-254",
+      "entry_criteria": [
+        {
+          "criterion_id": "CR_ARCH_APPROVED",
+          "description": "System architecture approved at SDR",
+          "check_type": "REVIEW_PASSED",
+          "check_config": {"review_id": "REV_SDR"}
+        }
+      ],
+      "exit_criteria": [
+        {
+          "criterion_id": "CR_DESIGN_COMPLETE",
+          "description": "All subsystem designs complete",
+          "check_type": "ALL_ITEMS_COMPLETE"
+        },
+        {
+          "criterion_id": "CR_UNIT_TESTS_PASS",
+          "description": "Unit tests passed",
+          "check_type": "COVERAGE_THRESHOLD",
+          "check_config": {"threshold": 100}
+        }
+      ],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_SW_DESIGN",
+          "name": "Software Detailed Design",
+          "description": "Software design per DO-178C",
+          "order": 1,
+          "activities": [
+            {
+              "activity_id": "ACT_SW_HLD",
+              "name": "Software High-Level Design",
+              "type": "DESIGN",
+              "required": true,
+              "output_artifacts": ["SW_HLD"]
+            },
+            {
+              "activity_id": "ACT_SW_LLD",
+              "name": "Software Low-Level Design",
+              "type": "DESIGN",
+              "required": true,
+              "dal_required": ["DAL_A", "DAL_B", "DAL_C"],
+              "output_artifacts": ["SW_LLD"]
+            },
+            {
+              "activity_id": "ACT_SW_CODE",
+              "name": "Software Coding",
+              "type": "IMPLEMENTATION",
+              "required": true,
+              "output_artifacts": ["SOURCE_CODE"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_HW_DESIGN",
+          "name": "Hardware Detailed Design",
+          "description": "Hardware design per DO-254",
+          "order": 2,
+          "activities": [
+            {
+              "activity_id": "ACT_HW_DESIGN",
+              "name": "Hardware Design",
+              "type": "DESIGN",
+              "required": true,
+              "output_artifacts": ["HW_DESIGN", "SCHEMATICS"]
+            },
+            {
+              "activity_id": "ACT_HW_IMPL",
+              "name": "Hardware Implementation",
+              "type": "IMPLEMENTATION",
+              "required": true,
+              "output_artifacts": ["HW_PROTOTYPE"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_MECH_DESIGN",
+          "name": "Mechanical Detailed Design",
+          "description": "Mechanical design",
+          "order": 3,
+          "activities": [
+            {
+              "activity_id": "ACT_MECH_DESIGN",
+              "name": "Mechanical Design",
+              "type": "DESIGN",
+              "required": true,
+              "output_artifacts": ["CAD_MODELS", "DRAWINGS"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_SUBSYS_VERIF",
+          "name": "Subsystem Verification",
+          "description": "Unit testing and component testing",
+          "order": 4,
+          "activities": [
+            {
+              "activity_id": "ACT_UNIT_TEST",
+              "name": "Unit Testing",
+              "type": "TEST",
+              "required": true,
+              "output_artifacts": ["UNIT_TEST_RESULTS"]
+            },
+            {
+              "activity_id": "ACT_CODE_REVIEW",
+              "name": "Code Reviews",
+              "type": "DOCUMENT_REVIEW",
+              "required": true,
+              "dal_required": ["DAL_A", "DAL_B", "DAL_C"],
+              "output_artifacts": ["CODE_REVIEW_RECORDS"]
+            },
+            {
+              "activity_id": "ACT_DESIGN_REVIEW",
+              "name": "Design Reviews",
+              "type": "DOCUMENT_REVIEW",
+              "required": true,
+              "output_artifacts": ["DESIGN_REVIEW_RECORDS"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_SUBSYS_SAFETY",
+          "name": "Subsystem Safety Analysis",
+          "description": "FTA, FMEA, CCA updates",
+          "order": 5,
+          "activities": [
+            {
+              "activity_id": "ACT_FTA",
+              "name": "Fault Tree Analysis",
+              "type": "ANALYSIS",
+              "required": true,
+              "dal_required": ["DAL_A", "DAL_B", "DAL_C"],
+              "output_artifacts": ["FTA_REPORT"]
+            },
+            {
+              "activity_id": "ACT_FMEA",
+              "name": "Failure Mode Effects Analysis",
+              "type": "ANALYSIS",
+              "required": true,
+              "dal_required": ["DAL_A", "DAL_B", "DAL_C", "DAL_D"],
+              "output_artifacts": ["FMEA_REPORT"]
+            }
+          ]
+        }
+      ],
+      "deliverables": [
+        {
+          "deliverable_id": "DEL_SUBSYS_DESIGN",
+          "name": "Subsystem/Component Design Documents",
+          "artifact_type": "DESIGN_DOCUMENT",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_SOURCE_CODE",
+          "name": "Source Code / Schematics / CAD Models",
+          "artifact_type": "SOURCE_CODE",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_UNIT_VERIF",
+          "name": "Unit & Component Verification Reports",
+          "artifact_type": "TEST_REPORT",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_REQ_TRACE",
+          "name": "Requirements Traceability Data",
+          "artifact_type": "TRACEABILITY_MATRIX",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_SAFETY_ANALYSES",
+          "name": "Updated Safety Analyses (FMEA, FTA, CCA)",
+          "artifact_type": "SAFETY_ASSESSMENT",
+          "required": true,
+          "dal_required": ["DAL_A", "DAL_B", "DAL_C", "DAL_D"]
+        }
+      ],
+      "reviews": [
+        {
+          "review_id": "REV_PDR",
+          "name": "Preliminary Design Review (PDR)",
+          "type": "PDR",
+          "entry_artifacts": ["SW_HLD", "HW_DESIGN"],
+          "exit_artifacts": ["PDR_RECORD"]
+        },
+        {
+          "review_id": "REV_CDR",
+          "name": "Critical Design Review (CDR)",
+          "type": "CDR",
+          "entry_artifacts": ["SW_LLD", "DETAILED_DESIGN"],
+          "exit_artifacts": ["CDR_RECORD"]
+        }
+      ],
+      "parallel_allowed": true,
+      "rollback_allowed": true
+    },
+
+    {
+      "phase_id": "PH_INTEGRATION",
+      "name": "Phase 4: System Integration & Qualification",
+      "description": "Incremental integration, interface verification, integration testing",
+      "order": 4,
+      "standard_reference": "ARP4754A Section 5.5",
+      "entry_criteria": [
+        {
+          "criterion_id": "CR_DESIGN_APPROVED",
+          "description": "Detailed design approved at CDR",
+          "check_type": "REVIEW_PASSED",
+          "check_config": {"review_id": "REV_CDR"}
+        }
+      ],
+      "exit_criteria": [
+        {
+          "criterion_id": "CR_INTEGRATION_COMPLETE",
+          "description": "All integration tests passed",
+          "check_type": "ALL_ITEMS_COMPLETE"
+        }
+      ],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_INCREMENTAL_INT",
+          "name": "Incremental Integration",
+          "order": 1,
+          "activities": [
+            {
+              "activity_id": "ACT_SUBSYS_INT",
+              "name": "Subsystem Integration",
+              "type": "IMPLEMENTATION",
+              "required": true,
+              "output_artifacts": ["INTEGRATED_SUBSYSTEMS"]
+            },
+            {
+              "activity_id": "ACT_ICD_VERIF",
+              "name": "ICD Compliance Verification",
+              "type": "VERIFICATION",
+              "required": true,
+              "output_artifacts": ["ICD_COMPLIANCE_REPORT"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_INT_TESTING",
+          "name": "Integration Testing",
+          "order": 2,
+          "activities": [
+            {
+              "activity_id": "ACT_FUNC_INT_TEST",
+              "name": "Functional Integration Testing",
+              "type": "TEST",
+              "required": true,
+              "output_artifacts": ["FUNC_INT_TEST_RESULTS"]
+            },
+            {
+              "activity_id": "ACT_INTERFACE_TEST",
+              "name": "Interface Testing",
+              "type": "TEST",
+              "required": true,
+              "output_artifacts": ["INTERFACE_TEST_RESULTS"]
+            },
+            {
+              "activity_id": "ACT_RESOURCE_TEST",
+              "name": "Resource Utilization Testing",
+              "type": "TEST",
+              "required": true,
+              "output_artifacts": ["RESOURCE_TEST_RESULTS"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_SSA_UPDATE",
+          "name": "Safety Assessment Update",
+          "order": 3,
+          "activities": [
+            {
+              "activity_id": "ACT_SSA",
+              "name": "System Safety Assessment Update",
+              "type": "ANALYSIS",
+              "required": true,
+              "dal_required": ["DAL_A", "DAL_B", "DAL_C", "DAL_D"],
+              "output_artifacts": ["SSA_REPORT"]
+            }
+          ]
+        }
+      ],
+      "deliverables": [
+        {
+          "deliverable_id": "DEL_INT_PROCEDURES",
+          "name": "System Integration Procedures & Reports",
+          "artifact_type": "TEST_PROCEDURE",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_INT_RESULTS",
+          "name": "Integration Test Results & Anomaly Reports",
+          "artifact_type": "TEST_REPORT",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_SSA",
+          "name": "System Safety Assessment (SSA)",
+          "artifact_type": "SAFETY_ASSESSMENT",
+          "required": true,
+          "dal_required": ["DAL_A", "DAL_B", "DAL_C", "DAL_D"]
+        },
+        {
+          "deliverable_id": "DEL_CONFIG_BASELINE",
+          "name": "As-Built Configuration Baseline",
+          "artifact_type": "CONFIGURATION_INDEX",
+          "required": true
+        }
+      ],
+      "reviews": [
+        {
+          "review_id": "REV_IRR",
+          "name": "Integration Readiness Review",
+          "type": "GATE_REVIEW",
+          "entry_artifacts": ["UNIT_TEST_RESULTS", "DESIGN_DOCS"],
+          "exit_artifacts": ["IRR_RECORD"]
+        }
+      ],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+
+    {
+      "phase_id": "PH_VERIFICATION",
+      "name": "Phase 5: System Verification & Qualification Testing",
+      "description": "Execute verification procedures, environmental qualification, compliance closure",
+      "order": 5,
+      "standard_reference": "ARP4754A Section 5.6",
+      "entry_criteria": [
+        {
+          "criterion_id": "CR_INT_COMPLETE",
+          "description": "Integration complete",
+          "check_type": "ARTIFACT_EXISTS"
+        }
+      ],
+      "exit_criteria": [
+        {
+          "criterion_id": "CR_RVM_COMPLETE",
+          "description": "Requirements Verification Matrix 100% complete",
+          "check_type": "COVERAGE_THRESHOLD",
+          "check_config": {"threshold": 100}
+        }
+      ],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_VERIF_PLANNING",
+          "name": "Verification Planning",
+          "order": 1,
+          "activities": [
+            {
+              "activity_id": "ACT_VERIF_PROC",
+              "name": "Finalize Verification Procedures",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["VERIFICATION_PROCEDURES"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_VERIF_EXEC",
+          "name": "Verification Execution",
+          "order": 2,
+          "activities": [
+            {
+              "activity_id": "ACT_FUNC_TEST",
+              "name": "Functional Testing",
+              "type": "TEST",
+              "required": true,
+              "output_artifacts": ["FUNC_TEST_RESULTS"]
+            },
+            {
+              "activity_id": "ACT_PERF_TEST",
+              "name": "Performance Testing",
+              "type": "TEST",
+              "required": true,
+              "output_artifacts": ["PERF_TEST_RESULTS"]
+            },
+            {
+              "activity_id": "ACT_ENV_QUAL",
+              "name": "Environmental Qualification",
+              "type": "TEST",
+              "required": true,
+              "output_artifacts": ["ENV_QUAL_RESULTS"]
+            },
+            {
+              "activity_id": "ACT_SAFETY_VERIF",
+              "name": "Safety Verification",
+              "type": "VERIFICATION",
+              "required": true,
+              "dal_required": ["DAL_A", "DAL_B", "DAL_C", "DAL_D"],
+              "output_artifacts": ["SAFETY_VERIF_RESULTS"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_COMPLIANCE_CLOSURE",
+          "name": "Compliance Closure",
+          "order": 3,
+          "activities": [
+            {
+              "activity_id": "ACT_RVM_COMPLETE",
+              "name": "Complete Requirements Verification Matrix",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["RVM"]
+            },
+            {
+              "activity_id": "ACT_TRACE_VERIF",
+              "name": "Trace All Requirements to Evidence",
+              "type": "VERIFICATION",
+              "required": true,
+              "output_artifacts": ["TRACE_EVIDENCE"]
+            }
+          ]
+        }
+      ],
+      "deliverables": [
+        {
+          "deliverable_id": "DEL_VERIF_PROC",
+          "name": "System Verification Procedures",
+          "artifact_type": "TEST_PROCEDURE",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_VERIF_REPORTS",
+          "name": "Verification Test Reports & Data",
+          "artifact_type": "TEST_REPORT",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_RVM",
+          "name": "Requirements Verification Matrix (RVM)",
+          "artifact_type": "TRACEABILITY_MATRIX",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_ENV_QUAL",
+          "name": "Environmental Qualification Reports",
+          "artifact_type": "TEST_REPORT",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_SAFETY_EVIDENCE",
+          "name": "Safety Compliance Evidence Package",
+          "artifact_type": "ACCOMPLISHMENT_SUMMARY",
+          "required": true,
+          "dal_required": ["DAL_A", "DAL_B", "DAL_C", "DAL_D"]
+        }
+      ],
+      "reviews": [
+        {
+          "review_id": "REV_TRR",
+          "name": "Test Readiness Review (TRR)",
+          "type": "TRR",
+          "entry_artifacts": ["VERIFICATION_PROCEDURES", "CONFIG_BASELINE"],
+          "exit_artifacts": ["TRR_RECORD"]
+        },
+        {
+          "review_id": "REV_VERIF",
+          "name": "Verification Review",
+          "type": "GATE_REVIEW",
+          "entry_artifacts": ["RVM", "TEST_RESULTS"],
+          "exit_artifacts": ["VERIF_REVIEW_RECORD"]
+        }
+      ],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+
+    {
+      "phase_id": "PH_VALIDATION",
+      "name": "Phase 6: System Validation",
+      "description": "Validate system fulfills stakeholder requirements in intended operational environment",
+      "order": 6,
+      "standard_reference": "ARP4754A Section 5.7",
+      "entry_criteria": [
+        {
+          "criterion_id": "CR_VERIF_COMPLETE",
+          "description": "Verification complete",
+          "check_type": "ARTIFACT_APPROVED",
+          "check_config": {"artifact_type": "TRACEABILITY_MATRIX"}
+        }
+      ],
+      "exit_criteria": [
+        {
+          "criterion_id": "CR_CUSTOMER_ACCEPT",
+          "description": "Customer acceptance obtained",
+          "check_type": "MANUAL_APPROVAL"
+        }
+      ],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_OPS_VALIDATION",
+          "name": "Operational Validation",
+          "order": 1,
+          "activities": [
+            {
+              "activity_id": "ACT_OPS_SCENARIOS",
+              "name": "Execute Operational Scenarios",
+              "type": "VALIDATION",
+              "required": true,
+              "output_artifacts": ["OPS_VALIDATION_RESULTS"]
+            },
+            {
+              "activity_id": "ACT_USABILITY",
+              "name": "Evaluate Usability and Operability",
+              "type": "VALIDATION",
+              "required": true,
+              "output_artifacts": ["USABILITY_REPORT"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_ACCEPTANCE",
+          "name": "Acceptance Testing",
+          "order": 2,
+          "activities": [
+            {
+              "activity_id": "ACT_FAT",
+              "name": "Factory Acceptance Test",
+              "type": "TEST",
+              "required": true,
+              "output_artifacts": ["FAT_RESULTS"]
+            },
+            {
+              "activity_id": "ACT_SAT",
+              "name": "Site Acceptance Test",
+              "type": "TEST",
+              "required": false,
+              "output_artifacts": ["SAT_RESULTS"]
+            }
+          ]
+        }
+      ],
+      "deliverables": [
+        {
+          "deliverable_id": "DEL_VAL_PLAN",
+          "name": "System Validation Plan & Procedures",
+          "artifact_type": "PLAN",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_VAL_REPORTS",
+          "name": "Validation Reports (FAT/SAT)",
+          "artifact_type": "TEST_REPORT",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_ACCEPTANCE",
+          "name": "Customer Acceptance Certificate",
+          "artifact_type": "ACCOMPLISHMENT_SUMMARY",
+          "required": true
+        }
+      ],
+      "reviews": [],
+      "parallel_allowed": false,
+      "rollback_allowed": true
+    },
+
+    {
+      "phase_id": "PH_CERTIFICATION",
+      "name": "Phase 7: Certification / Regulatory Compliance",
+      "description": "Compile certification data, authority engagement, obtain approval",
+      "order": 7,
+      "standard_reference": "ARP4754A Section 6",
+      "entry_criteria": [
+        {
+          "criterion_id": "CR_VAL_COMPLETE",
+          "description": "Validation complete",
+          "check_type": "ARTIFACT_EXISTS"
+        }
+      ],
+      "exit_criteria": [
+        {
+          "criterion_id": "CR_CERT_OBTAINED",
+          "description": "Certification/approval obtained",
+          "check_type": "MANUAL_APPROVAL"
+        }
+      ],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_CERT_DATA",
+          "name": "Compliance Evidence Compilation",
+          "order": 1,
+          "activities": [
+            {
+              "activity_id": "ACT_CERT_PACKAGE",
+              "name": "Compile Certification Data Package",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["CERT_DATA_PACKAGE"]
+            },
+            {
+              "activity_id": "ACT_PSAC",
+              "name": "Prepare PSAC (if applicable)",
+              "type": "DOCUMENT_CREATION",
+              "required": false,
+              "output_artifacts": ["PSAC"]
+            },
+            {
+              "activity_id": "ACT_SAFETY_REPORT",
+              "name": "Compile Safety Assessment Report",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "dal_required": ["DAL_A", "DAL_B", "DAL_C", "DAL_D"],
+              "output_artifacts": ["SAFETY_ASSESSMENT_REPORT"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_AUTHORITY",
+          "name": "Authority Engagement",
+          "order": 2,
+          "activities": [
+            {
+              "activity_id": "ACT_AUTHORITY_AUDIT",
+              "name": "Authority Audits and Inspections",
+              "type": "AUDIT",
+              "required": true,
+              "output_artifacts": ["AUDIT_FINDINGS"]
+            },
+            {
+              "activity_id": "ACT_FINDINGS_CLOSURE",
+              "name": "Close Findings and Action Items",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["FINDINGS_CLOSURE"]
+            }
+          ]
+        }
+      ],
+      "deliverables": [
+        {
+          "deliverable_id": "DEL_CERT_PACKAGE",
+          "name": "Certification/Compliance Data Package",
+          "artifact_type": "ACCOMPLISHMENT_SUMMARY",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_SAS",
+          "name": "Software Accomplishment Summary (SAS)",
+          "artifact_type": "ACCOMPLISHMENT_SUMMARY",
+          "required": false
+        },
+        {
+          "deliverable_id": "DEL_HAS",
+          "name": "Hardware Accomplishment Summary (HAS)",
+          "artifact_type": "ACCOMPLISHMENT_SUMMARY",
+          "required": false
+        },
+        {
+          "deliverable_id": "DEL_CERT",
+          "name": "Type Certificate / Regulatory Approval",
+          "artifact_type": "OTHER",
+          "required": true
+        }
+      ],
+      "reviews": [],
+      "parallel_allowed": false,
+      "rollback_allowed": false
+    },
+
+    {
+      "phase_id": "PH_PRODUCTION",
+      "name": "Phase 8: Production Transition & Deployment",
+      "description": "Industrialization, baselining, delivery and installation",
+      "order": 8,
+      "standard_reference": "ARP4754A Section 7",
+      "entry_criteria": [
+        {
+          "criterion_id": "CR_CERT_COMPLETE",
+          "description": "Certification obtained (if applicable)",
+          "check_type": "ARTIFACT_EXISTS"
+        }
+      ],
+      "exit_criteria": [
+        {
+          "criterion_id": "CR_DELIVERED",
+          "description": "System delivered to customer",
+          "check_type": "MANUAL_APPROVAL"
+        }
+      ],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_INDUSTRIAL",
+          "name": "Industrialization",
+          "order": 1,
+          "activities": [
+            {
+              "activity_id": "ACT_BOM_FINAL",
+              "name": "Finalize Bill of Materials",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["BOM"]
+            },
+            {
+              "activity_id": "ACT_MFG_PROC",
+              "name": "Develop Manufacturing Processes",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["MFG_PROCEDURES"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_BASELINE",
+          "name": "Product Baselining",
+          "order": 2,
+          "activities": [
+            {
+              "activity_id": "ACT_PROD_BASELINE",
+              "name": "Establish Production Baseline",
+              "type": "BASELINE",
+              "required": true,
+              "output_artifacts": ["PRODUCTION_BASELINE"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_DELIVERY",
+          "name": "Delivery & Installation",
+          "order": 3,
+          "activities": [
+            {
+              "activity_id": "ACT_FINAL_FAT",
+              "name": "Final Acceptance Tests",
+              "type": "TEST",
+              "required": true,
+              "output_artifacts": ["FINAL_FAT_RESULTS"]
+            },
+            {
+              "activity_id": "ACT_TRAINING",
+              "name": "Customer Training",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["TRAINING_RECORDS"]
+            }
+          ]
+        }
+      ],
+      "deliverables": [
+        {
+          "deliverable_id": "DEL_PROD_PLAN",
+          "name": "Production Plan & Manufacturing Procedures",
+          "artifact_type": "PLAN",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_BOM",
+          "name": "Bill of Materials (BOM)",
+          "artifact_type": "CONFIGURATION_INDEX",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_MANUALS",
+          "name": "User & Maintenance Manuals",
+          "artifact_type": "OTHER",
+          "required": true
+        }
+      ],
+      "reviews": [
+        {
+          "review_id": "REV_PRR",
+          "name": "Production Readiness Review (PRR)",
+          "type": "PRR",
+          "entry_artifacts": ["PROD_BASELINE", "MFG_PROCEDURES"],
+          "exit_artifacts": ["PRR_RECORD"]
+        }
+      ],
+      "parallel_allowed": false,
+      "rollback_allowed": false
+    },
+
+    {
+      "phase_id": "PH_IN_SERVICE",
+      "name": "Phase 9: In-Service Support & Continuous Monitoring",
+      "description": "Operations support, performance monitoring, maintenance",
+      "order": 9,
+      "standard_reference": "ARP4754A Section 8",
+      "entry_criteria": [
+        {
+          "criterion_id": "CR_DEPLOYED",
+          "description": "System deployed",
+          "check_type": "MANUAL_APPROVAL"
+        }
+      ],
+      "exit_criteria": [
+        {
+          "criterion_id": "CR_EOL_DECIDED",
+          "description": "End-of-life decision made",
+          "check_type": "MANUAL_APPROVAL"
+        }
+      ],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_OPS_SUPPORT",
+          "name": "Operations Support",
+          "order": 1,
+          "activities": [
+            {
+              "activity_id": "ACT_TECH_SUPPORT",
+              "name": "Technical Support",
+              "type": "IMPLEMENTATION",
+              "required": true,
+              "output_artifacts": ["SUPPORT_RECORDS"]
+            },
+            {
+              "activity_id": "ACT_ISSUE_TRACK",
+              "name": "Issue Tracking",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["ISSUE_LOG"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_MONITORING",
+          "name": "Performance Monitoring",
+          "order": 2,
+          "activities": [
+            {
+              "activity_id": "ACT_IN_SERVICE_MON",
+              "name": "In-Service Monitoring",
+              "type": "ANALYSIS",
+              "required": true,
+              "output_artifacts": ["PERFORMANCE_DATA"]
+            },
+            {
+              "activity_id": "ACT_SAFETY_MON",
+              "name": "Safety Data Monitoring",
+              "type": "ANALYSIS",
+              "required": true,
+              "dal_required": ["DAL_A", "DAL_B", "DAL_C", "DAL_D"],
+              "output_artifacts": ["SAFETY_TREND_DATA"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_MAINTENANCE",
+          "name": "Maintenance & Updates",
+          "order": 3,
+          "activities": [
+            {
+              "activity_id": "ACT_SW_UPDATES",
+              "name": "Software Updates",
+              "type": "IMPLEMENTATION",
+              "required": false,
+              "output_artifacts": ["SW_UPDATE_RECORDS"]
+            },
+            {
+              "activity_id": "ACT_CHANGE_MGMT",
+              "name": "Change Management",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["CHANGE_RECORDS"]
+            }
+          ]
+        }
+      ],
+      "deliverables": [
+        {
+          "deliverable_id": "DEL_OPS_MANUAL",
+          "name": "Maintenance & Operations Manuals",
+          "artifact_type": "OTHER",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_PERF_REPORTS",
+          "name": "Field Performance Reports",
+          "artifact_type": "ANALYSIS_REPORT",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_SERVICE_BULLETINS",
+          "name": "Service Bulletins / Modification Instructions",
+          "artifact_type": "OTHER",
+          "required": false
+        }
+      ],
+      "reviews": [],
+      "parallel_allowed": true,
+      "rollback_allowed": false
+    },
+
+    {
+      "phase_id": "PH_END_OF_LIFE",
+      "name": "Phase 10: End-of-Life & Disposal",
+      "description": "Decommissioning, disposal, documentation closure",
+      "order": 10,
+      "standard_reference": "ARP4754A Section 9",
+      "entry_criteria": [
+        {
+          "criterion_id": "CR_EOL_APPROVED",
+          "description": "End-of-life decision approved",
+          "check_type": "MANUAL_APPROVAL"
+        }
+      ],
+      "exit_criteria": [
+        {
+          "criterion_id": "CR_ARCHIVED",
+          "description": "All documentation archived",
+          "check_type": "ARTIFACT_EXISTS"
+        }
+      ],
+      "sub_phases": [
+        {
+          "sub_phase_id": "SP_DECOMMISSION",
+          "name": "Decommissioning",
+          "order": 1,
+          "activities": [
+            {
+              "activity_id": "ACT_EOL_PLAN",
+              "name": "Plan System Retirement",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["DECOMMISSION_PLAN"]
+            },
+            {
+              "activity_id": "ACT_DATA_ARCHIVE",
+              "name": "Archive Data",
+              "type": "DOCUMENT_CREATION",
+              "required": true,
+              "output_artifacts": ["DATA_ARCHIVE"]
+            }
+          ]
+        },
+        {
+          "sub_phase_id": "SP_DISPOSAL",
+          "name": "Disposal",
+          "order": 2,
+          "activities": [
+            {
+              "activity_id": "ACT_DISPOSAL",
+              "name": "Environmentally Responsible Disposal",
+              "type": "IMPLEMENTATION",
+              "required": true,
+              "output_artifacts": ["DISPOSAL_RECORDS"]
+            }
+          ]
+        }
+      ],
+      "deliverables": [
+        {
+          "deliverable_id": "DEL_DECOM_PLAN",
+          "name": "Decommissioning Plan",
+          "artifact_type": "PLAN",
+          "required": true
+        },
+        {
+          "deliverable_id": "DEL_FINAL_ARCHIVE",
+          "name": "Final Documentation Archive",
+          "artifact_type": "OTHER",
+          "required": true
+        }
+      ],
+      "reviews": [],
+      "parallel_allowed": false,
+      "rollback_allowed": false
+    }
+  ],
+
+  "phase_dependencies": [
+    {"from_phase": "PH_REQUIREMENTS_CAPTURE", "to_phase": "PH_ARCHITECTURE_DEFINITION", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_ARCHITECTURE_DEFINITION", "to_phase": "PH_DETAILED_DESIGN", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_DETAILED_DESIGN", "to_phase": "PH_INTEGRATION", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_INTEGRATION", "to_phase": "PH_VERIFICATION", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_VERIFICATION", "to_phase": "PH_VALIDATION", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_VALIDATION", "to_phase": "PH_CERTIFICATION", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_CERTIFICATION", "to_phase": "PH_PRODUCTION", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_PRODUCTION", "to_phase": "PH_IN_SERVICE", "dependency_type": "FINISH_TO_START"},
+    {"from_phase": "PH_IN_SERVICE", "to_phase": "PH_END_OF_LIFE", "dependency_type": "FINISH_TO_START"}
+  ],
+
+  "metadata": {
+    "author": "AISET Development Team",
+    "created_date": "2025-11-23",
+    "last_modified": "2025-11-23",
+    "references": [
+      "ARP4754A - Guidelines for Development of Civil Aircraft and Systems (December 2010)",
+      "ARP4761 - Guidelines and Methods for Conducting Safety Assessment (December 1996)",
+      "DO-178C - Software Considerations in Airborne Systems and Equipment Certification (December 2011)",
+      "DO-254 - Design Assurance Guidance for Airborne Electronic Hardware (April 2000)",
+      "AISET Project_Plan.md - 10-Phase Development Process"
+    ]
+  }
+}
