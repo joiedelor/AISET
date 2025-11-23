@@ -44,7 +44,29 @@
 
 ---
 
-### 3. Verify Todo List
+### 3. Update DOCUMENTATION_STRUCTURE.md
+**File:** `/home/joiedelor/aiset/DOCUMENTATION_STRUCTURE.md`
+
+**Update if any of these changed:**
+- [ ] New files created (add to appropriate section)
+- [ ] Files deleted or renamed
+- [ ] Documentation level assignments
+- [ ] File ownership changes
+
+---
+
+### 4. Update PROJECT_STRUCTURE.md
+**File:** `/home/joiedelor/aiset/PROJECT_STRUCTURE.md`
+
+**Update if any of these changed:**
+- [ ] New directories created
+- [ ] New source files added
+- [ ] File organization changes
+- [ ] Component structure updates
+
+---
+
+### 5. Verify Todo List
 **Check TodoWrite status:**
 - [ ] All todos either completed or with clear status
 - [ ] No todos left as "in_progress" without reason
@@ -52,7 +74,7 @@
 
 ---
 
-### 4. Check for New Files
+### 6. Check for New Files
 ```bash
 git status --short
 ```
@@ -62,7 +84,7 @@ git status --short
 
 ---
 
-### 5. Create Git Commit
+### 7. Create Git Commit
 
 **Commit message format:**
 ```
@@ -113,7 +135,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ---
 
-### 6. Provide Push Command
+### 8. Provide Push Command
 **Generate command for user:**
 ```bash
 git push origin main
@@ -130,7 +152,7 @@ If authentication required:
 
 ---
 
-### 7. Create Session Summary for User
+### 9. Create Session Summary for User
 
 **Provide clear summary:**
 ```markdown
@@ -170,20 +192,24 @@ Before ending session, verify:
 ### Critical Files
 ```python
 files_to_check = [
-    "Claude.md",           # MUST be updated every session
-    "PROJECT_STATUS.md",   # Update if status changed
+    "Claude.md",                  # MUST be updated every session
+    "PROJECT_STATUS.md",          # Update if status changed
+    "DOCUMENTATION_STRUCTURE.md", # Update if new files created/deleted
+    "PROJECT_STRUCTURE.md",       # Update if directory/file structure changed
 ]
 ```
 
 ### Git Status
 ```bash
 # Ensure no unstaged critical changes
-git diff --name-only Claude.md PROJECT_STATUS.md
+git diff --name-only Claude.md PROJECT_STATUS.md DOCUMENTATION_STRUCTURE.md PROJECT_STRUCTURE.md
 ```
 
 ### Documentation Consistency
 - Claude.md "Last Updated" matches current session end time
 - PROJECT_STATUS.md has today's date if modified
+- DOCUMENTATION_STRUCTURE.md lists all new files created
+- PROJECT_STRUCTURE.md reflects current directory structure
 - No .Zone.Identifier files
 - No duplicate files in docs/ and 01_PLANNING/
 
@@ -267,6 +293,8 @@ echo -e "\n=== END VERIFICATION ==="
 ### Files Modified
 - `Claude.md` - Updated session summary
 - `PROJECT_STATUS.md` - Updated compliance metrics
+- `DOCUMENTATION_STRUCTURE.md` - Updated file listings (if new files created)
+- `PROJECT_STRUCTURE.md` - Updated structure (if directories/files changed)
 - [Other files]
 
 ### Git Status
@@ -306,13 +334,15 @@ This procedure should be triggered:
 Before ending any session:
 1. Update Claude.md
 2. Update PROJECT_STATUS.md if needed
-3. Create commit
-4. Provide push command
-5. Summarize session
+3. Update DOCUMENTATION_STRUCTURE.md if new files created/deleted
+4. Update PROJECT_STRUCTURE.md if directory/file structure changed
+5. Create commit
+6. Provide push command
+7. Summarize session
 ```
 
 ---
 
-**Last Updated:** 2025-11-14
+**Last Updated:** 2025-11-22
 **Status:** Active Procedure
 **Mandatory:** YES - Do not skip

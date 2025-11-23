@@ -73,6 +73,8 @@ aiset/
 │   │
 │   ├── 📂 services/                  # Business logic layer
 │   │   ├── ai_service.py             # Claude/LM Studio integration (REQ-SERVICE-001)
+│   │   ├── ai_context_loader.py      # AI context management (REQ-AI-045-047)
+│   │   ├── approval_service.py       # AI approval workflow (REQ-AI-017-019)
 │   │   ├── requirements_service.py   # Requirements management (REQ-SERVICE-002)
 │   │   ├── traceability_service.py   # Traceability management (REQ-SERVICE-003)
 │   │   └── document_service.py       # Document generation (REQ-SERVICE-004)
@@ -83,6 +85,7 @@ aiset/
 │   │   ├── projects.py               # Projects API (REQ-API-003)
 │   │   ├── requirements.py           # Requirements API (REQ-API-004)
 │   │   ├── ai_conversation.py        # AI chat API (REQ-API-005)
+│   │   ├── approval.py               # Approval workflow API (REQ-AI-017-019)
 │   │   ├── traceability.py           # Traceability API (REQ-API-006)
 │   │   ├── documents.py              # Document generation API (REQ-API-007)
 │   │   ├── design_components.py      # Design API (REQ-API-008)
@@ -92,7 +95,10 @@ aiset/
 │   └── 📂 tests/                     # Test suites
 │       ├── __init__.py               # Tests initialization
 │       ├── test_requirements_service.py  # Requirements tests (REQ-TEST-001)
-│       └── test_traceability_service.py  # Traceability tests (REQ-TEST-002)
+│       ├── test_traceability_service.py  # Traceability tests (REQ-TEST-002)
+│       ├── test_ai_behavior.py           # AI behavior tests (REQ-AI-001-010)
+│       ├── test_project_initialization.py # Project init tests (REQ-AI-032-037)
+│       └── test_approval_workflow.py     # Approval workflow tests (REQ-AI-017-019)
 │
 ├── 📂 **[Level 1]** frontend/        # AISET Tool Source Code (React TypeScript)
 │   ├── package.json                  # NPM dependencies
