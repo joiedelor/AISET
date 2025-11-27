@@ -103,6 +103,7 @@ const ProcessManagement: React.FC = () => {
   const [stateMachine, setStateMachine] = useState<StateMachine | null>(null);
   const [progress, setProgress] = useState<Progress | null>(null);
   const [currentActivity, setCurrentActivity] = useState<any | null>(null);
+  const [interviewStatus, setInterviewStatus] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expandedPhase, setExpandedPhase] = useState<number | null>(null);
@@ -156,8 +157,21 @@ const ProcessManagement: React.FC = () => {
       try {
         const activityResponse = await axios.get(`${API_BASE_URL}/configuration-items/${ciId}/current-activity`);
         setCurrentActivity(activityResponse.data);
+
+        // Fetch interview status for current activity
+        if (activityResponse.data?.activity?.activity_id) {
+          try {
+            const interviewStatusResponse = await axios.get(
+              `${API_BASE_URL}/configuration-items/${ciId}/activity/${activityResponse.data.activity.activity_id}/interview-status`
+            );
+            setInterviewStatus(interviewStatusResponse.data);
+          } catch {
+            setInterviewStatus(null);
+          }
+        }
       } catch {
         setCurrentActivity(null);
+        setInterviewStatus(null);
       }
 
       setError(null);
@@ -352,7 +366,25 @@ const ProcessManagement: React.FC = () => {
             </div>
           )}
         </div>
+
+        {interviewStatus?.has_interview && (
+          <div className="mt-3 p-3 bg-blue-50 rounded border border-blue-200">
+            <p className="text-sm text-blue-800">
+              <strong>📋 Interview Available:</strong> {interviewStatus.interview_script}
+              {interviewStatus.interview_required && <span className="ml-2 text-red-600">(Required)</span>}
+            </p>
+          </div>
+        )}
+
         <div className="mt-4 flex gap-3">
+          {interviewStatus?.has_interview && (
+            <button
+              onClick={() => alert('Interview functionality coming soon!')}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              📋 Start Interview
+            </button>
+          )}
           <button
             onClick={() => selectedCI && completeActivity(selectedCI, currentActivity.activity.activity_id)}
             disabled={loading}

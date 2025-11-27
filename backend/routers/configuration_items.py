@@ -12,6 +12,7 @@ from datetime import datetime
 
 from database.connection import get_db
 from services.configuration_item_service import ConfigurationItemService
+from services.activity_interview_service import ActivityInterviewService
 from models.configuration_item import CIType, CILifecyclePhase, CIControlLevel, CIStatus, BOMType
 
 router = APIRouter()
@@ -600,3 +601,108 @@ async def skip_activity(
         )
 
     return result
+
+
+# ==================== Activity-Interview Integration ====================
+
+@router.get("/configuration-items/{ci_id}/activity/{activity_id}/interview-status")
+async def get_activity_interview_status(
+    ci_id: int,
+    activity_id: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Get interview status for an activity.
+
+    Returns:
+        - Whether activity has an associated interview
+        - Interview script ID if available
+        - Whether interview is required
+    """
+    service = ActivityInterviewService(db)
+    status = service.get_activity_interview_status(ci_id, activity_id)
+    return status
+
+
+@router.post("/configuration-items/{ci_id}/activity/{activity_id}/start-interview")
+async def start_activity_interview(
+    ci_id: int,
+    activity_id: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Start an interview for a specific activity.
+
+    Traceability: REQ-SM-003, REQ-IS-001
+
+    This endpoint:
+    - Checks if activity has an associated interview
+    - Creates interview session
+    - Returns interview state for frontend
+    """
+    service = ActivityInterviewService(db)
+
+    result = service.start_interview_for_activity(ci_id, activity_id)
+
+    if not result:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No interview available for activity {activity_id} or activity not current."
+        )
+
+    return result
+
+
+class InterviewCompletionData(BaseModel):
+    """Schema for completing activity with interview data."""
+    interview_results: dict
+
+
+@router.post("/configuration-items/{ci_id}/activity/{activity_id}/complete-with-interview")
+async def complete_activity_with_interview(
+    ci_id: int,
+    activity_id: str,
+    request: InterviewCompletionData,
+    db: Session = Depends(get_db)
+):
+    """
+    Complete an activity using interview results.
+
+    Traceability: REQ-SM-003, REQ-IS-008
+
+    This endpoint:
+    - Takes interview results as input
+    - Extracts relevant data for activity completion
+    - Marks activity as complete
+    - Advances state machine
+    """
+    service = ActivityInterviewService(db)
+
+    result = service.complete_activity_with_interview_data(
+        ci_id=ci_id,
+        activity_id=activity_id,
+        interview_results=request.interview_results
+    )
+
+    if not result:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Failed to complete activity with interview data."
+        )
+
+    return result
+
+
+@router.get("/activity-interview-mappings")
+async def list_activity_interview_mappings():
+    """
+    List all activity-to-interview mappings.
+
+    Returns:
+        Dictionary of activity types to interview script IDs
+    """
+    mappings = ActivityInterviewService.list_activity_interview_mappings()
+    return {
+        "mappings": mappings,
+        "total": len(mappings)
+    }
