@@ -194,6 +194,54 @@ const ProcessManagement: React.FC = () => {
     }
   };
 
+  // Complete Activity
+  const completeActivity = async (ciId: number, activityId: string) => {
+    try {
+      setLoading(true);
+      await axios.post(`${API_BASE_URL}/configuration-items/${ciId}/complete-activity`, {
+        activity_id: activityId,
+        completion_data: {
+          completed_by: 'user',
+          timestamp: new Date().toISOString()
+        }
+      });
+
+      // Refresh state machine data
+      await fetchStateMachine(ciId);
+      await fetchConfigurationItems();
+      setError(null);
+    } catch (err) {
+      setError('Failed to complete activity');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Skip Activity
+  const skipActivity = async (ciId: number, activityId: string) => {
+    const reason = prompt('Please provide a reason for skipping this activity:');
+    if (!reason) return;
+
+    try {
+      setLoading(true);
+      await axios.post(`${API_BASE_URL}/configuration-items/${ciId}/skip-activity`, {
+        activity_id: activityId,
+        reason: reason
+      });
+
+      // Refresh state machine data
+      await fetchStateMachine(ciId);
+      await fetchConfigurationItems();
+      setError(null);
+    } catch (err) {
+      setError('Failed to skip activity');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Select a CI
   const handleSelectCI = (ciId: number) => {
     setSelectedCI(ciId);
@@ -302,6 +350,24 @@ const ProcessManagement: React.FC = () => {
                 ))}
               </ul>
             </div>
+          )}
+        </div>
+        <div className="mt-4 flex gap-3">
+          <button
+            onClick={() => selectedCI && completeActivity(selectedCI, currentActivity.activity.activity_id)}
+            disabled={loading}
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:bg-gray-400"
+          >
+            ✓ Complete Activity
+          </button>
+          {!currentActivity.activity.required && (
+            <button
+              onClick={() => selectedCI && skipActivity(selectedCI, currentActivity.activity.activity_id)}
+              disabled={loading}
+              className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 disabled:bg-gray-400"
+            >
+              Skip (Optional)
+            </button>
           )}
         </div>
       </div>

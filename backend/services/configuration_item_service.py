@@ -657,3 +657,259 @@ class ConfigurationItemService:
             "progress_percent": round(progress_percent, 1),
             "current_phase_name": phases[sm_data["current_phase_index"]].get("name") if sm_data["current_phase_index"] < len(phases) else None
         }
+
+    def complete_activity(
+        self,
+        ci_id: int,
+        activity_id: str,
+        completion_data: Optional[Dict[str, Any]] = None
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Mark an activity as complete and advance the state machine.
+
+        Traceability: REQ-SM-003 (Activity sequencing)
+
+        Args:
+            ci_id: Configuration Item ID
+            activity_id: Activity ID to complete
+            completion_data: Optional data about the completion (artifacts, notes, etc.)
+
+        Returns:
+            Updated state machine data or None if failed
+        """
+        from models.project import CIStateMachine
+
+        # Get the state machine record
+        sm_record = self.db.query(CIStateMachine).filter(
+            CIStateMachine.ci_id == ci_id
+        ).order_by(CIStateMachine.created_at.desc()).first()
+
+        if not sm_record:
+            logger.error(f"No state machine found for CI {ci_id}")
+            return None
+
+        # Parse state data
+        try:
+            state_dict = json.loads(sm_record.state_data)
+        except json.JSONDecodeError:
+            logger.error(f"Invalid state data for CI {ci_id}")
+            return None
+
+        # Reconstruct state machine instance
+        from process_engine.services.state_machine_generator import (
+            StateMachineInstance,
+            StateMachineController,
+            PhaseInstance,
+            SubPhaseInstance,
+            ActivityInstance,
+            PhaseStatus,
+            SubPhaseStatus,
+            ActivityStatus
+        )
+        from datetime import datetime as dt
+
+        # Helper to reconstruct instances from dict
+        def dict_to_activity(act_dict: Dict) -> ActivityInstance:
+            return ActivityInstance(
+                activity_id=act_dict["activity_id"],
+                name=act_dict["name"],
+                activity_type=act_dict["activity_type"],
+                status=ActivityStatus(act_dict["status"]),
+                required=act_dict["required"],
+                started_at=dt.fromisoformat(act_dict["started_at"]) if act_dict.get("started_at") else None,
+                completed_at=dt.fromisoformat(act_dict["completed_at"]) if act_dict.get("completed_at") else None,
+                output_artifacts=act_dict.get("output_artifacts", []),
+                completion_data=act_dict.get("completion_data", {})
+            )
+
+        def dict_to_subphase(sp_dict: Dict) -> SubPhaseInstance:
+            return SubPhaseInstance(
+                sub_phase_id=sp_dict["sub_phase_id"],
+                name=sp_dict["name"],
+                order=sp_dict["order"],
+                status=SubPhaseStatus(sp_dict["status"]),
+                activities=[dict_to_activity(a) for a in sp_dict["activities"]],
+                started_at=dt.fromisoformat(sp_dict["started_at"]) if sp_dict.get("started_at") else None,
+                completed_at=dt.fromisoformat(sp_dict["completed_at"]) if sp_dict.get("completed_at") else None,
+                current_activity_index=sp_dict["current_activity_index"]
+            )
+
+        def dict_to_phase(p_dict: Dict) -> PhaseInstance:
+            return PhaseInstance(
+                phase_id=p_dict["phase_id"],
+                name=p_dict["name"],
+                order=p_dict["order"],
+                status=PhaseStatus(p_dict["status"]),
+                sub_phases=[dict_to_subphase(sp) for sp in p_dict["sub_phases"]],
+                deliverables=p_dict.get("deliverables", []),
+                reviews=p_dict.get("reviews", []),
+                started_at=dt.fromisoformat(p_dict["started_at"]) if p_dict.get("started_at") else None,
+                completed_at=dt.fromisoformat(p_dict["completed_at"]) if p_dict.get("completed_at") else None,
+                current_sub_phase_index=p_dict["current_sub_phase_index"],
+                entry_criteria_met=p_dict["entry_criteria_met"],
+                exit_criteria_met=p_dict["exit_criteria_met"]
+            )
+
+        # Reconstruct full state machine
+        from process_engine import CIType as ProcessCIType
+        sm_instance = StateMachineInstance(
+            instance_id=state_dict["instance_id"],
+            ci_id=state_dict["ci_id"],
+            ci_type=ProcessCIType(state_dict["ci_type"]),
+            template_id=state_dict["template_id"],
+            template_name=state_dict["template_name"],
+            dal_level=state_dict.get("dal_level"),
+            phases=[dict_to_phase(p) for p in state_dict["phases"]],
+            current_phase_index=state_dict["current_phase_index"],
+            created_at=dt.fromisoformat(state_dict["created_at"]),
+            updated_at=dt.fromisoformat(state_dict["updated_at"]),
+            context=state_dict.get("context", {})
+        )
+
+        # Create controller and complete activity
+        controller = StateMachineController(sm_instance)
+        success = controller.complete_activity(activity_id, completion_data or {})
+
+        if not success:
+            logger.warning(f"Failed to complete activity {activity_id} for CI {ci_id}")
+            return None
+
+        # Update database with new state
+        sm_record.state_data = json.dumps(sm_instance.to_dict())
+        sm_record.current_phase_index = sm_instance.current_phase_index
+        self.db.commit()
+
+        logger.info(f"Completed activity {activity_id} for CI {ci_id}")
+
+        return {
+            "ci_id": ci_id,
+            "activity_id": activity_id,
+            "success": True,
+            "current_phase_index": sm_instance.current_phase_index,
+            "overall_progress": sm_instance.overall_progress
+        }
+
+    def skip_activity(
+        self,
+        ci_id: int,
+        activity_id: str,
+        reason: str
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Skip an optional activity.
+
+        Traceability: REQ-SM-003 (Activity optional/required)
+
+        Args:
+            ci_id: Configuration Item ID
+            activity_id: Activity ID to skip
+            reason: Reason for skipping
+
+        Returns:
+            Updated state machine data or None if failed
+        """
+        from models.project import CIStateMachine
+
+        sm_record = self.db.query(CIStateMachine).filter(
+            CIStateMachine.ci_id == ci_id
+        ).order_by(CIStateMachine.created_at.desc()).first()
+
+        if not sm_record:
+            return None
+
+        try:
+            state_dict = json.loads(sm_record.state_data)
+        except json.JSONDecodeError:
+            return None
+
+        # Similar reconstruction as complete_activity
+        # (Using same helper functions)
+        from process_engine.services.state_machine_generator import (
+            StateMachineInstance,
+            StateMachineController,
+            PhaseInstance,
+            SubPhaseInstance,
+            ActivityInstance,
+            PhaseStatus,
+            SubPhaseStatus,
+            ActivityStatus
+        )
+        from datetime import datetime as dt
+
+        def dict_to_activity(act_dict: Dict) -> ActivityInstance:
+            return ActivityInstance(
+                activity_id=act_dict["activity_id"],
+                name=act_dict["name"],
+                activity_type=act_dict["activity_type"],
+                status=ActivityStatus(act_dict["status"]),
+                required=act_dict["required"],
+                started_at=dt.fromisoformat(act_dict["started_at"]) if act_dict.get("started_at") else None,
+                completed_at=dt.fromisoformat(act_dict["completed_at"]) if act_dict.get("completed_at") else None,
+                output_artifacts=act_dict.get("output_artifacts", []),
+                completion_data=act_dict.get("completion_data", {})
+            )
+
+        def dict_to_subphase(sp_dict: Dict) -> SubPhaseInstance:
+            return SubPhaseInstance(
+                sub_phase_id=sp_dict["sub_phase_id"],
+                name=sp_dict["name"],
+                order=sp_dict["order"],
+                status=SubPhaseStatus(sp_dict["status"]),
+                activities=[dict_to_activity(a) for a in sp_dict["activities"]],
+                started_at=dt.fromisoformat(sp_dict["started_at"]) if sp_dict.get("started_at") else None,
+                completed_at=dt.fromisoformat(sp_dict["completed_at"]) if sp_dict.get("completed_at") else None,
+                current_activity_index=sp_dict["current_activity_index"]
+            )
+
+        def dict_to_phase(p_dict: Dict) -> PhaseInstance:
+            return PhaseInstance(
+                phase_id=p_dict["phase_id"],
+                name=p_dict["name"],
+                order=p_dict["order"],
+                status=PhaseStatus(p_dict["status"]),
+                sub_phases=[dict_to_subphase(sp) for sp in p_dict["sub_phases"]],
+                deliverables=p_dict.get("deliverables", []),
+                reviews=p_dict.get("reviews", []),
+                started_at=dt.fromisoformat(p_dict["started_at"]) if p_dict.get("started_at") else None,
+                completed_at=dt.fromisoformat(p_dict["completed_at"]) if p_dict.get("completed_at") else None,
+                current_sub_phase_index=p_dict["current_sub_phase_index"],
+                entry_criteria_met=p_dict["entry_criteria_met"],
+                exit_criteria_met=p_dict["exit_criteria_met"]
+            )
+
+        from process_engine import CIType as ProcessCIType
+        sm_instance = StateMachineInstance(
+            instance_id=state_dict["instance_id"],
+            ci_id=state_dict["ci_id"],
+            ci_type=ProcessCIType(state_dict["ci_type"]),
+            template_id=state_dict["template_id"],
+            template_name=state_dict["template_name"],
+            dal_level=state_dict.get("dal_level"),
+            phases=[dict_to_phase(p) for p in state_dict["phases"]],
+            current_phase_index=state_dict["current_phase_index"],
+            created_at=dt.fromisoformat(state_dict["created_at"]),
+            updated_at=dt.fromisoformat(state_dict["updated_at"]),
+            context=state_dict.get("context", {})
+        )
+
+        controller = StateMachineController(sm_instance)
+        success = controller.skip_activity(activity_id, reason)
+
+        if not success:
+            logger.warning(f"Failed to skip activity {activity_id} for CI {ci_id}")
+            return None
+
+        # Update database
+        sm_record.state_data = json.dumps(sm_instance.to_dict())
+        sm_record.current_phase_index = sm_instance.current_phase_index
+        self.db.commit()
+
+        logger.info(f"Skipped activity {activity_id} for CI {ci_id}: {reason}")
+
+        return {
+            "ci_id": ci_id,
+            "activity_id": activity_id,
+            "skipped": True,
+            "reason": reason,
+            "current_phase_index": sm_instance.current_phase_index
+        }

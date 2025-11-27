@@ -520,3 +520,83 @@ async def get_ci_progress(ci_id: int, db: Session = Depends(get_db)):
         )
 
     return progress
+
+
+class ActivityComplete(BaseModel):
+    """Schema for completing an activity."""
+    activity_id: str
+    completion_data: Optional[dict] = None
+
+
+class ActivitySkip(BaseModel):
+    """Schema for skipping an activity."""
+    activity_id: str
+    reason: str
+
+
+@router.post("/configuration-items/{ci_id}/complete-activity")
+async def complete_activity(
+    ci_id: int,
+    request: ActivityComplete,
+    db: Session = Depends(get_db)
+):
+    """
+    Mark an activity as complete and advance the state machine.
+
+    Traceability: REQ-SM-003 (Activity sequencing)
+
+    This endpoint:
+    - Marks the specified activity as complete
+    - Stores optional completion data (artifacts, notes, etc.)
+    - Advances the state machine to the next activity
+    - Updates progress percentages
+    """
+    service = ConfigurationItemService(db)
+
+    result = service.complete_activity(
+        ci_id=ci_id,
+        activity_id=request.activity_id,
+        completion_data=request.completion_data
+    )
+
+    if not result:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Failed to complete activity. Activity may not exist or is not current."
+        )
+
+    return result
+
+
+@router.post("/configuration-items/{ci_id}/skip-activity")
+async def skip_activity(
+    ci_id: int,
+    request: ActivitySkip,
+    db: Session = Depends(get_db)
+):
+    """
+    Skip an optional activity.
+
+    Traceability: REQ-SM-003 (Activity optional/required)
+
+    This endpoint:
+    - Skips the specified optional activity
+    - Records the reason for skipping
+    - Advances the state machine to the next activity
+    - Cannot skip required activities
+    """
+    service = ConfigurationItemService(db)
+
+    result = service.skip_activity(
+        ci_id=ci_id,
+        activity_id=request.activity_id,
+        reason=request.reason
+    )
+
+    if not result:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Failed to skip activity. Activity may be required or not found."
+        )
+
+    return result
