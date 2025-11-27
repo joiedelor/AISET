@@ -7,7 +7,7 @@
 import { useParams, Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { projectsApi } from '../services/api'
-import { FileText, GitBranch, MessageSquare, FileCheck } from 'lucide-react'
+import { FileText, GitBranch, MessageSquare, FileCheck, Network, Workflow } from 'lucide-react'
 
 export default function ProjectDetails() {
   const { projectId } = useParams<{ projectId: string }>()
@@ -43,6 +43,20 @@ export default function ProjectDetails() {
       href: `/projects/${projectId}/chat`,
       icon: MessageSquare,
       color: 'bg-purple-100 text-purple-600',
+    },
+    {
+      name: 'Product Structure',
+      description: 'Product structure & BOM management',
+      href: `/projects/${projectId}/product-structure`,
+      icon: Network,
+      color: 'bg-cyan-100 text-cyan-600',
+    },
+    {
+      name: 'Process Management',
+      description: 'Development process state machines',
+      href: `/projects/${projectId}/process-management`,
+      icon: Workflow,
+      color: 'bg-indigo-100 text-indigo-600',
     },
     {
       name: 'Traceability',

@@ -7,7 +7,7 @@ This package contains all database models with complete traceability
 to DO-178C requirements and audit trail capabilities.
 """
 
-from .project import Project
+from .project import Project, CIStateMachine
 from .requirement import Requirement
 from .design_component import DesignComponent
 from .test_case import TestCase
@@ -65,4 +65,7 @@ __all__ = [
     "CIControlLevel",
     "CIStatus",
     "BOMType",
+
+    # Process Engine
+    "CIStateMachine",
 ]

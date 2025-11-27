@@ -108,3 +108,49 @@ class Project(Base):
 
     def __repr__(self):
         return f"<Project(id={self.id}, name='{self.name}', code='{self.project_code}')>"
+
+
+class CIStateMachine(Base):
+    """
+    State Machine Instance for Configuration Items.
+
+    This model stores the runtime state of a development process (state machine)
+    for a Configuration Item. The state_data field contains the complete serialized
+    state machine instance.
+
+    Traceability:
+    - REQ-SM-001: Development lifecycle state machine
+    - REQ-SM-002: Phase preconditions
+    - REQ-SM-003: Sub-phase sequence
+    """
+    __tablename__ = "ci_state_machines"
+
+    # Primary Key
+    id = Column(Integer, primary_key=True, index=True)
+
+    # GUID for external references
+    guid = Column(String(36), unique=True, nullable=False, index=True)
+
+    # CI Reference
+    ci_id = Column(Integer, nullable=False, index=True)
+
+    # Template Information
+    template_id = Column(String(100), nullable=False)
+    template_name = Column(String(255))
+
+    # Process Configuration
+    dal_level = Column(String(20))  # DAL_A, DAL_B, ASIL_D, SIL_4, etc.
+
+    # Current State
+    current_phase_index = Column(Integer, default=0)
+
+    # Complete State Data (JSON-serialized StateMachineInstance)
+    state_data = Column(Text, nullable=False)
+
+    # Metadata
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    created_by = Column(String(255))
+
+    def __repr__(self):
+        return f"<CIStateMachine(id={self.id}, ci_id={self.ci_id}, template='{self.template_name}')>"

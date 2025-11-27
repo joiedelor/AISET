@@ -414,3 +414,109 @@ async def get_ci_statistics(project_id: int, db: Session = Depends(get_db)):
         "project_id": project_id,
         **stats
     }
+
+
+# ==================== Process Engine Integration ====================
+
+class StateMachineCreate(BaseModel):
+    """Schema for creating a state machine for a CI."""
+    dal_level: Optional[str] = None
+    auto_start: bool = True
+
+
+@router.post("/configuration-items/{ci_id}/state-machine")
+async def create_ci_state_machine(
+    ci_id: int,
+    request: StateMachineCreate,
+    db: Session = Depends(get_db)
+):
+    """
+    Create a development process state machine for a Configuration Item.
+
+    Traceability: REQ-SM-001 to REQ-SM-006
+
+    This creates an executable process instance based on the CI's type and criticality.
+    For example, a SOFTWARE CI with DAL_B criticality gets a DO-178C DAL B process.
+    """
+    service = ConfigurationItemService(db)
+
+    result = service.create_state_machine_for_ci_item(
+        ci_id=ci_id,
+        dal_level=request.dal_level,
+        auto_start=request.auto_start
+    )
+
+    if not result:
+        raise HTTPException(
+            status_code=400,
+            detail="Failed to create state machine. CI may not exist or process template may be missing."
+        )
+
+    return result
+
+
+@router.get("/configuration-items/{ci_id}/state-machine")
+async def get_ci_state_machine(ci_id: int, db: Session = Depends(get_db)):
+    """
+    Get the state machine instance for a CI.
+
+    Returns the complete state machine with all phases, sub-phases, and activities.
+    """
+    service = ConfigurationItemService(db)
+
+    sm_data = service.get_ci_state_machine(ci_id)
+
+    if not sm_data:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No state machine found for CI {ci_id}. Create one first."
+        )
+
+    return sm_data
+
+
+@router.get("/configuration-items/{ci_id}/current-activity")
+async def get_ci_current_activity(ci_id: int, db: Session = Depends(get_db)):
+    """
+    Get the current activity that should be worked on for this CI.
+
+    Returns:
+        - Current phase, sub-phase, and activity information
+        - What needs to be done next
+        - Required outputs/artifacts
+    """
+    service = ConfigurationItemService(db)
+
+    activity = service.get_ci_current_activity(ci_id)
+
+    if not activity:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No current activity for CI {ci_id}. The process may be complete or not started."
+        )
+
+    return activity
+
+
+@router.get("/configuration-items/{ci_id}/progress")
+async def get_ci_progress(ci_id: int, db: Session = Depends(get_db)):
+    """
+    Get progress information for a CI's development process.
+
+    Returns:
+        - Overall completion percentage
+        - Phase progress
+        - Activity completion counts
+        - Current phase/activity
+    """
+    service = ConfigurationItemService(db)
+
+    progress = service.get_ci_progress(ci_id)
+
+    if not progress:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No process found for CI {ci_id}. Create a state machine first."
+        )
+
+    return progress

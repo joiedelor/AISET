@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_
 import uuid
 import logging
+import json
 
 from models.configuration_item import (
     ConfigurationItem,
@@ -24,6 +25,12 @@ from models.configuration_item import (
     CIControlLevel,
     CIStatus,
     BOMType
+)
+from process_engine import (
+    create_state_machine_for_ci,
+    StateMachineController,
+    StateMachineInstance,
+    CIType as ProcessCIType
 )
 
 logger = logging.getLogger(__name__)
@@ -401,4 +408,252 @@ class ConfigurationItemService:
             "bom_relationships": bom_count,
             "root_items": sum(1 for ci in all_cis if ci.parent_id is None),
             "max_depth": max((ci.level for ci in all_cis), default=0)
+        }
+
+    # ==================== Process Engine Integration ====================
+
+    @staticmethod
+    def _map_ci_type_to_process_type(ci_type: CIType) -> str:
+        """
+        Map ConfigurationItem CIType to Process Engine CIType.
+
+        This mapping determines which process template is used for the CI.
+        """
+        mapping = {
+            CIType.SYSTEM: "SYSTEM",
+            CIType.SUBSYSTEM: "SUBSYSTEM",
+            CIType.COMPONENT: "COMPONENT",
+            CIType.SOFTWARE: "SOFTWARE",
+            CIType.HARDWARE: "HARDWARE",
+            CIType.DOCUMENT: "DOCUMENT",
+            CIType.INTERFACE: "COMPONENT",
+            CIType.COTS: "COMPONENT",
+            CIType.NDI: "COMPONENT",
+            CIType.OTHER: "COMPONENT"
+        }
+        return mapping.get(ci_type, "COMPONENT")
+
+    def create_state_machine_for_ci_item(
+        self,
+        ci_id: int,
+        dal_level: Optional[str] = None,
+        auto_start: bool = True
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Create and store a state machine instance for a CI.
+
+        Traceability: REQ-SM-001 to REQ-SM-006 (State Machine Requirements)
+
+        Args:
+            ci_id: Configuration Item ID
+            dal_level: Optional DAL/SIL/ASIL level (e.g., "DAL_B", "ASIL_D")
+            auto_start: Whether to automatically start the first phase
+
+        Returns:
+            State machine instance as dictionary, or None if CI not found
+        """
+        ci = self.get_ci_by_id(ci_id)
+        if not ci:
+            logger.error(f"CI not found: {ci_id}")
+            return None
+
+        # Use criticality from CI if dal_level not specified
+        if not dal_level and ci.criticality:
+            dal_level = ci.criticality.replace(" ", "_").upper()
+
+        # Map CI type to process engine type
+        process_ci_type = self._map_ci_type_to_process_type(ci.ci_type)
+
+        try:
+            # Create state machine instance
+            sm_instance = create_state_machine_for_ci(
+                ci_id=ci_id,
+                ci_type=process_ci_type,
+                dal_level=dal_level
+            )
+
+            # Store in database (ci_state_machines table)
+            from models.project import CIStateMachine
+            sm_record = CIStateMachine(
+                guid=str(uuid.uuid4()),
+                ci_id=ci_id,
+                template_id=sm_instance.template_id,
+                template_name=sm_instance.template_name,
+                dal_level=sm_instance.dal_level,
+                current_phase_index=sm_instance.current_phase_index,
+                state_data=json.dumps(sm_instance.to_dict()),
+                created_by="system"
+            )
+
+            self.db.add(sm_record)
+            self.db.commit()
+            self.db.refresh(sm_record)
+
+            # Auto-start first phase if requested
+            if auto_start:
+                controller = StateMachineController(sm_instance)
+                if controller.start_phase(0):
+                    # Update state in database
+                    sm_record.state_data = json.dumps(sm_instance.to_dict())
+                    sm_record.current_phase_index = sm_instance.current_phase_index
+                    self.db.commit()
+
+            logger.info(f"Created state machine for CI {ci_id}: {sm_instance.template_name}")
+
+            return {
+                "state_machine_id": sm_record.id,
+                "instance_id": sm_instance.instance_id,
+                "ci_id": ci_id,
+                "template_name": sm_instance.template_name,
+                "dal_level": sm_instance.dal_level,
+                "current_phase_index": sm_instance.current_phase_index,
+                "overall_progress": sm_instance.overall_progress,
+                "created_at": sm_record.created_at.isoformat() if sm_record.created_at else None
+            }
+
+        except Exception as e:
+            logger.error(f"Failed to create state machine for CI {ci_id}: {str(e)}")
+            return None
+
+    def get_ci_state_machine(self, ci_id: int) -> Optional[Dict[str, Any]]:
+        """
+        Get the state machine instance for a CI.
+
+        Args:
+            ci_id: Configuration Item ID
+
+        Returns:
+            State machine data or None if not found
+        """
+        from models.project import CIStateMachine
+
+        sm_record = self.db.query(CIStateMachine).filter(
+            CIStateMachine.ci_id == ci_id
+        ).order_by(CIStateMachine.created_at.desc()).first()
+
+        if not sm_record:
+            return None
+
+        # Parse state data
+        try:
+            state_data = json.loads(sm_record.state_data)
+            return {
+                "state_machine_id": sm_record.id,
+                "ci_id": ci_id,
+                "template_id": sm_record.template_id,
+                "template_name": sm_record.template_name,
+                "dal_level": sm_record.dal_level,
+                "current_phase_index": sm_record.current_phase_index,
+                "state_data": state_data,
+                "created_at": sm_record.created_at.isoformat() if sm_record.created_at else None,
+                "updated_at": sm_record.updated_at.isoformat() if sm_record.updated_at else None
+            }
+        except json.JSONDecodeError:
+            logger.error(f"Invalid state data for CI {ci_id}")
+            return None
+
+    def get_ci_current_activity(self, ci_id: int) -> Optional[Dict[str, Any]]:
+        """
+        Get the current activity that should be worked on for a CI.
+
+        Args:
+            ci_id: Configuration Item ID
+
+        Returns:
+            Current activity information or None
+        """
+        sm_data = self.get_ci_state_machine(ci_id)
+        if not sm_data:
+            return None
+
+        # Reconstruct state machine instance
+        from process_engine.services.state_machine_generator import StateMachineInstance
+        state_dict = sm_data["state_data"]
+
+        # This is a simplified reconstruction - in production, you'd have a proper deserializer
+        current_phase = state_dict.get("phases", [])[state_dict.get("current_phase_index", 0)]
+        if not current_phase:
+            return None
+
+        current_sub_phase_idx = current_phase.get("current_sub_phase_index", 0)
+        sub_phases = current_phase.get("sub_phases", [])
+
+        if current_sub_phase_idx >= len(sub_phases):
+            return None
+
+        current_sub_phase = sub_phases[current_sub_phase_idx]
+        current_activity_idx = current_sub_phase.get("current_activity_index", 0)
+        activities = current_sub_phase.get("activities", [])
+
+        if current_activity_idx >= len(activities):
+            return None
+
+        current_activity = activities[current_activity_idx]
+
+        return {
+            "ci_id": ci_id,
+            "phase": {
+                "name": current_phase.get("name"),
+                "order": current_phase.get("order"),
+                "status": current_phase.get("status")
+            },
+            "sub_phase": {
+                "name": current_sub_phase.get("name"),
+                "order": current_sub_phase.get("order"),
+                "status": current_sub_phase.get("status")
+            },
+            "activity": {
+                "activity_id": current_activity.get("activity_id"),
+                "name": current_activity.get("name"),
+                "type": current_activity.get("activity_type"),
+                "status": current_activity.get("status"),
+                "required": current_activity.get("required", True),
+                "output_artifacts": current_activity.get("output_artifacts", [])
+            }
+        }
+
+    def get_ci_progress(self, ci_id: int) -> Optional[Dict[str, Any]]:
+        """
+        Get progress information for a CI's development process.
+
+        Args:
+            ci_id: Configuration Item ID
+
+        Returns:
+            Progress information including percentage completion
+        """
+        sm_data = self.get_ci_state_machine(ci_id)
+        if not sm_data:
+            return None
+
+        state_dict = sm_data["state_data"]
+        phases = state_dict.get("phases", [])
+
+        total_phases = len(phases)
+        completed_phases = sum(1 for p in phases if p.get("status") == "completed")
+
+        # Calculate overall progress from activities
+        total_activities = 0
+        completed_activities = 0
+
+        for phase in phases:
+            for sub_phase in phase.get("sub_phases", []):
+                for activity in sub_phase.get("activities", []):
+                    total_activities += 1
+                    if activity.get("status") in ["completed", "skipped"]:
+                        completed_activities += 1
+
+        progress_percent = (completed_activities / total_activities * 100) if total_activities > 0 else 0
+
+        return {
+            "ci_id": ci_id,
+            "template_name": sm_data["template_name"],
+            "dal_level": sm_data.get("dal_level"),
+            "total_phases": total_phases,
+            "completed_phases": completed_phases,
+            "current_phase_index": sm_data["current_phase_index"],
+            "total_activities": total_activities,
+            "completed_activities": completed_activities,
+            "progress_percent": round(progress_percent, 1),
+            "current_phase_name": phases[sm_data["current_phase_index"]].get("name") if sm_data["current_phase_index"] < len(phases) else None
         }

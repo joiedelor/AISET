@@ -16,6 +16,7 @@ import Chat from './pages/Chat'
 import Traceability from './pages/Traceability'
 import Documents from './pages/Documents'
 import ProductStructure from './pages/ProductStructure'
+import ProcessManagement from './pages/ProcessManagement'
 import Login from './pages/Login'
 import Register from './pages/Register'
 
@@ -82,6 +83,7 @@ function AppRoutes() {
         <Route path="projects/:projectId/traceability" element={<Traceability />} />
         <Route path="projects/:projectId/documents" element={<Documents />} />
         <Route path="projects/:projectId/product-structure" element={<ProductStructure />} />
+        <Route path="projects/:projectId/process-management" element={<ProcessManagement />} />
       </Route>
     </Routes>
   )
