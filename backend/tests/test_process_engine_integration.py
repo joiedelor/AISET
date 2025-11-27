@@ -84,7 +84,7 @@ class TestStateMachineCreation:
         # Verify database record
         sm_record = db.query(CIStateMachine).filter(CIStateMachine.ci_id == ci.id).first()
         assert sm_record is not None
-        assert sm_record.template_id == "DO178C_SOFTWARE_PROCESS"
+        assert sm_record.template_id == "DO178C_SOFTWARE_V1"
         assert sm_record.dal_level == "DAL_B"
 
     def test_create_state_machine_for_hardware_ci(self, db: Session, test_project: Project, ci_service: ConfigurationItemService):
