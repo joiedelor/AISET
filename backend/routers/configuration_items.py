@@ -13,6 +13,8 @@ from datetime import datetime
 from database.connection import get_db
 from services.configuration_item_service import ConfigurationItemService
 from services.activity_interview_service import ActivityInterviewService
+from services.process_event_service import get_event_service
+from services.phase_approval_service import PhaseApprovalService
 from models.configuration_item import CIType, CILifecyclePhase, CIControlLevel, CIStatus, BOMType
 
 router = APIRouter()
@@ -706,3 +708,128 @@ async def list_activity_interview_mappings():
         "mappings": mappings,
         "total": len(mappings)
     }
+
+
+# ==================== Phase Approval Workflow ====================
+
+class PhaseTransitionRequest(BaseModel):
+    """Schema for requesting phase transition approval."""
+    from_phase: int
+    to_phase: int
+    requested_by: str
+    justification: str = ""
+
+
+class ApprovalDecision(BaseModel):
+    """Schema for approval decision."""
+    approved_by: str
+    comments: str = ""
+
+
+class RejectionDecision(BaseModel):
+    """Schema for rejection decision."""
+    rejected_by: str
+    reason: str
+
+
+@router.post("/configuration-items/{ci_id}/request-phase-transition")
+async def request_phase_transition(
+    ci_id: int,
+    request: PhaseTransitionRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Request approval for phase transition.
+
+    Traceability: REQ-SM-002 (Phase preconditions)
+
+    This endpoint creates an approval request that must be
+    approved before the phase transition can occur.
+    """
+    service = PhaseApprovalService(db)
+
+    approval_request = service.request_phase_transition_approval(
+        ci_id=ci_id,
+        from_phase_index=request.from_phase,
+        to_phase_index=request.to_phase,
+        requested_by=request.requested_by,
+        justification=request.justification
+    )
+
+    return approval_request
+
+
+@router.post("/approvals/{approval_id}/approve")
+async def approve_phase_transition(
+    approval_id: str,
+    decision: ApprovalDecision,
+    db: Session = Depends(get_db)
+):
+    """
+    Approve a phase transition request.
+
+    Traceability: REQ-SM-002, REQ-AUDIT-001
+    """
+    service = PhaseApprovalService(db)
+
+    result = service.approve_phase_transition(
+        approval_id=approval_id,
+        approved_by=decision.approved_by,
+        comments=decision.comments
+    )
+
+    return result
+
+
+@router.post("/approvals/{approval_id}/reject")
+async def reject_phase_transition(
+    approval_id: str,
+    decision: RejectionDecision,
+    db: Session = Depends(get_db)
+):
+    """
+    Reject a phase transition request.
+
+    Traceability: REQ-SM-002, REQ-AUDIT-001
+    """
+    service = PhaseApprovalService(db)
+
+    result = service.reject_phase_transition(
+        approval_id=approval_id,
+        rejected_by=decision.rejected_by,
+        reason=decision.reason
+    )
+
+    return result
+
+
+@router.get("/configuration-items/{ci_id}/phase/{phase_index}/entry-criteria")
+async def check_phase_entry_criteria(
+    ci_id: int,
+    phase_index: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Check if entry criteria are met for a phase.
+
+    Traceability: REQ-SM-002 (Phase preconditions)
+    """
+    service = PhaseApprovalService(db)
+    criteria = service.check_phase_entry_criteria(ci_id, phase_index)
+    return criteria
+
+
+@router.get("/configuration-items/{ci_id}/phase/{phase_index}/exit-criteria")
+async def check_phase_exit_criteria(
+    ci_id: int,
+    phase_index: int,
+    db: Session = Depends(get_db)
+):
+    """
+    Check if exit criteria are met for a phase.
+
+    Traceability: REQ-SM-002 (Phase preconditions)
+    """
+    service = PhaseApprovalService(db)
+    criteria = service.check_phase_exit_criteria(ci_id, phase_index)
+    return criteria

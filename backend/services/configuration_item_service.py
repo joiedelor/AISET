@@ -32,6 +32,7 @@ from process_engine import (
     StateMachineInstance,
     CIType as ProcessCIType
 )
+from services.process_event_service import get_event_service
 
 logger = logging.getLogger(__name__)
 
@@ -780,6 +781,15 @@ class ConfigurationItemService:
         self.db.commit()
 
         logger.info(f"Completed activity {activity_id} for CI {ci_id}")
+
+        # Emit event for real-time updates
+        event_service = get_event_service()
+        event_service.emit_activity_completed(
+            ci_id=ci_id,
+            activity_id=activity_id,
+            activity_name=activity.name,
+            progress_percent=sm_instance.overall_progress
+        )
 
         return {
             "ci_id": ci_id,
