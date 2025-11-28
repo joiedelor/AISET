@@ -14,6 +14,7 @@ import logging
 
 from config.settings import settings
 from database.connection import init_db
+from services.websocket_manager import init_websocket_manager
 
 # Import routers
 from routers import (
@@ -106,6 +107,10 @@ async def root():
         "docs": "/docs",
         "do178c_compliance": "enabled" if settings.enable_audit_trail else "disabled"
     }
+
+
+# Mount WebSocket manager
+app = init_websocket_manager(app)
 
 
 if __name__ == "__main__":
